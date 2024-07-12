@@ -3,7 +3,7 @@ import { NavLink as Link } from "react-router-dom";
 import styled from "styled-components";
  
 export const Nav = styled.nav`
-    background: #ffb3ff;
+    background: #f3e5ab;
     height: 80px;
     display: flex;
     justify-content: space-between;
@@ -12,7 +12,7 @@ export const Nav = styled.nav`
 `;
  
 export const NavLink = styled(Link)`
-    color: #808080;
+    color: #000080;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -24,12 +24,23 @@ export const NavLink = styled(Link)`
     }
 `;
  
-
+export const LoginLogout = styled(Link)`
+    color: #f3e5ab;
+    background-color: #000080;
+    border: none;
+    display: inline-block;
+    text-align: center;
+    float: right;
+    position: absolute;
+    right: 15px;
+    padding: 15px 30px;
+    cursor: pointer;
+`;
  
 export const NavMenu = styled.div`
     display: flex;
     align-items: center;
-    margin-right: -24px;
+    margin-left: 24px;
     /* Second Nav */
     /* margin-right: 24px; */
     /* Third Nav */

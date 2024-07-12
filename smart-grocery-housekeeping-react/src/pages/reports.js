@@ -2,7 +2,7 @@ import React from "react";
  
 const Reports = () => {
     return (
-        <div>
+        <div class="core">
             <h1>
                 This will be the reports page.
             </h1>

@@ -5,7 +5,7 @@ import { FaCamera } from "react-icons/fa";
  
 const Add_Item = () => {
     return (
-        <div>
+        <div class="core">
             <h2>
                 Image Input
             </h2>

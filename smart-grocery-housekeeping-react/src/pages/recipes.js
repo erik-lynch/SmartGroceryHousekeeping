@@ -2,7 +2,7 @@ import React from "react";
  
 const Recipes = () => {
     return (
-        <div>
+        <div class="core">
             <h1>
                 This will be the recipes page.
             </h1>

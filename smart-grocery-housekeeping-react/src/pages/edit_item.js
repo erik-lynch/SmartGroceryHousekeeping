@@ -2,7 +2,7 @@ import React from "react";
  
 const Edit_Item = () => {
     return (
-        <div>
+        <div class="core">
             <h2>
                 Grocery Item Name
             </h2>
