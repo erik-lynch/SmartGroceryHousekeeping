@@ -1,3 +1,5 @@
+// Adapted from https://www.geeksforgeeks.org/how-to-create-a-multi-page-website-using-react-js/
+// Retrieved July 10, 2024
 
 import { NavLink as Link } from "react-router-dom";
 import styled from "styled-components";
