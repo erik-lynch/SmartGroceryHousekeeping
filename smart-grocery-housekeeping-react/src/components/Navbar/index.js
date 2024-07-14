@@ -1,3 +1,6 @@
+// Adapted from https://www.geeksforgeeks.org/how-to-create-a-multi-page-website-using-react-js/
+// Retrieved July 10, 2024
+
 import React from "react";
 import { LoginLogout, Nav, NavLink, NavMenu } from "./NavbarElements";
  
