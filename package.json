@@ -1,0 +1,15 @@
+{
+  "name": "SmartGroceryHousekeeping",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "./setup.sh",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^7.2.1"
+  }
+}
