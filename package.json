@@ -6,7 +6,7 @@
     "setup": "./setup.sh",
     "start:frontend": "cd frontend && npm start",
     "start:backend": "cd backend && npm start",
-    "start": "npm run start:frontend"
+    "start": "npm run setup && npm run start:frontend"
   },
   "dependencies": {},
   "devDependencies": {
