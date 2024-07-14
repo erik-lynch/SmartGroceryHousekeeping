@@ -17,11 +17,11 @@ const Add_Item = () => {
                     id="button-upload"
                 />
                 <label htmlFor="button-upload">
-                    <FaUpload />
+                    <FaUpload class="image-icon"/>
                 </label>
                 <input accept="image/*" id="icon-button-file" type="file" capture="user" style={{ display: 'none' }} />
                 <label htmlFor="icon-button-file">
-                    <FaCamera />
+                    <FaCamera class="image-icon"/>
                 </label>
             </form>
             <h2>

@@ -40,3 +40,61 @@
 .core {
   margin-left: 30px;
 }
+
+.image-placeholder {
+  width: 80%;
+  height: 80%;
+}
+
+.left-inline-div {
+  float: left;
+  height: 500px;
+  width: 50%;
+}
+
+.right-inline-div {
+  margin-left: 200px;
+  padding-left: 50px;
+  padding-top: 50px;
+}
+
+select {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+input {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+input[type="submit"] {
+  color: #f3e5ab;
+  background-color: #000080;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  padding: 15px 30px;
+  cursor: pointer;
+}
+
+/* Add Item screen */
+.image-icon {
+  height: 30px;
+  width: 30px;
+  padding-right: 15px;
+}
+
+button {
+  color: #f3e5ab;
+  background-color: #000080;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  position: absolute;
+  right: 15px;
+  padding: 15px 30px;
+  cursor: pointer;
+}

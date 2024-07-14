@@ -15,12 +15,13 @@ export const NavLink = styled(Link)`
     color: #000080;
     display: flex;
     align-items: center;
+    float: left;
     text-decoration: none;
     padding: 0 1rem;
-    height: 100%;
+    height: 50px;
     cursor: pointer;
     &.active {
-        color: #4d4dff;
+        background: white;
     }
 `;
  
