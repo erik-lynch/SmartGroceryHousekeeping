@@ -3,20 +3,22 @@ const express = require('express');
 const { Client } = require('pg');
 const app = express();
 
-const client = new Client({
+const pool = new Pool({
+  max: 5,
+  idleTimeoutMillis: 50000,
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
 
-client.connect()
+pool.connect()
   .then(() => console.log('Connected to the database'))
   .catch(err => console.error('Connection error', err.stack));
 
 app.get('/items', async (req, res) => {
   try {
-    const result = await client.query('SELECT * FROM items');
+    const result = await pool.query('SELECT * FROM items');
     res.json(result.rows);
   } catch (err) {
     console.error(err);
