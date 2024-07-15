@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 const app = express();
 
 const pool = new Pool({
