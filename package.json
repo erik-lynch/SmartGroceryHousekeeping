@@ -6,7 +6,8 @@
     "setup": "./setup.sh",
     "start:frontend": "cd frontend && npm start",
     "start:backend": "cd backend && npm start",
-    "start": "npm run setup && npm run start:frontend"
+    "start:all": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "start": "npm run setup && npm run start:all"
   },
   "dependencies": {},
   "devDependencies": {
