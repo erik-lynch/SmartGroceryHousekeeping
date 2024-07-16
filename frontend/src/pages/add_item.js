@@ -137,11 +137,11 @@ const Add_Item = () => {
       <form>
         <input type="file" accept="image/*" style={{ display: "none" }} id="button-upload" />
         <label htmlFor="button-upload">
-          <FaUpload />
+          <FaUpload class="image-icon"/>
         </label>
         <input accept="image/*" id="icon-button-file" type="file" capture="user" style={{ display: "none" }} />
         <label htmlFor="icon-button-file">
-          <FaCamera />
+          <FaCamera class="image-icon"/>
         </label>
       </form>
       <h2>Manual Input</h2>
