@@ -26,6 +26,67 @@ app.get('/items', async (req, res) => {
   }
 });
 
+//----------------------------------------------------------------------------
+//                View Recipe Page requests
+//----------------------------------------------------------------------------
+
+//Get recipe name and description From recipeid
+app.get('/recipes/:recipeId/namedescription', async(req,res) => {
+  try{
+    const getRecipeInfoData = await pool.query(
+      `SELECT
+        recipeName,
+        recipeDescription
+      FROM recipes
+      WHERE recipeId = ${req.params.recipeId}`
+    );
+    res.json(getRecipeInfoData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//Get recipe ingredients from recipeid
+app.get('/recipes/:recipeId/ingredients', async(req,res) => {
+  try{
+    const getRecipeIngredientData = await pool.query(
+      `SELECT 
+        I.itemName, 
+        IR.quantity
+      FROM Items AS I
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
+      INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
+      WHERE R.recipeId = ${req.params.recipeId}`
+    );
+    res.json(getRecipeIngredientData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//get recipe steps from recipeid
+app.get('/recipes/:recipeId/steps', async(req,res) => {
+  try{
+    const getRecipeStepData = await pool.query(
+      `SELECT 
+        I.itemName, 
+        IR.quantity
+      FROM Items AS I
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
+      INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
+      WHERE R.recipeId = ${req.params.recipeId}`
+    );
+    res.json(getRecipeStepData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
