@@ -13,6 +13,8 @@ import AddItem from "./pages/add_item";
 import EditItem from "./pages/edit_item";
 import Recipes from "./pages/recipes";
 import Reports from "./pages/reports";
+import ViewRecipe from "./pages/view_recipe";
+import AddRecipe from "./pages/add_recipe";
 
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/edit_item" element={<EditItem />} />
+                <Route path="/recipes/:recipeId/view_recipe" element={<ViewRecipe />} />
+                <Route path="/recipes/:recipeId/add_recipe" element={<AddRecipe />} />
             </Routes>
             <Footer />
         </Router>
