@@ -9,7 +9,7 @@ const responsive = {
         max: 3000,
         min: 1024
       },
-      items: 3,
+      items: 4,
       partialVisibilityGutter: 40
     },
     mobile: {
@@ -30,13 +30,31 @@ const responsive = {
     }
 };
 
+/* WIP: Custom arrows */
+
+const CustomRightArrow = ({ onClick, ...rest }) => {
+  const {
+    onMove,
+    carouselState: { currentSlide, deviceType }
+  } = rest;
+  // onMove means if dragging or swiping in progress.
+  return <button onClick={() => onClick()} />;
+};
+
+const CustomLeftArrow = ({ onClick, ...rest }) => {
+  const {
+    onMove,
+    carouselState: { currentSlide, deviceType }
+  } = rest;
+  // onMove means if dragging or swiping in progress.
+  return <button onClick={() => onClick()} />;
+};
 
 class ItemCarousel extends Component {
 
     render() {
 
         return(
-            <div className='custom-container'>
 
             <Carousel 
                 additionalTransfrom={0}
@@ -48,9 +66,10 @@ class ItemCarousel extends Component {
                 deviceType={this.props.deviceType}
                 focusOnSelect={false}
                 draggable={true}
-               
-
-                removeArrowOnDeviceType={["tablet", "mobile", "desktop"]}
+            
+                removeArrowOnDeviceType={["tablet", "mobile"]}
+                // customRightArrow={<CustomRightArrow />}
+                // customLeftArrow={<CustomLeftArrow />}
             
                 containerClass="carousel-container"
                 itemClass="carousel-item"
@@ -68,7 +87,6 @@ class ItemCarousel extends Component {
 
             </Carousel>
 
-            </div>
         );
     }
 

@@ -3,10 +3,10 @@ import React from "react";
 const Reports = () => {
     return (
         <div class="core">
-            <h3>
+            <h2>
                 Frequently Spoiled Items
-            </h3>
-            <hr></hr>
+            </h2>
+
             <br></br>
             <table>
                 <tr class="header-row">
@@ -41,10 +41,10 @@ const Reports = () => {
             <br></br>
             <br></br>
             
-            <h3>
+            <h2>
                 Frequently Used Items
-            </h3>
-            <hr></hr>
+            </h2>
+
             <br></br>
             <table>
                 <tr class="header-row">

@@ -1,3 +1,81 @@
+/* Typography */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+.roboto-thin {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.roboto-light {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.roboto-regular {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.roboto-medium {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.roboto-bold {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.roboto-black {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.roboto-thin-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.roboto-light-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.roboto-regular-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.roboto-medium-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.roboto-bold-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.roboto-black-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+/* App */
+
 .App {
   text-align: center;
 }
@@ -39,7 +117,17 @@
 
 .core {
   padding: 2%;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Roboto';
+  min-height: 100vh;
+}
+
+h2 {
+
+  margin: 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid black;
+  font-size: large;
+
 }
 
 /* Tables */
@@ -82,17 +170,13 @@ th {
 }
 
 select {
-  margin-bottom: 10px;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin: 10px;
   border-radius: 50px;
   height: 25px;
 }
 
 input:not([type="submit"]) {
-  margin-bottom: 10px;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin: 10px;
   border-radius: 50px;
   height: 25px;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -100,8 +184,8 @@ input:not([type="submit"]) {
 }
 
 input[type="submit"] {
-  color: #f3e5ab;
-  background-color: #000080;
+  color: white;
+  background-color: black;
   border: none;
   display: inline-block;
   text-align: center;
@@ -110,8 +194,7 @@ input[type="submit"] {
   border-radius: 5px;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: 16px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 /* Add Item screen */
@@ -122,8 +205,8 @@ input[type="submit"] {
 }
 
 button {
-  color: #f3e5ab;
-  background-color: #000080;
+  color: white;
+  background-color: black;
   border: none;
   display: inline-block;
   text-align: center;

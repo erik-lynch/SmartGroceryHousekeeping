@@ -4,15 +4,15 @@ import ItemCarousel from "../components/Carousel/ItemCarousel";
 const Recipes = () => {
     return (
         <div class="core">
-            <h1>
+            <h2>
                 Recipes Using Items Spoiling Soon
-            </h1>
+            </h2>
 
             <ItemCarousel />
 
-            <h1>
+            <h2>
                 Recipes With Minimal Additional Ingredients
-            </h1>
+            </h2>
 
             <ItemCarousel />
         </div>

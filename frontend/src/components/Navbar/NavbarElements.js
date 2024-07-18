@@ -11,8 +11,7 @@ export const Nav = styled.nav`
  
 export const NavLink = styled(Link)`
     float: left;    
-    color: #000080;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: black;
     text-decoration: none;
     padding: 10px 20px;
     cursor: pointer;
@@ -24,12 +23,11 @@ export const NavLink = styled(Link)`
 `;
  
 export const LoginLogout = styled(Link)`
-    float: right;    
+    float: left;    
     color: white;
-    background-color: #000080;
+    background-color: black;
     border: none;
     text-decoration: none;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 8px;
