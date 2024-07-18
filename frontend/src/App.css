@@ -38,7 +38,7 @@
 }
 
 .core {
-  margin-left: 30px;
+  padding: 2%;
 }
 
 .image-placeholder {
@@ -98,3 +98,4 @@ button {
   padding: 15px 30px;
   cursor: pointer;
 }
+
