@@ -16,7 +16,9 @@ const Dashboard = () => {
                 Spoiling Soon
             </h2>
 
-            <ItemCarousel />
+            <ItemCarousel 
+                ItemName="Apple"
+                ItemQuantity="5"/>
 
             <h2>
                 All Items

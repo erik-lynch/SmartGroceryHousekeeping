@@ -51,7 +51,7 @@ const CustomLeftArrow = ({ onClick, ...rest }) => {
   return <button onClick={() => onClick()} />;
 };
 
-class ItemCarousel extends Component {
+class RecipeCarousel extends Component {
 
     render() {
 
@@ -78,20 +78,12 @@ class ItemCarousel extends Component {
             >
                 
                 <div className="CardContent">
-                
-                <img 
-                  src={`${process.env.PUBLIC_URL}/images/apple-1.jpg`}
-                  style={{ width: "100%", 
-                           height: "80%" }}
-                  alt="" 
-                />
-
-                  <div className="ItemName">{this.props.itemName}</div>
-                  <div className="ItemQuantity">{this.props.itemQuantity}</div>
-
-                </div>
+                    
+                    <div className="RecipeTitle">{this.props.recipeTitle}</div>
+                    <div className="RecipeIngredients">{this.props.recipeIngredients}</div>
           
-
+                </div>
+                
             </Carousel>
 
         );
@@ -99,4 +91,4 @@ class ItemCarousel extends Component {
 
 }
 
-export default ItemCarousel;
+export default RecipeCarousel;
