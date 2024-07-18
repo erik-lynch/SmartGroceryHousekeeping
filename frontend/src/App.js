@@ -2,6 +2,7 @@
 import './App.css';
 import React from "react";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer"
 import {
     BrowserRouter as Router,
     Routes,
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/edit_item" element={<EditItem />} />
             </Routes>
+            <Footer />
         </Router>
     );
 }

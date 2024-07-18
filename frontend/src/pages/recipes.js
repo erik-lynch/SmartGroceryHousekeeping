@@ -15,7 +15,6 @@ const Recipes = () => {
             </h1>
 
             <ItemCarousel />
-
         </div>
     );
 };

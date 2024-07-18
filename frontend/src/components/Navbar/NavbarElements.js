@@ -18,6 +18,7 @@ export const NavLink = styled(Link)`
     display: flex;
     align-items: center;
     float: left;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     text-decoration: none;
     padding: 0 1rem;
     height: 50px;
@@ -31,6 +32,7 @@ export const LoginLogout = styled(Link)`
     color: #f3e5ab;
     background-color: #000080;
     border: none;
+    text-decoration: none;
     display: inline-block;
     text-align: center;
     float: right;
@@ -38,6 +40,8 @@ export const LoginLogout = styled(Link)`
     right: 15px;
     padding: 15px 30px;
     cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 `;
  
 export const NavMenu = styled.div`
