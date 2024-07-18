@@ -8,8 +8,9 @@ const Dashboard = () => {
                 Recently Purchased
             </h2>
 
-            <ItemCarousel />
-
+            <ItemCarousel 
+                itemName="Apple"
+                itemQuantity="5"/>
             <a href="/edit_item">Edit Item page link</a>
 
             <h2>
@@ -17,16 +18,18 @@ const Dashboard = () => {
             </h2>
 
             <ItemCarousel 
-                ItemName="Apple"
-                ItemQuantity="5"/>
+                itemName="Apple"
+                itemQuantity="5"/>
 
             <h2>
                 All Items
             </h2>
 
-            <ItemCarousel />
+            <ItemCarousel 
+                itemName="Apple"
+                itemQuantity="5"/>
 
-        </div>
+            </div>
     );
 };
  
