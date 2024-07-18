@@ -76,14 +76,15 @@ class RecipeCarousel extends Component {
                 itemClass="carousel-item"
                 sliderClass="carousel-slider"
             >
-                
+                <a href={this.props.link}>
                 <div className="CardContent">
                     
                     <div className="RecipeTitle">{this.props.recipeTitle}</div>
                     <div className="RecipeIngredients">{this.props.recipeIngredients}</div>
-          
-                </div>
                 
+                </div>
+                </a>
+
             </Carousel>
 
         );

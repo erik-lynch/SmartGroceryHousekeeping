@@ -9,6 +9,7 @@ const Recipes = () => {
             </h2>
 
             <RecipeCarousel 
+                link="https://www.google.com/"
                 recipeTitle="Curry Tomatoes and Chickpeas With Cucumber Yogurt"
                 recipeIngredients="Tomatoes, Yogurt, Cucumbers, Mint, Garlic, Lemon"
             />
@@ -18,6 +19,7 @@ const Recipes = () => {
             </h2>
 
             <RecipeCarousel 
+                link="https://www.google.com/"
                 recipeTitle="Curry Tomatoes and Chickpeas With Cucumber Yogurt"
                 recipeIngredients="Tomatoes, Yogurt, Cucumbers, Mint, Garlic, Lemon"
             />

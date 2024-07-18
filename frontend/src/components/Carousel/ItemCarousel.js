@@ -79,12 +79,12 @@ class ItemCarousel extends Component {
                 
                 <div className="CardContent">
                 
-                <img 
-                  src={`${process.env.PUBLIC_URL}/images/apple-1.jpg`}
-                  style={{ width: "100%", 
-                           height: "80%" }}
-                  alt="" 
-                />
+                  <img 
+                    src={`${process.env.PUBLIC_URL}/images/apple-1.jpg`}
+                    style={{ width: "100%", 
+                            height: "80%" }}
+                    alt="" 
+                  />
 
                   <div className="ItemName">{this.props.itemName}</div>
                   <div className="ItemQuantity">{this.props.itemQuantity}</div>
