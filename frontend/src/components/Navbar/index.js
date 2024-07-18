@@ -9,6 +9,7 @@ const Navbar = () => {
         <>
             <Nav>
                 <NavMenu>
+
                     <NavLink to="/" activeStyle>
                         Dashboard
                     </NavLink>
@@ -24,6 +25,7 @@ const Navbar = () => {
                     <LoginLogout>
                         Login
                     </LoginLogout>
+                    
                 </NavMenu>
             </Nav>
         </>

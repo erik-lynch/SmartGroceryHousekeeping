@@ -1,10 +1,10 @@
 .carousel-item {
     background-color: white;
-    outline: solid;
+    outline: solid #000080;
     padding: 20px;
     margin: 10px;
-    height: 100px;
-    filter: drop-shadow(10px 10px 0px black);
+    height: 200px;
+    filter: drop-shadow(10px 10px 0px #000080);
     border-radius: 8px;
   }
 
@@ -13,5 +13,5 @@
 }
 
 .carousel-slider{
-  padding: 50px 0px 50px 0px;
+  padding: 10px 0px 50px 0px;
 }
