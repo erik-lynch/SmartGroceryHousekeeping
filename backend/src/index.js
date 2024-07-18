@@ -31,7 +31,7 @@ app.get('/items', async (req, res) => {
 //----------------------------------------------------------------------------
 
 //Get recipe name and description From recipeid
-app.get('/recipes/:recipeId/namedescription', async(req,res) => {
+app.get('/api/recipes/:recipeId/namedescription', async(req,res) => {
   try{
     const getRecipeInfoData = await pool.query(
       `SELECT
@@ -48,7 +48,7 @@ app.get('/recipes/:recipeId/namedescription', async(req,res) => {
 });
 
 //Get recipe ingredients from recipeid
-app.get('/recipes/:recipeId/ingredients', async(req,res) => {
+app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
   try{
     const getRecipeIngredientData = await pool.query(
       `SELECT 
@@ -67,16 +67,19 @@ app.get('/recipes/:recipeId/ingredients', async(req,res) => {
 });
 
 //get recipe steps from recipeid
-app.get('/recipes/:recipeId/steps', async(req,res) => {
+app.get('/api/recipes/:recipeId/steps', async(req,res) => {
   try{
     const getRecipeStepData = await pool.query(
-      `SELECT 
-        I.itemName, 
-        IR.quantity
-      FROM Items AS I
-      INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
-      INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
-      WHERE R.recipeId = ${req.params.recipeId}`
+
+    `SELECT
+      S.StepNumber,
+      S.stepDescription
+    FROM Recipes AS R
+    INNER JOIN RecipesSteps AS RS ON RS.FK_recipes_recipeId = R.recipeId
+    INNER JOIN Steps AS S ON RS.FK_steps_stepId = S.stepId
+    WHERE R.recipeId = recipeId
+    ORDER BY S.stepNumber ASC;
+  `
     );
     res.json(getRecipeStepData.rows);
   } catch (err) {
@@ -87,7 +90,7 @@ app.get('/recipes/:recipeId/steps', async(req,res) => {
 
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
