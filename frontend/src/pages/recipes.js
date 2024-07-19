@@ -1,5 +1,6 @@
 import React from "react";
 import RecipeCarousel from "../components/Carousel/RecipeCarousel";
+import recipesTestData from "../components/Carousel/recipes-test-data";
 
 const Recipes = () => {
     return (
@@ -8,21 +9,14 @@ const Recipes = () => {
                 Recipes Using Items Spoiling Soon
             </h2>
 
-            <RecipeCarousel 
-                link="https://www.google.com/"
-                recipeTitle="Curry Tomatoes and Chickpeas With Cucumber Yogurt"
-                recipeIngredients="Tomatoes, Yogurt, Cucumbers, Mint, Garlic, Lemon"
-            />
+            <RecipeCarousel content={recipesTestData} />
 
             <h2>
                 Recipes With Minimal Additional Ingredients
             </h2>
 
-            <RecipeCarousel 
-                link="https://www.google.com/"
-                recipeTitle="Curry Tomatoes and Chickpeas With Cucumber Yogurt"
-                recipeIngredients="Tomatoes, Yogurt, Cucumbers, Mint, Garlic, Lemon"
-            />
+            <RecipeCarousel content={recipesTestData} />
+            
         </div>
     );
 };

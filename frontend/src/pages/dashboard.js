@@ -1,5 +1,6 @@
 import React from "react";
 import ItemCarousel from "../components/Carousel/ItemCarousel";
+import dashboardTestData from "../components/Carousel/dashboard-test-data";
 
 const Dashboard = () => {
     return (
@@ -8,16 +9,7 @@ const Dashboard = () => {
                 Recently Purchased
             </h2>
 
-            <ItemCarousel 
-
-                link="/edit_item"
-                imagePath="/images/apple-1.jpg"
-                altText="image of many apples"
-                itemName="Apple"
-                itemQuantity="5"
-                itemUnit="apples"
-
-            />
+            <ItemCarousel content={dashboardTestData} />
 
             <a href="/edit_item">Edit Item page link</a>
 
@@ -25,32 +17,13 @@ const Dashboard = () => {
                 Spoiling Soon
             </h2>
 
-            <ItemCarousel 
-
-                link="/edit_item"
-                imagePath="/images/apple-1.jpg"
-                altText="image of many apples"
-                itemName="Apple"
-                itemQuantity="5"
-                itemUnit="apples"
-
-            />
-
+            <ItemCarousel content={dashboardTestData} />
 
             <h2>
                 All Items
             </h2>
 
-            <ItemCarousel 
-
-                link="/edit_item"
-                imagePath="/images/apple-1.jpg"
-                altText="image of many apples"
-                itemName="Apple"
-                itemQuantity="5"
-                itemUnit="apples"
-
-            />
+            <ItemCarousel content={dashboardTestData} />
 
             </div>
     );

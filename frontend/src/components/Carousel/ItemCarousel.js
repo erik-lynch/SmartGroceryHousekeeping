@@ -33,13 +33,8 @@ const responsive = {
 
 class ItemCarousel extends Component {
 
-    constructor(props) {
-      super (props)
-    }
 
     render() {
-
-      const { deviceType, link, imagePath, altText, itemName, itemQuantity, itemUnit } = this.props
 
         return(
 
@@ -50,7 +45,7 @@ class ItemCarousel extends Component {
             ssr={true}              // means to render carousel on server-side.
             infinite={true}
             autoPlay={false}
-            deviceType={deviceType}
+            deviceType={this.props.deviceType}
             focusOnSelect={false}
             draggable={true}
             removeArrowOnDeviceType={["tablet", "mobile"]}
@@ -59,21 +54,24 @@ class ItemCarousel extends Component {
             sliderClass="carousel-slider"
         >  
         
-            <a href={link}>
+          {this.props.content.map((e) => (
+
+            <a href={e.link}>
             <div className="CardContent">
                     
               <img 
-                src={imagePath}
-                style={{ width: "100%", 
-                        height: "80%" }}
-                alt={altText} 
+                src={e.imagePath}
+                style={{ width: "100%"}}
+                alt={e.altText} 
               />
 
-                <div className="item-name">{itemName}</div>
-                <div className="item-quantity">{itemQuantity} {itemUnit}</div>
+                <div className="item-name">{e.itemName}</div>
+                <div className="item-quantity">{e.itemQuantity} {e.itemUnit}</div>
 
             </div>
             </a>
+
+          ))}
 
         </Carousel>
 

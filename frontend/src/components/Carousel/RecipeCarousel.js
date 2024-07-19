@@ -31,25 +31,6 @@ const responsive = {
     }
 };
 
-/* WIP: Custom arrows */
-
-const CustomRightArrow = ({ onClick, ...rest }) => {
-  const {
-    onMove,
-    carouselState: { currentSlide, deviceType }
-  } = rest;
-  // onMove means if dragging or swiping in progress.
-  return <button onClick={() => onClick()} />;
-};
-
-const CustomLeftArrow = ({ onClick, ...rest }) => {
-  const {
-    onMove,
-    carouselState: { currentSlide, deviceType }
-  } = rest;
-  // onMove means if dragging or swiping in progress.
-  return <button onClick={() => onClick()} />;
-};
 
 class RecipeCarousel extends Component {
 
@@ -67,23 +48,25 @@ class RecipeCarousel extends Component {
                 deviceType={this.props.deviceType}
                 focusOnSelect={false}
                 draggable={true}
-            
                 removeArrowOnDeviceType={["tablet", "mobile"]}
-                // customRightArrow={<CustomRightArrow />}
-                // customLeftArrow={<CustomLeftArrow />}
-            
                 containerClass="carousel-container"
                 itemClass="carousel-item"
                 sliderClass="carousel-slider"
             >
-                <a href={this.props.link}>
+
+              {this.props.content.map((e) => (
+
+                <a href={e.link}>
                 <div className="CardContent">
                     
-                    <div className="recipe-title">{this.props.recipeTitle}</div>
-                    <div className="recipe-ingredients">{this.props.recipeIngredients}</div>
-                
+                    <div className="recipe-title">{e.recipeTitle}</div>
+                    <div className="recipe-ingredients">{e.recipeIngredients}</div>
+
                 </div>
                 </a>
+
+              ))}
+                
 
             </Carousel>
 
