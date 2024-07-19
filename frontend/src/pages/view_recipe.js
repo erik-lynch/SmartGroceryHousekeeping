@@ -7,20 +7,44 @@ import { useParams } from "react-router-dom";
 const View_Recipe = () => {
 
     const [steps, setSteps] = useState([]);
+    const [ingredients, setIngredients] = useState([]);
+    const [description, setDescription] = useState([]);
     const [error, setError] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading1, setLoading1] = useState(true);
+    const [loading2, setLoading2] = useState(true);
+    const [loading3, setLoading3] = useState(true);
 
-    
+    let { recipeId } = useParams();
+
+    const fetchStepData = async () => {
+        setLoading1(true);
+        const stepRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/steps`);
+        const stepData = await stepRes.json();
+        setSteps(stepData);
+        setLoading1(false);
+    }
+
+    const fetchIngredientData = async () => {
+        setLoading2(true);
+        const ingredientRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/ingredients`);
+        const ingredientData = await ingredientRes.json();
+        setIngredients(ingredientData);
+        setLoading2(false);
+    }
+
+    const fetchDescriptionData = async () => {
+        setLoading3(true);
+        const descriptionRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/namedescription`);
+        const descriptionData = await descriptionRes.json();
+        setDescription(descriptionData);
+        setLoading3(false);
+    }
+
     useEffect(() => {
-        const fetchStepData = async () => {
-            setLoading(true);
-            const stepRes  = await fetch('http://localhost:3001/api/recipes/1/steps');
-            const stepData = await stepRes.json();
-            setSteps(stepData);
-            setLoading(false);
-        }
-    
-    fetchStepData();}, []);
+    fetchStepData();
+    fetchIngredientData();
+    fetchDescriptionData();
+    }, []);
 
 //    const [steps, setSteps] = useState([]);
 //
@@ -40,30 +64,32 @@ const View_Recipe = () => {
 //    , []);
 
     //to get rid of error where attribute set before assigned
-    if (loading) return <h1>Loading</h1>;
+    // if any one is not loaded display loading screen
+    if (loading1 || loading2 || loading3) return <h1>Loading</h1>;
 
     return (
         <div class="core">
             <h1>
-                Recipe Name Variable
+                {description[0].recipename}
             </h1>
-            <p>Recipe Description</p>
-            <h2>Ingredients</h2>
+            <p>{description[0].recipedescription}</p>
+            <h2>Ingredients:</h2>
                 <ul>
-                    <li>item 1</li>
-                    <li>item 2</li>
-                    <li>item 3</li>
-                    <li>item 4</li>
+                    {ingredients.map((ingredientval) => {
+                        return (
+                            <li>{ingredientval.itemname} {ingredientval.quantity} OptionalUnitQuantity</li>
+                        );
+                    })}
                 </ul>
-            <h2>Recipe Steps</h2>
-
+            <h2>Directions:</h2>
+                
                 <ol>
-                    <li> {steps[1].stepdescription}</li>
-                    <li> {steps[3].stepdescription}</li>
-                    <li> {steps[4].stepdescription}</li>
-                    <li> {steps[5].stepdescription}</li>
+                {steps.map((stepval) => {
+                    return(
+                        <li> {stepval.stepdescription}</li>
+                    );
+                })}
                 </ol>
-
         </div>
     )
 };
