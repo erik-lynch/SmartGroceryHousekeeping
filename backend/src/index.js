@@ -74,6 +74,22 @@ app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
     res.status(500).send('Server error');
   }
 });
+//verify recipeid exists
+app.get('/api/recipes/:recipeId/verify', async(req,res) => {
+  try{
+    const getRecipeVerify = await pool.query(
+    `SELECT recipeId FROM recipes where recipeid = ${req.params.recipeId}`
+    );
+    if (getRecipeVerify.rows.length === 0 ) {
+      res.status(404).send("404 recipeId doesn't exist");
+    }
+    else {res.status(200).send("recipe exists")}
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 //get recipe steps from recipeid
 app.get('/api/recipes/:recipeId/steps', async(req,res) => {
@@ -86,7 +102,7 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
     FROM Recipes AS R
     INNER JOIN RecipesSteps AS RS ON RS.FK_recipes_recipeId = R.recipeId
     INNER JOIN Steps AS S ON RS.FK_steps_stepId = S.stepId
-    WHERE R.recipeId = recipeId
+    WHERE R.recipeId = ${req.params.recipeId}
     ORDER BY S.stepNumber ASC;
   `
     );
