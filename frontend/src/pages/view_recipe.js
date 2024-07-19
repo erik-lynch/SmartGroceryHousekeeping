@@ -1,11 +1,14 @@
 import React from "react";
 import{ useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const View_Recipe = () => {
     
     // get recipeId for URL parameter
     let { recipeId } = useParams();
+
+    let navigate = useNavigate();
 
     // set use effect state changes- steps,ingredient,description for page data
     const [steps, setSteps] = useState([]);
@@ -116,6 +119,8 @@ const View_Recipe = () => {
                     );
                 })}
                 </ol>
+                <br></br>
+                <button onClick={() => navigate(-1)}> Return to previous page</button>
         </div>
     )
 };
