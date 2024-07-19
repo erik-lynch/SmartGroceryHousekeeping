@@ -1,20 +1,22 @@
 import React from "react";
-import ItemCarousel from "../components/Carousel/ItemCarousel";
- 
+import RecipeCarousel from "../components/Carousel/RecipeCarousel";
+import recipesTestData from "../components/Carousel/recipes-test-data";
+
 const Recipes = () => {
     return (
         <div class="core">
-            <h1>
+            <h2>
                 Recipes Using Items Spoiling Soon
-            </h1>
+            </h2>
 
-            <ItemCarousel />
+            <RecipeCarousel content={recipesTestData} />
 
-            <h1>
+            <h2>
                 Recipes With Minimal Additional Ingredients
-            </h1>
+            </h2>
 
-            <ItemCarousel />
+            <RecipeCarousel content={recipesTestData} />
+            
         </div>
     );
 };

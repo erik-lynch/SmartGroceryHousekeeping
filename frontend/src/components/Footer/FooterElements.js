@@ -2,13 +2,12 @@ import styled from "styled-components";
  
 export const Box = styled.div`
     
-    background: #f3e5ab;
-    border-top: 3px black;
-    position: absolute;
-    bottom: 0;
+    background: #FFE7C3;
+    border-top: solid 1px black;
+    bottom: 0px;
     width: 100%;
-    height: 60px;
-    display: flex;
+    height: 120px;
+    margin-top: auto;
 `;
 
  
