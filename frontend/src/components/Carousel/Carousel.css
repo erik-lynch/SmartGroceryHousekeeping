@@ -14,7 +14,7 @@
   padding: 10px 0px 50px 0px;
 }
 
-.ItemName {
+.item-name {
   float: left;
   font-size: medium;
   display: flex;
@@ -23,7 +23,7 @@
 
 }
 
-.ItemQuantity {
+.item-quantity {
   float: right;
   font-size: medium;
   display: flex;
@@ -31,13 +31,13 @@
   padding: 10%;
 }
 
-.RecipeTitle {
+.recipe-title {
   font-weight: bold;
   font-size: large;
   padding: 20px;
 }
 
-.RecipeIngredients {
+.recipe-ingredients {
   padding: 20px;
 }
 

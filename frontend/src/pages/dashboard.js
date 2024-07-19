@@ -9,8 +9,16 @@ const Dashboard = () => {
             </h2>
 
             <ItemCarousel 
+
+                link="/edit_item"
+                imagePath="/images/apple-1.jpg"
+                altText="image of many apples"
                 itemName="Apple"
-                itemQuantity="5"/>
+                itemQuantity="5"
+                itemUnit="apples"
+
+            />
+
             <a href="/edit_item">Edit Item page link</a>
 
             <h2>
@@ -18,16 +26,30 @@ const Dashboard = () => {
             </h2>
 
             <ItemCarousel 
+
+                link="/edit_item"
+                imagePath="/images/apple-1.jpg"
+                altText="image of many apples"
                 itemName="Apple"
-                itemQuantity="5"/>
+                itemQuantity="5"
+                itemUnit="apples"
+
+            />
 
             <h2>
                 All Items
             </h2>
 
             <ItemCarousel 
+
+                link="/edit_item"
+                imagePath="/images/apple-1.jpg"
+                altText="image of many apples"
                 itemName="Apple"
-                itemQuantity="5"/>
+                itemQuantity="5"
+                itemUnit="apples"
+
+            />
 
             </div>
     );

@@ -79,8 +79,8 @@ class RecipeCarousel extends Component {
                 <a href={this.props.link}>
                 <div className="CardContent">
                     
-                    <div className="RecipeTitle">{this.props.recipeTitle}</div>
-                    <div className="RecipeIngredients">{this.props.recipeIngredients}</div>
+                    <div className="recipe-title">{this.props.recipeTitle}</div>
+                    <div className="recipe-ingredients">{this.props.recipeIngredients}</div>
                 
                 </div>
                 </a>
