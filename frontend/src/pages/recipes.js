@@ -1,7 +1,3 @@
-//import React from "react";
-//import ItemCarousel from "../components/Carousel/ItemCarousel";
- 
-/* Jillian has not pushed THE BELOW to main yet, but I am using this IT IS NOT MINE*/
 import React from "react";
 import RecipeCarousel from "../components/Carousel/RecipeCarousel";
 import{ useState, useEffect } from 'react';
@@ -193,66 +189,22 @@ const Recipes = () => {
                 recipeTitle8="Curry Tomatoes and Chickpeas With Cucumber Yogurt"
                 recipeIngredients8="Tomatoes, Yogurt, Cucumbers, Mint, Garlic, Lemon"
             />
-        </div>
-    
-        
-    );
-};
-};
- /* Jillian has not pushed THE ABOVE to main yet, but I am using this IT IS NOT MINE*/
 
-/*
-const Recipes = () => {
-    return (
-        <div class="core">
-            <h1>
+            <h2>
                 Recipes Using Items Spoiling Soon
-            </h1>
+            </h2>
 
-            <ItemCarousel
-            item1 = {<a href="/recipes/1/view_recipe">Sample text 1 link</a>}
-            item2="Sample text 2"
-            item3="Sample text 3"
-            item4="Sample text 4"
-            item5="Sample text 5"
-            item6="Sample text 6"
-            item7="Sample text 7"
-            item8="Sample text 8"
-            />
+            <RecipeCarousel content={recipesTestData} />
 
-            <h1>
+            <h2>
                 Recipes With Minimal Additional Ingredients
-            </h1>
+            </h2>
 
-            <ItemCarousel 
-            item1="Sample text 1"
-            item2="Sample text 2"
-            item3="Sample text 3"
-            item4="Sample text 4"
-            item5="Sample text 5"
-            item6="Sample text 6"
-            item7="Sample text 7"
-            item8="Sample text 8"
-            />
-
-            <h1>
-                Recipes Suggested From Cookbook
-            </h1>
-
-            <ItemCarousel 
-            item1="Sample text 1"
-            item2="Sample text 2"
-            item3="Sample text 3"
-            item4="Sample text 4"
-            item5="Sample text 5"
-            item6="Sample text 6"
-            item7="Sample text 7"
-            item8="Sample text 8"
-            />
+            <RecipeCarousel content={recipesTestData} />
+            
         </div>
     );
 };
- 
-export default Recipes;
-*/
+};
+
 export default Recipes;
