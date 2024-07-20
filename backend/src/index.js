@@ -130,7 +130,8 @@ app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
       INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
       INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
       WHERE U.userId = ${req.params.userid}
-      AND UI.spoilageDate <= (SELECT CURRENT_DATE+5)
+        AND UI.spoilageDate <= (SELECT CURRENT_DATE+5)
+        AND UI.finished = false
       ORDER BY UI.spoilageDate`
   );
     res.json(getSpoilSoonIngredientsData.rows);
@@ -152,6 +153,7 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
       INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
       INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
       WHERE U.userId = ${req.params.userid}
+        AND UI.finished = false
       ORDER BY UI.spoilageDate`
   );
     res.json(getInFridgeIngredientsData.rows);
@@ -160,8 +162,6 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
     res.status(500).send('Server error');
   }
 });
-
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
