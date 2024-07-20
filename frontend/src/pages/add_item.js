@@ -153,7 +153,7 @@ const Add_Item = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/add-item", {
+      const response = await fetch("http://localhost:3001/api/add-item", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
