@@ -74,6 +74,7 @@ app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
     res.status(500).send('Server error');
   }
 });
+
 //verify recipeid exists
 app.get('/api/recipes/:recipeId/verify', async(req,res) => {
   try{
@@ -107,6 +108,53 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
   `
     );
     res.json(getRecipeStepData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//----------------------------------------------------------------------------
+//                Recipes Page requests
+//----------------------------------------------------------------------------
+
+//Get all ingredients spoiling in the next 5 days
+app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
+  try{
+    const getSpoilSoonIngredientsData = await pool.query(
+      `SELECT
+	      I.itemName
+      FROM Items AS I
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
+      INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
+      WHERE U.userId = ${req.params.userid}
+      AND UI.spoilageDate <= (SELECT CURRENT_DATE+5)
+      ORDER BY UI.spoilageDate`
+  );
+    res.json(getSpoilSoonIngredientsData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//Get all ingredients in fridge
+app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
+  try{
+    const getInFridgeIngredientsData = await pool.query(
+      `SELECT
+	      I.itemName
+      FROM Items AS I
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
+      INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
+      WHERE U.userId = ${req.params.userid}
+      ORDER BY UI.spoilageDate`
+  );
+    res.json(getInFridgeIngredientsData.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
