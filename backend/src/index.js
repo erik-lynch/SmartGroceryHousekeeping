@@ -62,7 +62,8 @@ app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
     const getRecipeIngredientData = await pool.query(
       `SELECT 
         I.itemName, 
-        IR.quantity
+        IR.quantity,
+        IR.quantityunit
       FROM Items AS I
       INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
       INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId

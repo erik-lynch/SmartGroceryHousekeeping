@@ -106,7 +106,7 @@ const View_Recipe = () => {
                 <ul>
                     {ingredients.map((ingredientval,key) => {
                         return (
-                            <li key={key}>{ingredientval.itemname} {ingredientval.quantity} OptionalUnitQuantity</li>
+                            <li key={key}>{ingredientval.itemname} {ingredientval.quantity} {ingredientval.quantityunit}</li>
                         );
                     })}
                 </ul>
