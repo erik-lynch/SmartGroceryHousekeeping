@@ -19,7 +19,7 @@ const Navbar = () => {
                     <NavLink to="/reports" activeStyle>
                         Reports
                     </NavLink>
-                    <NavLink to="/recipes" activeStyle>
+                    <NavLink to="/users/1/recipes" activeStyle>
                         Recipes
                     </NavLink>
                     <LoginLogout>
