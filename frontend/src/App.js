@@ -16,10 +16,8 @@ import Reports from "./pages/reports";
 import ViewRecipe from "./pages/view_recipe";
 import AddRecipe from "./pages/add_recipe";
 
-
-
-
 function App() {
+
     return (
         <Router>
             <Navbar />
@@ -27,7 +25,7 @@ function App() {
                 <Route exact path="/" element={<Dashboard />} />
                 <Route path="/add_item" element={<AddItem />} />
                 <Route path="/reports" element={<Reports />} />
-                <Route path="/recipes" element={<Recipes />} />
+                <Route path="/users/:userId/recipes" element={<Recipes />} />
                 <Route path="/edit_item" element={<EditItem />} />
                 <Route path="/recipes/:recipeId/view_recipe" element={<ViewRecipe />} />
                 <Route path="/recipes/:recipeId/add_recipe" element={<AddRecipe />} />

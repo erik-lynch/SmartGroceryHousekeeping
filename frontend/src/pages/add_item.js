@@ -9,21 +9,30 @@ const Add_Item = () => {
   const [scannedCodes, setScannedCodes] = useState([]);
   const videoRef = useRef(null);
   const overlayRef = useRef(null);
+  const [formData, setFormData] = useState({
+    iname: "",
+    unit: "count",
+    quantity: 1,
+    ripeRating: "",
+    itemDescription: "",
+  });
 
   const handleDetected = debounce((data) => {
     if (data && data.codeResult && data.codeResult.code) {
       const code = data.codeResult.code;
-      console.log("Detected code:", code); 
+      console.log("Detected code:", code);
       setScannedCodes((prevCodes) => [...prevCodes, code]);
     }
-  }, 300); 
+  }, 300);
 
   useEffect(() => {
     if (isScanning && videoRef.current) {
+      const videoElement = videoRef.current;
+
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then((stream) => {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
+          videoElement.srcObject = stream;
+          videoElement.play();
         })
         .catch((err) => {
           console.error("Error accessing camera:", err);
@@ -37,10 +46,10 @@ const Add_Item = () => {
             width: 640,
             height: 480,
           },
-          target: videoRef.current,
+          target: videoElement,
         },
         locator: {
-          patchSize: "large", 
+          patchSize: "large",
           halfSample: false,
         },
         decoder: {
@@ -59,13 +68,13 @@ const Add_Item = () => {
         },
         locate: true,
         numOfWorkers: navigator.hardwareConcurrency,
-        frequency: 20, 
+        frequency: 20,
       }, (err) => {
         if (err) {
-          console.error("Quagga init error:", err); 
+          console.error("Quagga init error:", err);
           return;
         }
-        console.log("Quagga initialized"); 
+        console.log("Quagga initialized");
         Quagga.start();
       });
 
@@ -98,7 +107,7 @@ const Add_Item = () => {
               color: "red",
               lineWidth: 3,
             });
-            console.log("Barcode detected: ", result.codeResult.code); 
+            console.log("Barcode detected: ", result.codeResult.code);
           }
         }
       });
@@ -106,14 +115,14 @@ const Add_Item = () => {
       Quagga.onDetected(handleDetected);
 
       return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-          videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        if (videoElement && videoElement.srcObject) {
+          videoElement.srcObject.getTracks().forEach(track => track.stop());
         }
         Quagga.stop();
         Quagga.offDetected(handleDetected);
       };
     }
-  }, [isScanning]);
+  }, [isScanning, handleDetected]);
 
   useEffect(() => {
     if (scannedCodes.length > 0) {
@@ -123,13 +132,45 @@ const Add_Item = () => {
       });
 
       const mostFrequentCode = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
-      if (counts[mostFrequentCode] > 2) { 
-        console.log("Most frequent code:", mostFrequentCode); 
+      if (counts[mostFrequentCode] > 2) {
+        console.log("Most frequent code:", mostFrequentCode);
         setBarcodeData(mostFrequentCode);
         setIsScanning(false);
       }
     }
   }, [scannedCodes]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const dataToSend = {
+      ...formData,
+      barcode: barcodeData,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/api/add-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (response.ok) {
+        console.log("Item added successfully");
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to add item:", errorText);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
 
   return (
     <div className="core">
@@ -137,30 +178,31 @@ const Add_Item = () => {
       <form>
         <input type="file" accept="image/*" style={{ display: "none" }} id="button-upload" />
         <label htmlFor="button-upload">
-          <FaUpload class="image-icon"/>
+          <FaUpload className="image-icon"/>
         </label>
         <input accept="image/*" id="icon-button-file" type="file" capture="user" style={{ display: "none" }} />
         <label htmlFor="icon-button-file">
-          <FaCamera class="image-icon"/>
+          <FaCamera className="image-icon"/>
         </label>
       </form>
       <h2>Manual Input</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label htmlFor="iname">Item name:</label> <br />
-        <input type="text" id="iname" name="iname" /> <br />
+        <input type="text" id="iname" name="iname" value={formData.iname} onChange={handleInputChange} /> <br />
+        <label htmlFor="itemDescription">Item Description:</label> <br />
+        <input type="text" id="itemDescription" name="itemDescription" value={formData.itemDescription} onChange={handleInputChange} /> <br />
         <label htmlFor="unit">Item Measurement Unit:</label> <br />
-        <select id="unit" name="unit">
+        <select id="unit" name="unit" value={formData.unit} onChange={handleInputChange}>
           <option value="count">Count</option>
           <option value="gallons">Gallons</option>
           <option value="grams">Grams</option>
         </select>
         <br />
         <label htmlFor="quantity">Quantity of Item:</label> <br />
-        <input type="number" id="quantity" name="quantity" /> <br />
-        <label htmlFor="ripe-rating">Item Ripeness Rating (optional):</label> <br />
-        <input type="text" id="ripe-rating" name="ripe-rating" /> <br />
-        <p>Tags</p>
-        <input type="submit" value="Submit"></input>
+        <input type="number" id="quantity" name="quantity" value={formData.quantity} onChange={handleInputChange} /> <br />
+        <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label> <br />
+        <input type="text" id="ripeRating" name="ripeRating" value={formData.ripeRating} onChange={handleInputChange} /> <br />
+        <input type="submit" value="Submit" />
       </form>
 
       <h2>Barcode Scanning</h2>
