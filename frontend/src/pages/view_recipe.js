@@ -18,10 +18,10 @@ const View_Recipe = () => {
     // set use effect state changes- for page rendering and waiting
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
+
     const [loading1, setLoading1] = useState(true);
     const [loading2, setLoading2] = useState(true);
     const [loading3, setLoading3] = useState(true);
-
 
     useEffect(() => {
     const fetchVerifyRecipeId = async () => {

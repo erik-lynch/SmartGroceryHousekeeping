@@ -11,8 +11,6 @@ const Dashboard = () => {
 
             <ItemCarousel content={dashboardTestData} />
 
-            <a href="/edit_item">Edit Item page link</a>
-
             <h2>
                 Spoiling Soon
             </h2>

@@ -18,6 +18,7 @@ pool.connect()
   .then(() => console.log('Connected to the database'))
   .catch(err => console.error('Connection error', err.stack));
 
+
 app.use(cors({
   origin: 'http://localhost:3000', 
   methods: ['GET', 'POST', 'DELETE'],
@@ -26,7 +27,6 @@ app.use(cors({
 
 
 app.use(bodyParser.json());
-
 
 app.get('/items', async (req, res) => {
   try {
@@ -37,6 +37,7 @@ app.get('/items', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 
 app.post('/api/add-item', async (req, res) => {
   const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 

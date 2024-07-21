@@ -18,9 +18,10 @@
 .item-name {
   float: left;
   font-size: medium;
+  font-weight: bold;
   display: flex;
   flex-wrap: wrap;
-  padding: 10%;
+  padding: 10% 8%;
 
 }
 
@@ -29,7 +30,7 @@
   font-size: medium;
   display: flex;
   flex-wrap: wrap;
-  padding: 10%;
+  padding: 10% 8%;
 }
 
 .recipe-title {
