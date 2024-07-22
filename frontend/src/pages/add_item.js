@@ -206,6 +206,7 @@ const Add_Item = () => {
       </form>
 
       <h2>Barcode Scanning</h2>
+
       <button
         onClick={() => {
           setScannedCodes([]);
@@ -215,9 +216,14 @@ const Add_Item = () => {
       >
         {isScanning ? "Stop Scanning" : "Start Scanning"}
       </button>
+
+
       {isScanning && (
-        <div style={{ position: "relative", width: '640px', height: '480px' }}>
+
+        <div style={{ position: "relative", width: '640px', height: '480px', margin: '10% 0'}}>
+
           <video id="scanner" ref={videoRef} style={{ width: '100%', height: '100%' }} autoPlay />
+
           <canvas ref={overlayRef} className="drawingBuffer" style={{
             position: 'absolute',
             top: 0,
@@ -226,8 +232,10 @@ const Add_Item = () => {
             height: '100%',
             zIndex: 1,
           }} />
+
         </div>
       )}
+
       {barcodeData && <p>Scanned Barcode: {barcodeData}</p>}
     </div>
   );
