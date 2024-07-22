@@ -13,16 +13,16 @@ const Add_Recipe = () => {
         recipeDescription: "",
     });
 
-    const [recipeSteps, setRecipeSteps] = useState({
+    const [recipeSteps, setRecipeSteps] = useState([{
         stepNumber: stepFormNumber,
         stepDescription: ""
-    });
+    }]);
 
-    const [recipeItems, setRecipeItems] = useState({
+    const [recipeItems, setRecipeItems] = useState([{
         itemName: "",
         quantity: 1,
         quantityUnit: ""
-    });
+    }]);
 
     // Add new fields (steps and items)
 
@@ -51,14 +51,16 @@ const Add_Recipe = () => {
         setRecipeInfo({ ...recipeInfo, [name]: value });
     };
 
-    const handleRecipeStepsInputChange = (i, e) => {
-        const { name, value } = e.target;
-        setRecipeSteps({ ...recipeSteps[i], [name]: value });
+    const handleRecipeStepsInputChange = (i,e) => {
+        let stepData = [...recipeSteps];
+        stepData[i][e.target.name] = e.target.value;
+        setRecipeSteps(stepData)
     };
 
-    const handleRecipeItemsInputChange = (i, e) => {
-        const { name, value } = e.target;
-        setRecipeItems({ ...recipeItems[i], [name]: value });
+    const handleRecipeItemsInputChange = (i,e) => {
+        let itemData = [...recipeItems];
+        itemData[i][e.target.name] = e.target.value;
+        setRecipeItems(itemData)
     };
     
     // submission
@@ -112,27 +114,57 @@ const Add_Recipe = () => {
                         name="recipeDescription" 
                         value={recipeInfo.recipeDescription} 
                         onChange={handleRecipeInfoInputChange}
-                        ></textarea> <br/><br/>
-                    <label htmlFor="quantityUnit">Item Measurement Unit:</label> <br />
-                        <select id="quantityUnit" name="quantityUnit" value={recipeItems.quantityUnit} onChange={handleRecipeItemsInputChange}>
-                            <option value=""></option>
-                            <option value="tsp">Teaspoon</option>
-                            <option value="tbsp">Tablespoon</option>
-                            <option value="cup">Cup</option>
-                            <option value="cups">Cups</option>
-                            <option value="qt">Quart/Quarts</option>
-                            <option value="gal">Gallon/Gallons</option>
-                            <option value="oz">Ounce/Ounces</option>
-                            <option value="lb">Pound/Pounds</option>
-                            <option value="fl oz">Fluid Ounce/Ounces</option>
-                            <option value="mL">Milliliter/Milliliters</option>
-                            <option value="L">Liter/Liters</option>
-                            <option value="g">Gram/Grams</option>
-                            <option value="kg">Kilogram/Kilograms</option>
-                        </select>
+                        ></textarea> <br/><br/><br/>
+
+                        {recipeItems.map((items, i) => {
+                            return(
+                                <div>
+                                    <label htmlFor="Ingredients">Ingredients List:</label><br/><br/>
+                                    <label htmlFor="quantityUnit">Name: </label>
+                                    <input type="text" />
+                                    <label htmlFor="quantityUnit">Quantity: </label>
+                                    <input type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/>
+                                    <label htmlFor="quantityUnit">Measurement:</label>
+                                    <select id="quantityUnit" name="quantityUnit" value={items.quantityUnit} onChange={e => handleRecipeItemsInputChange(i,e)}>
+                                        <option value="">No Unit</option>
+                                        <option value="tsp">Teaspoon</option>
+                                        <option value="tbsp">Tablespoon</option>
+                                        <option value="cup">Cup</option>
+                                        <option value="cups">Cups</option>
+                                        <option value="qt">Quart/Quarts</option>
+                                        <option value="gal">Gallon/Gallons</option>
+                                        <option value="oz">Ounce/Ounces</option>
+                                        <option value="lb">Pound/Pounds</option>
+                                        <option value="fl oz">Fluid Ounce/Ounces</option>
+                                        <option value="mL">Milliliter/Milliliters</option>
+                                        <option value="L">Liter/Liters</option>
+                                        <option value="g">Gram/Grams</option>
+                                        <option value="kg">Kilogram/Kilograms</option>
+                                    </select>
+                                </div>
+                            )
+                        })}
+                        <br/><div><button>Add Ingredient</button></div><br/><br/>
+                        <br/><br/>
+                        {recipeSteps.map((steps, i) => {
+                            return(
+                                <div>
+                                    <label htmlFor="Steps">Directions:</label><br/><br/>
+                                    <label htmlFor="stepDescription">Step {i+1} :</label><br/><br/>
+                                    <textarea
+                                        id="stepDescription" 
+                                        name="stepDescription"
+                                        value={steps.stepDescription} 
+                                        onChange={e => handleRecipeStepsInputChange(i,e)}
+                                    ></textarea> <br/><br/>
+                                </div>
+                        )
+                    })}
+                    <div><button>Add Step</button></div><br/><br/><br/>
                 </form>
+                <div><button>Submit</button></div><br/><br/><br/>
         </div>
     );
 };
- 
+
 export default Add_Recipe;
