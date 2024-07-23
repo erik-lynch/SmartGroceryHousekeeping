@@ -7,6 +7,7 @@ const View_Recipe = () => {
     
     // get recipeId for URL parameter
     let { recipeId } = useParams();
+    let { userId } = useParams();
 
     let navigate = useNavigate();
 
@@ -26,7 +27,7 @@ const View_Recipe = () => {
     const fetchVerifyRecipeId = async () => {
         try {
             setLoading0(true);
-            const verifyRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/verify`);
+            const verifyRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/verify`);
             setLoading0(false);
             if (verifyRes.status === 404) {
                 setPageError(404);
@@ -41,7 +42,7 @@ const View_Recipe = () => {
     const fetchStepData = async () => {
         try {
             setLoading1(true);
-            const stepRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/steps`);
+            const stepRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/steps`);
             const stepData = await stepRes.json();
             setSteps(stepData);
             setLoading1(false);
@@ -55,7 +56,7 @@ const View_Recipe = () => {
     const fetchIngredientData = async () => {
         try {
             setLoading2(true);
-            const ingredientRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/ingredients`);
+            const ingredientRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/ingredients`);
             const ingredientData = await ingredientRes.json();
             setIngredients(ingredientData);
             setLoading2(false);
@@ -69,7 +70,7 @@ const View_Recipe = () => {
     const fetchDescriptionData = async () => {
         try {
         setLoading3(true);
-        const descriptionRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/namedescription`);
+        const descriptionRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/namedescription`);
         const descriptionData = await descriptionRes.json();
         setDescription(descriptionData);
         setLoading3(false);

@@ -102,15 +102,20 @@ app.post('/api/add-item', async (req, res) => {
 //                View Recipe Page requests
 //----------------------------------------------------------------------------
 
-//Get recipe name and description From recipeid
-app.get('/api/recipes/:recipeId/namedescription', async(req,res) => {
+//Get recipe name and description From recipeid and userId
+app.get('/api/users/:userId/recipes/:recipeId/namedescription', async(req,res) => {
   try{
     const getRecipeInfoData = await pool.query(
       `SELECT
         recipeName,
         recipeDescription
-      FROM recipes
-      WHERE recipeId = ${req.params.recipeId}`
+      FROM recipes AS R
+	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+	    WHERE recipeId = ${req.params.recipeId}	
+	      AND U.userId = ${req.params.userId}`
     );
     res.json(getRecipeInfoData.rows);
   } catch (err) {
@@ -120,7 +125,7 @@ app.get('/api/recipes/:recipeId/namedescription', async(req,res) => {
 });
 
 //Get recipe ingredients from recipeid
-app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
+app.get('/api/users/:userId/recipes/:recipeId/ingredients', async(req,res) => {
   try{
     const getRecipeIngredientData = await pool.query(
       `SELECT 
@@ -130,7 +135,10 @@ app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
       FROM Items AS I
       INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
       INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
-      WHERE R.recipeId = ${req.params.recipeId}`
+	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE R.recipeId = ${req.params.recipeId}	
+        AND U.userid = ${req.params.userId}`
     );
     res.json(getRecipeIngredientData.rows);
   } catch (err) {
@@ -140,10 +148,18 @@ app.get('/api/recipes/:recipeId/ingredients', async(req,res) => {
 });
 
 //verify recipeid exists
-app.get('/api/recipes/:recipeId/verify', async(req,res) => {
+app.get('/api/users/:userId/recipes/:recipeId/verify', async(req,res) => {
   try{
     const getRecipeVerify = await pool.query(
-    `SELECT recipeId FROM recipes where recipeid = ${req.params.recipeId}`
+    `SELECT 
+      recipeId 
+    FROM recipes AS R
+	  INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+	  INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+	  INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	  INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+	  WHERE recipeid = ${req.params.recipeId}
+      AND U.userid=${req.params.userId}`
     );
     if (getRecipeVerify.rows.length === 0 ) {
       res.status(404).send("404 recipeId doesn't exist");
@@ -157,7 +173,7 @@ app.get('/api/recipes/:recipeId/verify', async(req,res) => {
 
 
 //get recipe steps from recipeid
-app.get('/api/recipes/:recipeId/steps', async(req,res) => {
+app.get('/api/users/:userId/recipes/:recipeId/steps', async(req,res) => {
   try{
     const getRecipeStepData = await pool.query(
 
@@ -167,9 +183,13 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
     FROM Recipes AS R
     INNER JOIN RecipesSteps AS RS ON RS.FK_recipes_recipeId = R.recipeId
     INNER JOIN Steps AS S ON RS.FK_steps_stepId = S.stepId
+	  INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+	  INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+	  INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	  INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
     WHERE R.recipeId = ${req.params.recipeId}
-    ORDER BY S.stepNumber ASC;
-  `
+	    AND U.userId = ${req.params.userId}
+    ORDER BY S.stepNumber ASC;`
     );
     res.json(getRecipeStepData.rows);
   } catch (err) {
