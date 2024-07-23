@@ -227,6 +227,60 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
   }
 });
 
+//----------------------------------------------------------------------------
+//                Reports Page
+//----------------------------------------------------------------------------
+
+//Get all freq spoiled items
+app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
+  try{
+    const getFreqSpoiled = await pool.query(
+      `SELECT 
+        I.itemName AS Item,
+        UI.dateAdded,
+        UI.spoilageDate,
+        UI.quantityPurchased || ' ' ||U.UnitName AS LastPurchasedTotal,
+        (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.UnitName AS CurrentQuantityConsumed,
+        UI.quantityRemaining || ' ' ||U.UnitName AS CurrentQuantityRemaining,
+        UI.finishedTotal+UI.spoiledTotal AS TimesBought,
+          CASE 
+            WHEN UI.spoiledTotal >0 
+              THEN ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal))*100)||'%'
+            WHEN UI.spoiledTotal <=0
+              THEN '0%' 
+          END AS SpoiledPercent
+        FROM UsersItems AS UI
+        INNER JOIN Items AS I ON UI.FK_items_itemId = I.itemId
+        INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
+        INNER JOIN Units AS U ON U.unitId=IU.FK_units_unitId
+        INNER JOIN Users ON Users.userId = UI.FK_users_userId
+          WHERE ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.15)
+          AND purchaseAgain =true
+          AND (NOT UI.spoiledTotal = 0)
+          AND Users.userId = ${req.params.userid})
+        ORDER BY I.itemName;`
+  );
+    res.json(getFreqSpoiled.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//Get all freq used items
+app.get('/api/users/:userid/reports/freqused', async(req,res) => {
+  try{
+    const getFreqUsed = await pool.query(
+
+  );
+    res.json(getFreqUsed.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
