@@ -237,8 +237,8 @@ app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
     const getFreqSpoiled = await pool.query(
       `SELECT 
         I.itemName AS Item,
-        UI.dateAdded,
-        UI.spoilageDate,
+        TO_CHAR(UI.dateAdded, 'mm/dd/yyyy') AS DateAdded,
+        TO_CHAR(UI.spoilageDate,'mm/dd/yyyy') AS SpoilageDate,
         UI.quantityPurchased || ' ' ||U.UnitName AS LastPurchasedTotal,
         (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.UnitName AS CurrentQuantityConsumed,
         UI.quantityRemaining || ' ' ||U.UnitName AS CurrentQuantityRemaining,
@@ -273,8 +273,8 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
     const getFreqUsed = await pool.query(
       `SELECT 
         I.itemName AS Item,
-        UI.dateAdded,
-        UI.spoilageDate,
+        TO_CHAR(UI.dateAdded, 'mm/dd/yyyy') AS DateAdded,
+        TO_CHAR(UI.spoilageDate,'mm/dd/yyyy') AS SpoilageDate,
         UI.quantityPurchased || ' ' ||U.UnitName AS LastPurchasedTotal,
         (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.UnitName AS CurrentQuantityConsumed,
         UI.quantityRemaining || ' ' ||U.UnitName AS CurrentQuantityRemaining,

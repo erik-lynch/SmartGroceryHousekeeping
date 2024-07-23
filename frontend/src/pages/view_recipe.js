@@ -18,7 +18,6 @@ const View_Recipe = () => {
     // set use effect state changes- for page rendering and waiting
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
-
     const [loading1, setLoading1] = useState(true);
     const [loading2, setLoading2] = useState(true);
     const [loading3, setLoading3] = useState(true);
@@ -90,7 +89,7 @@ const View_Recipe = () => {
     // added recipeId to dependency array to avoid useEffect compile error
 
     if (loading0 || loading1 || loading2 || loading3) {
-        return (<h1>Loading</h1>)
+        return (<p>Loading</p>)
     };
 
     if (pageError) {return (<h1>There was an error: {pageError} </h1>)}

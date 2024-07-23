@@ -1,6 +1,66 @@
 import React from "react";
- 
+import{ useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
+
 const Reports = () => {
+
+        // get userId for URL parameter
+        let { userId } = useParams();
+    
+        // set use effect state changes- frequently spoiled, frequently used
+        const [freqSpoiled, setFreqSpoiled] = useState([]);
+        const [freqUsed, setFreqUsed] = useState([]);
+
+        // set use effect state changes- for page rendering and waiting
+        const [pageError, setPageError] = useState(false);
+        const [loading0, setLoading0] = useState(true);
+        const [loading1, setLoading1] = useState(true);
+    
+        useEffect(() => {
+    
+        const fetchFreqSpoiled = async () => {
+            try {
+                setLoading0(true);
+                const freqSpoiledRes  = await fetch(`http://localhost:3001/api/users/${userId}/reports/freqspoiled`);
+                const freqSpoiledData = await freqSpoiledRes.json();
+                console.log(freqSpoiledData)
+                setFreqSpoiled(freqSpoiledData);
+                setLoading0(false);
+            }
+            catch (error) {
+                console.log("There was an error:", error);
+                setPageError(error);
+            }
+        }
+    
+        const fetchFreqUsed = async () => {
+            try {
+                setLoading1(true);
+                const freqUsedRes  = await fetch(`http://localhost:3001/api/users/${userId}/reports/freqused`);
+                const freqUsedData = await freqUsedRes.json();
+                setFreqUsed(freqUsedData);
+                setLoading1(false);
+            }
+            catch (error) {
+                console.log("There was an error:", error);
+                setPageError(error);
+            }
+        }
+    
+    
+        
+        fetchFreqSpoiled();
+        fetchFreqUsed();
+        }, [userId]);
+    
+        if (loading0 || loading1) {
+            return (<p>Loading</p>)
+        };
+    
+        if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
+        else {
+
+
     return (
         <div class="core">
             <h2>
@@ -11,31 +71,28 @@ const Reports = () => {
             <table>
                 <tr class="header-row">
                     <th>Item</th>
-                    <th>Date Added</th>
-                    <th>Quantity</th>
-                    <th>Date Marked Spoiled</th>
+                    <th>Last <br></br>Date Added</th>
+                    <th>Last <br></br>Spoilage Date</th>
+                    <th>Last <br></br>Quantity Purchased</th>
+                    <th>Last <br></br>Amount Eaten</th>
+                    <th>Last <br></br>Amount Left</th>
+                    <th>Times <br></br>Purchased</th>
+                    <th>Percent <br></br>Purchases <br></br>With Spoilage</th>
                 </tr>
                 <br></br>
-                <tr>
-                    <td>Radish</td>
-                    <td>11/25/23</td>
-                    <td>2 bunch</td>
-                    <td>11/28/23</td>
+                {freqSpoiled.map((data,key) => {
+                    return (
+                <tr key={key}>
+                    <th>{data.item}</th>
+                    <th>{data.dateadded}</th>
+                    <th>{data.spoilagedate}</th>
+                    <th>{data.lastpurchasedtotal}</th>
+                    <th>{data.currentquantityconsumed}</th>
+                    <th>{data.currentquantityremaining}</th>
+                    <th>{data.timesbought}</th>
+                    <th>{data.spoiledpercent}</th>   
                 </tr>
-                <br></br>
-                <tr>
-                    <td>Pear</td>
-                    <td>11/27/23</td>
-                    <td>2 count</td>
-                    <td>11/30/23</td>
-                </tr>
-                <br></br>
-                <tr>
-                    <td>Milk</td>
-                    <td>11/13/23</td>
-                    <td>1 Gallon</td>
-                    <td>11/30/23</td>
-                </tr>
+                    )})}
             </table>
             <br></br>
             <br></br>
@@ -49,25 +106,35 @@ const Reports = () => {
             <table>
                 <tr class="header-row">
                     <th>Item</th>
-                    <th>Total Quantity Added</th>
-                    <th>Percentage Spoiled</th>
+                    <th>Last<br></br> Date Added</th>
+                    <th>Last<br></br> Spoilage Date</th>
+                    <th>Last<br></br> Quantity <br></br> Purchased</th>
+                    <th>Last<br></br> Amount Eaten</th>
+                    <th>Last<br></br> Amount Left</th>
+                    <th>In Fridge</th>
+                    <th>Times<br></br> Purchased</th>
+                    <th>Percent<br></br> Purchases<br></br> Fully Finished</th>
                 </tr>
                 <br></br>
-                <tr>
-                    <td>Lemon</td>
-                    <td>120</td>
-                    <td>2%</td>
+                {freqUsed.map((data,key) => {
+                    return (
+                <tr key={key}>
+                    <th>{data.item}</th>
+                    <th>{data.dateadded}</th>
+                    <th>{data.spoilagedate}</th>
+                    <th>{data.lastpurchasedtotal}</th>
+                    <th>{data.currentquantityconsumed}</th>
+                    <th>{data.currentquantityremaining}</th>
+                    <th>{data.infridge}</th>
+                    <th>{data.timesbought}</th>
+                    <th>{data.finishedpercent}</th>   
                 </tr>
-                <br></br>
-                <tr>
-                    <td>Pear</td>
-                    <td>20</td>
-                    <td>12%</td>
-                </tr>
+                    )})}
                 
             </table>
         </div>
     );
+};
 };
  
 export default Reports;
