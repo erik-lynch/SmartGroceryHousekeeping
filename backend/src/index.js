@@ -173,23 +173,18 @@ app.get('/api/users/:userId/recipes/:recipeId/verify', async(req,res) => {
 
 
 //get recipe steps from recipeid
-app.get('/api/users/:userId/recipes/:recipeId/steps', async(req,res) => {
+app.get('/api/recipes/:recipeId/steps', async(req,res) => {
   try{
     const getRecipeStepData = await pool.query(
 
     `SELECT
-      S.StepNumber,
-      S.stepDescription
+	    S.StepNumber,
+	    S.stepDescription
     FROM Recipes AS R
     INNER JOIN RecipesSteps AS RS ON RS.FK_recipes_recipeId = R.recipeId
     INNER JOIN Steps AS S ON RS.FK_steps_stepId = S.stepId
-	  INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
-	  INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
-	  INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	  INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
     WHERE R.recipeId = ${req.params.recipeId}
-	    AND U.userId = ${req.params.userId}
-    ORDER BY S.stepNumber ASC;`
+    ORDER BY S.stepNumber ASC`
     );
     res.json(getRecipeStepData.rows);
   } catch (err) {
@@ -246,6 +241,32 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
     res.status(500).send('Server error');
   }
 });
+
+//Get all recipes that use these in ingredient
+app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(req,res) => {
+  try{
+    const getRecipeInFridgeIngredientsData = await pool.query(
+      `SELECT
+		    R.recipeId,
+        R.recipeName,
+		    I.itemName
+      FROM Recipes AS R
+	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+	      WHERE I.itemName IN (${req.params.ingredients})
+        AND U.userId = ${req.params.userid}
+      ORDER BY recipeId;`
+  );
+    console.log(getRecipeInFridgeIngredientsData.rows);
+    res.json(getRecipeInFridgeIngredientsData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 //----------------------------------------------------------------------------
 //                Reports Page

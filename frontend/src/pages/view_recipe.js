@@ -42,7 +42,7 @@ const View_Recipe = () => {
     const fetchStepData = async () => {
         try {
             setLoading1(true);
-            const stepRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/steps`);
+            const stepRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/steps`);
             const stepData = await stepRes.json();
             setSteps(stepData);
             setLoading1(false);
@@ -86,7 +86,7 @@ const View_Recipe = () => {
     fetchStepData();
     fetchIngredientData();
     fetchDescriptionData();
-    }, [recipeId]);
+    }, [userId, recipeId]);
     // added recipeId to dependency array to avoid useEffect compile error
 
     if (loading0 || loading1 || loading2 || loading3) {

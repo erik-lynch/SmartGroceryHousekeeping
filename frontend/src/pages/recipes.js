@@ -127,7 +127,7 @@ useEffect(() => {
                 setPageError(error);
             }
         }
-/*
+*/
         const fetchInFridgeRecipes = async () => {
             try {
                 setLoading4(true);
@@ -141,11 +141,11 @@ useEffect(() => {
                 setPageError(error);
             }
         }
-*/
+
         if (ingredients) { 
             console.log("ingredients:", ingredients);
             //fetchApiInFridgeRecipes();
-            //fetchInFridgeRecipes();
+            fetchInFridgeRecipes();
         }
         }, [ingredients]);
 
@@ -168,7 +168,7 @@ useEffect(() => {
                     setPageError(error);
                 }
             }
-/*   
+*/  
             const fetchSpoilSoonRecipes = async () => {
                 try {
                     setLoading5(true);
@@ -183,17 +183,17 @@ useEffect(() => {
                 }
                     
             }
-*/
+
             if (spoilIngredients) {
                 console.log(" spoil ingredients:", spoilIngredients);
                 //fetchApiSpoilSoonRecipes();
-                //fetchSpoilSoonRecipes();
+                fetchSpoilSoonRecipes();
             }
             }, [spoilIngredients]);
 
-        if (loading0 || loading1)// || loading2) //|| loading3 //|| loading4 //|| loading5)
+        if (loading0 || loading1 || loading4 || loading5)// || loading2) //|| loading3)
         {
-            return (<h1>Loading</h1>)
+            return (<p>Loading</p>)
         };
 
         if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
