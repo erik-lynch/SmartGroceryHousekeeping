@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
 const app = express();
+const https = require('https');
 
 const pool = new Pool({
   max: 5,
@@ -257,7 +258,8 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
 	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
 	      WHERE I.itemName IN (${req.params.ingredients})
         AND U.userId = ${req.params.userid}
-      ORDER BY recipeId;`
+      ORDER BY recipeId
+      limit 8`
   );
     console.log(getRecipeInFridgeIngredientsData.rows);
     res.json(getRecipeInFridgeIngredientsData.rows);
@@ -266,6 +268,62 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
     res.status(500).send('Server error');
   }
 });
+
+//Get all recipes that use these in ingredient
+app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(req,res) => {
+  try{
+    const getRecipeSpoilSoonIngredientsData = await pool.query(
+      `SELECT DISTINCT
+	      R.recipeId,
+	      R.recipeName,
+	      count(*) over(partition by r.recipeId) AS ingredientsUsed 
+      FROM Recipes AS R
+	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+	    WHERE I.itemName IN (${req.params.ingredients})
+        AND U.userId = ${req.params.userid}
+      ORDER BY ingredientsUsed DESC
+		    limit 8`
+  );
+    console.log(getRecipeSpoilSoonIngredientsData.rows);
+    res.json(getRecipeSpoilSoonIngredientsDataa.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// spoonacular api - fetchApiInFridgeRecipes
+app.get('/api/ingredients/:ingredients/spoon/infridge', async(req,res) => {
+  try {
+    const url_string =  `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${req.params.ingredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=min-missing-ingredients`;
+    const apiInFridgeRes  = await fetch(url_string);
+    const apiInFridgeData = await apiInFridgeRes.json();
+    res.json(apiInFridgeData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+    });
+
+
+
+// spoonacular api - fetchApiSpoilSoonRecipes
+//https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${spoilIngredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=max-used-ingredients
+app.get('/api/ingredients/:ingredients/spoon/spoilsoon', async(req,res) => {
+  try {
+    const url_string = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${req.params.ingredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=max-used-ingredients`;
+    const apiSpoilSoonRes  = await fetch(url_string);
+    const apiSpoilSoonData = await apiSpoilSoonRes.json();
+    res.json(apiSpoilSoonData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+    });
 
 
 //----------------------------------------------------------------------------

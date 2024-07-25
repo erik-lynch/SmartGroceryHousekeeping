@@ -117,7 +117,7 @@ useEffect(() => {
         const fetchApiInFridgeRecipes = async () => {
             try {
                 setLoading2(true);
-                const apiInFridgeRecipesRes  = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${ingredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=min-missing-ingredients`);
+                const apiInFridgeRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/:ingredients/spoon/infridge`);
                 const apiInFridgeRecipeData = await apiInFridgeRecipesRes.json();
                 setApiInFridge(apiInFridgeRecipeData);
                 setLoading2(false);
@@ -131,7 +131,7 @@ useEffect(() => {
         const fetchInFridgeRecipes = async () => {
             try {
                 setLoading4(true);
-                const inFridgeRecipesRes  = await fetch(``);
+                const inFridgeRecipesRes  = await fetch(`http://localhost:3001/api/users/:userid/ingredients/:ingredients/infridge/recipes`);
                 const inFridgeRecipeData = await inFridgeRecipesRes.json();
                 setInFridgeRecipes(inFridgeRecipeData);
                 setLoading4(false);
@@ -158,7 +158,7 @@ useEffect(() => {
             const fetchApiSpoilSoonRecipes = async () => {
                 try {
                     setLoading3(true);
-                    const apiSpoilSoonRecipesRes  = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${spoilIngredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=max-used-ingredients`);
+                    const apiSpoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/:ingredients/spoon/spoilsoon`);
                     const apiSpoilSoonRecipesData = await apiSpoilSoonRecipesRes.json();
                     setApiSpoilRecipes(apiSpoilSoonRecipesData);
                     setLoading3(false);
@@ -185,7 +185,7 @@ useEffect(() => {
             }
 
             if (spoilIngredients) {
-                console.log(" spoil ingredients:", spoilIngredients);
+                console.log("spoil ingredients:", spoilIngredients);
                 //fetchApiSpoilSoonRecipes();
                 fetchSpoilSoonRecipes();
             }
