@@ -179,6 +179,103 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
 });
 
 //----------------------------------------------------------------------------
+//                Dashboard Page requests
+//----------------------------------------------------------------------------
+
+// get items spoiling soon
+app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
+  
+  try{
+    const getUserSpoilingSoon = await pool.query(
+      `SELECT 
+        users.userid as "id",
+        items.itemname as "itemName",
+        usersitems.quantityremaining as "itemQuantity",
+        usersitems.spoilagedate as "spoilDate",
+        current_date as "today",
+        images.imagefilepath as "imagePath",
+        units.unitname as "itemUnit",
+        usersitems.spoiled as "isSpoiled"
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = ${req.params.userId}
+      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False);`);
+
+    res.json(getUserSpoilingSoon.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+
+// get items recently purchased
+app.get('/dashboard/:userId/recentitems', async(req, res) => {
+  
+  try{
+    const getUserRecentItems = await pool.query(
+      `SELECT 
+        users.userid as "id",
+        items.itemname as "itemName",
+        usersitems.quantityremaining as "itemQuantity",
+        current_date as "today",
+        usersitems.dateadded as "dateAdded",
+        images.imagefilepath as "imagePath",
+        units.unitname as "itemUnit"
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = ${req.params.userId}
+      AND usersitems.dateadded >= (current_date - 5);`);
+
+    res.json(getUserRecentItems.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+// get all items
+app.get('/dashboard/:userId/allitems', async(req, res) => {
+  
+  try{
+    const getAllUserItems = await pool.query(
+      `SELECT users.userid as "id", 
+            items.itemname as "itemName", 
+            usersitems.quantityremaining as "itemQuantity", 
+            images.imagefilepath as "imagePath", 
+            units.unitname as "itemUnit" 
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
+      WHERE users.userid = ${req.params.userId};`
+    );
+    res.json(getAllUserItems.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+
+})
+
+
+//----------------------------------------------------------------------------
 //                Recipes Page requests
 //----------------------------------------------------------------------------
 

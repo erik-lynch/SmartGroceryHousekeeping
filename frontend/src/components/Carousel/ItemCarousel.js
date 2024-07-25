@@ -1,4 +1,4 @@
-import React, { Children, Component } from "react";
+import { React, Component } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import './Carousel.css'

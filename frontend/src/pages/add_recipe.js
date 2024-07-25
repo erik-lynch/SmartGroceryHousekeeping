@@ -3,7 +3,7 @@ import React from "react";
  
 const Add_Recipe = () => {
     return (
-        <div class="core">
+        <div className="core">
             <h1>
                 This will be the Add recipe page
             </h1>

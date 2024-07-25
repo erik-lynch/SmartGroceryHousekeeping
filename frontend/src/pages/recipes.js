@@ -99,7 +99,7 @@ const Recipes = () => {
             }
             catch (error) {
                 console.log("There was an error:", error);
-                setPageError(error);
+                setPageError(error); 
             }
         }
 
