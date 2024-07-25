@@ -44,11 +44,8 @@ function fill_api_data(jsonData) {
 }
 
 const Recipes = () => {
-        
-        const SPOONACULAR_API_KEY = '';
 
         let { userId } = useParams();
-
 
         // set use effect state changes- steps,ingredient,description for page data
         const [ingredients, setIngredients] = useState("");
@@ -195,20 +192,41 @@ useEffect(() => {
                     setPageError(error);
                 }
             }
-//  
+*/  
             const fetchSpoilSoonRecipes = async () => {
                 try {
                     setLoading5(true);
-                    const spoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes`);
+                    const spoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${spoilIngredients}/infridge/recipes`);
                     const spoilSoonRecipesData = await spoilSoonRecipesRes.json();
+                    
+                    //console.log("spoil soon e pulled:", spoilSoonRecipesData);
 
+                    let sortedJsonSpoilSoonData;
 
+                
+                sortedJsonSpoilSoonData = spoilSoonRecipesData.sort((a, b) => {
+                    if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
+                      return -1;
+                    }
+                  });
 
+                //console.log("SORTED spoil soon pulled:", sortedJsonSpoilSoonData);
+                //console.log(sortedJsonSpoilSoonData[0].recipeid);
+                
+                // get total ingredient list for each recipe and update array
+                for (let i=0; i < sortedJsonSpoilSoonData.length; i++) {
+                    // send recipeId to get list of ingredients
+                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonSpoilSoonData[i].recipeid}/ingredientlist`);
+                    var currentRecipeData = await currentRecipeRes.json();
+                    sortedJsonSpoilSoonData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
+                    sortedJsonSpoilSoonData[i]['link'] = `/users/${userId}/recipes/${sortedJsonSpoilSoonData[i].recipeid}/view_recipe`;
+                    sortedJsonSpoilSoonData[i]['recipeTitle'] = sortedJsonSpoilSoonData[i].recipename;
+                    //console.log("current spoil recipe list", currentRecipeData[0].ingredientlist)
+                }
 
+                console.log("finalized",sortedJsonSpoilSoonData);
 
-
-
-                    setFridgeSpoilRecipes(spoilSoonRecipesData);
+                setFridgeSpoilRecipes(sortedJsonSpoilSoonData);
                     setLoading5(false);
                 }
                 catch (error) {
@@ -217,11 +235,11 @@ useEffect(() => {
                 }
                     
             }
-*/
+
             if (spoilIngredients) {
                 console.log("spoil ingredients:", spoilIngredients);
                 //fetchApiSpoilSoonRecipes();
-                //fetchSpoilSoonRecipes();
+                fetchSpoilSoonRecipes();
             }
             }, [spoilIngredients]);
 
@@ -262,7 +280,7 @@ useEffect(() => {
                 Recipes Suggested From Cookbook With Items Spoiling Soon
             </h2>
 
-            <RecipeCarousel content={recipesTestData} />
+            <RecipeCarousel content={fridgeSpoilRecipes} />
             
         </div>
     );
