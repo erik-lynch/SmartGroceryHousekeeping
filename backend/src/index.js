@@ -243,23 +243,25 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
   }
 });
 
-//Get all recipes that use these in ingredient
+//Get all recipes that use these ingredients that are in fride
 app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(req,res) => {
   try{
     const getRecipeInFridgeIngredientsData = await pool.query(
-      `SELECT
+      `SELECT distinct
 		    R.recipeId,
         R.recipeName,
-		    I.itemName
-      FROM Recipes AS R
+		    count(*) over(partition by r.recipeId) AS ingredientsUsed,
+		      (SELECT COUNT(itemsrecipesId)
+		      FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
+        FROM Recipes AS R
 	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
 	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
 	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
 	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-	      WHERE I.itemName IN (${req.params.ingredients})
+	    WHERE I.itemName IN (${req.params.ingredients})
         AND U.userId = ${req.params.userid}
-      ORDER BY recipeId
-      limit 8`
+      ORDER BY ingredientsUsed DESC, ingredientsTot ASC
+      limit 16`
   );
     console.log(getRecipeInFridgeIngredientsData.rows);
     res.json(getRecipeInFridgeIngredientsData.rows);
@@ -269,23 +271,25 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
   }
 });
 
-//Get all recipes that use these in ingredient
+//Get all recipes that use these ingredients that spoil soon
 app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(req,res) => {
   try{
     const getRecipeSpoilSoonIngredientsData = await pool.query(
-      `SELECT DISTINCT
-	      R.recipeId,
-	      R.recipeName,
-	      count(*) over(partition by r.recipeId) AS ingredientsUsed 
-      FROM Recipes AS R
+      `SELECT distinct
+		    R.recipeId,
+        R.recipeName,
+		    count(*) over(partition by r.recipeId) AS ingredientsUsed,
+		      (SELECT COUNT(itemsrecipesId)
+		      FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
+        FROM Recipes AS R
 	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
 	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
 	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
 	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
 	    WHERE I.itemName IN (${req.params.ingredients})
         AND U.userId = ${req.params.userid}
-      ORDER BY ingredientsUsed DESC
-		    limit 8`
+      ORDER BY ingredientsUsed DESC, ingredientsTot ASC
+      limit 16`
   );
     console.log(getRecipeSpoilSoonIngredientsData.rows);
     res.json(getRecipeSpoilSoonIngredientsDataa.rows);
@@ -325,6 +329,23 @@ app.get('/api/ingredients/:ingredients/spoon/spoilsoon', async(req,res) => {
   }
     });
 
+app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
+  try{
+    const Data = await pool.query(
+      `select 
+	    STRING_AGG(itemname, ', ') AS ingredientList
+      FROM items AS I
+	    INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
+	    INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
+      where r.recipeId = ${req.params.recipeid}`
+  );
+    console.log(Data.rows);
+    res.json(Data.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
 
 //----------------------------------------------------------------------------
 //                Reports Page

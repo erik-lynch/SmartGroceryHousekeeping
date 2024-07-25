@@ -7,11 +7,11 @@ import { useParams } from "react-router-dom";
 
 
 function string_items(obj) {
-    var string_val = "";
+    var string_val = '';
     for (let i=0; i < obj.length; i++) {
-        string_val = string_val + obj[i].itemname;
+        string_val = string_val + "'" + obj[i].itemname + "'";
         if (i < obj.length-1) {
-            string_val = string_val + ", ";
+            string_val = string_val + ', ';
         }
     }
     return string_val;
@@ -71,7 +71,6 @@ const Recipes = () => {
 //      pull ingredients from fridge
 //---------------------------------------------------------------- 
     useEffect(() => {
-
         const fetchInFridgeIngredients = async () => {
             try {
                 setLoading0(true);
@@ -131,9 +130,37 @@ useEffect(() => {
         const fetchInFridgeRecipes = async () => {
             try {
                 setLoading4(true);
-                const inFridgeRecipesRes  = await fetch(`http://localhost:3001/api/users/:userid/ingredients/:ingredients/infridge/recipes`);
+                const inFridgeRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${ingredients}/infridge/recipes`);
                 const inFridgeRecipeData = await inFridgeRecipesRes.json();
-                setInFridgeRecipes(inFridgeRecipeData);
+
+                //console.log("in fridge pulled:", inFridgeRecipeData);
+
+                let sortedJsonInFridgeData;
+
+                //couldn't get sql to use temp col value...so this sorts by least ingredients missing (sql secondary-more used ingredient desc , total ingredienst asc)
+                sortedJsonInFridgeData = inFridgeRecipeData.sort((a, b) => {
+                    if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
+                      return -1;
+                    }
+                  });
+
+                //console.log("SORTED in fridge pulled:", sortedJsonInFridgeData);
+                //console.log(sortedJsonInFridgeData[0].recipeid);
+                
+                // get total ingredient list for each recipe and update array
+                for (let i=0; i < sortedJsonInFridgeData.length; i++) {
+                    // send recipeId to get list of ingredients
+                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonInFridgeData[i].recipeid}/ingredientlist`);
+                    var currentRecipeData = await currentRecipeRes.json();
+                    sortedJsonInFridgeData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
+                    sortedJsonInFridgeData[i]['link'] = `/users/${userId}/recipes/${sortedJsonInFridgeData[i].recipeid}/view_recipe`;
+                    sortedJsonInFridgeData[i]['recipeTitle'] = sortedJsonInFridgeData[i].recipename;
+                    //console.log("current recipe list", currentRecipeData[0].ingredientlist)
+                }
+
+                console.log("finalized",sortedJsonInFridgeData);
+
+                setInFridgeRecipes(sortedJsonInFridgeData);
                 setLoading4(false);
             }
             catch (error) {
@@ -168,12 +195,19 @@ useEffect(() => {
                     setPageError(error);
                 }
             }
-*/  
+//  
             const fetchSpoilSoonRecipes = async () => {
                 try {
                     setLoading5(true);
-                    const spoilSoonRecipesRes  = await fetch(``);
+                    const spoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes`);
                     const spoilSoonRecipesData = await spoilSoonRecipesRes.json();
+
+
+
+
+
+
+
                     setFridgeSpoilRecipes(spoilSoonRecipesData);
                     setLoading5(false);
                 }
@@ -183,15 +217,15 @@ useEffect(() => {
                 }
                     
             }
-
+*/
             if (spoilIngredients) {
                 console.log("spoil ingredients:", spoilIngredients);
                 //fetchApiSpoilSoonRecipes();
-                fetchSpoilSoonRecipes();
+                //fetchSpoilSoonRecipes();
             }
             }, [spoilIngredients]);
 
-        if (loading0 || loading1 || loading4 || loading5)// || loading2) //|| loading3)
+        if (loading0 || loading1 || loading4 )//|| loading5)// || loading2) //|| loading3)
         {
             return (<p>Loading</p>)
         };
@@ -222,7 +256,7 @@ useEffect(() => {
                 Recipes Suggested From Cookbook With Minimal Ingredients
             </h2>
 
-            <RecipeCarousel content={recipesTestData} />
+            <RecipeCarousel content={inFridgeRecipes} />
 
             <h2>
                 Recipes Suggested From Cookbook With Items Spoiling Soon
