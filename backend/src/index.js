@@ -129,7 +129,7 @@ app.get('/api/users/:userId/recipes/:recipeId/namedescription', async(req,res) =
 app.get('/api/users/:userId/recipes/:recipeId/ingredients', async(req,res) => {
   try{
     const getRecipeIngredientData = await pool.query(
-      `SELECT 
+      `SELECT  distinct
         I.itemName, 
         IR.quantity,
         IR.quantityunit
@@ -138,8 +138,7 @@ app.get('/api/users/:userId/recipes/:recipeId/ingredients', async(req,res) => {
       INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
 	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
 	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-      WHERE R.recipeId = ${req.params.recipeId}	
-        AND U.userid = ${req.params.userId}`
+      WHERE R.recipeId = ${req.params.recipeId}`
     );
     res.json(getRecipeIngredientData.rows);
   } catch (err) {
