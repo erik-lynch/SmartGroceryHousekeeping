@@ -35,11 +35,11 @@ function fill_api_data(jsonData) {
         //console.log(jsonData[i])
         var recipeIngredientStr = string_nameClean(jsonData[i].extendedIngredients);
         var newJsonApiData = {
-            link : jsonData[i].sourceUrl,
+            link : jsonData[i].spoonacularSourceUrl,
             recipeTitle: jsonData[i].title,
             recipeIngredients: recipeIngredientStr
         }
-        //console.log(newJsonApiData);
+        console.log(newJsonApiData);
         arrayJsonObjApiData.push(newJsonApiData);
     }
     return arrayJsonObjApiData
