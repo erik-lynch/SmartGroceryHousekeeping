@@ -201,8 +201,9 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
 app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
   try{
     const getSpoilSoonIngredientsData = await pool.query(
-      `SELECT
-	      I.itemName
+      `SELECT DISTINCT
+	      I.itemName,
+        UI.spoilageDate
       FROM Items AS I
       INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
       INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
@@ -224,8 +225,9 @@ app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
 app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
   try{
     const getInFridgeIngredientsData = await pool.query(
-      `SELECT
-	      I.itemName
+      `SELECT DISTINCT
+	      I.itemName,
+        UI.spoilageDate
       FROM Items AS I
       INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
       INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
@@ -262,7 +264,7 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
       limit 16`
   );
-    console.log(getRecipeInFridgeIngredientsData.rows);
+    //console.log(getRecipeInFridgeIngredientsData.rows);
     res.json(getRecipeInFridgeIngredientsData.rows);
   } catch (err) {
     console.error(err);
@@ -290,7 +292,7 @@ app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(r
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
       limit 16`
   );
-    console.log(getRecipeSpoilSoonIngredientsData.rows);
+    //console.log(getRecipeSpoilSoonIngredientsData.rows);
     res.json(getRecipeSpoilSoonIngredientsDataa.rows);
   } catch (err) {
     console.error(err);
@@ -338,7 +340,7 @@ app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
 	    INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
       where r.recipeId = ${req.params.recipeid}`
   );
-    console.log(Data.rows);
+    //console.log(Data.rows);
     res.json(Data.rows);
   } catch (err) {
     console.error(err);
