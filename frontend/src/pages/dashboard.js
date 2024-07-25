@@ -71,6 +71,7 @@ const Dashboard = () => {
         return (
 
             <div className="core">
+                
                 <h2>
                     Recently Purchased
                 </h2>

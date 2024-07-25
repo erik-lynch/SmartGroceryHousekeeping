@@ -33,7 +33,6 @@ const responsive = {
 
 class ItemCarousel extends Component {
 
-
     render() {
 
         return(

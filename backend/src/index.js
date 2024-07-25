@@ -155,7 +155,6 @@ app.get('/api/recipes/:recipeId/verify', async(req,res) => {
   }
 });
 
-
 //get recipe steps from recipeid
 app.get('/api/recipes/:recipeId/steps', async(req,res) => {
   try{
@@ -235,8 +234,9 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId}
-      AND usersitems.dateadded >= (current_date - 5);`);
+      WHERE users.userid = 1
+	    AND usersitems.dateadded >= (current_date - 5)
+	    ORDER BY usersitems.dateadded DESC;`);
 
     res.json(getUserRecentItems.rows)
     
