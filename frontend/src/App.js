@@ -28,7 +28,7 @@ function App() {
                 <Route path="/users/:userId/recipes" element={<Recipes />} />
                 <Route path="/edit_item" element={<EditItem />} />
                 <Route path="/users/:userId/recipes/:recipeId/view_recipe" element={<ViewRecipe />} />
-                <Route path="/recipes/add_recipe" element={<AddRecipe />} />
+                <Route path="/users/:userId/recipes/add_recipe" element={<AddRecipe />} />
             </Routes>
             <Footer />
         </Router>
