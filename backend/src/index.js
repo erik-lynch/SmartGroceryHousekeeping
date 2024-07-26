@@ -349,6 +349,31 @@ app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
 });
 
 //----------------------------------------------------------------------------
+//                Add Recipe Page
+//----------------------------------------------------------------------------
+
+app.get('/api/users/:userid/items', async(req,res) => {
+  try{
+    const getAllUserItems = await pool.query(
+      `SELECT distinct
+	      I.itemid,
+	      I.itemName
+      FROM Items AS I
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE U.userid = ${req.params.userid}
+      ORDER by itemName`
+  );
+    res.json(getAllUserItems.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+//----------------------------------------------------------------------------
 //                Reports Page
 //----------------------------------------------------------------------------
 
