@@ -129,10 +129,10 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
       FROM usersitems
       INNER JOIN users ON usersitems.fk_users_userid = users.userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      INNER JOIN itemstags ON items.itemid = itemstags.fk_items_itemid
-      INNER JOIN tags ON itemstags.fk_tags_tagid = tags.tagid
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
-      INNER JOIN images ON images.imageid = itemsimages.fk_images_imageid
+      LEFT JOIN itemstags ON items.itemid = itemstags.fk_items_itemid
+      LEFT JOIN tags ON itemstags.fk_tags_tagid = tags.tagid
+      LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      LEFT JOIN images ON images.imageid = itemsimages.fk_images_imageid
 	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
 	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
@@ -204,7 +204,7 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = 1
+      WHERE users.userid = ${req.params.userId}
 	    AND usersitems.dateadded >= (current_date - 5)
 	    ORDER BY usersitems.dateadded DESC;`);
 

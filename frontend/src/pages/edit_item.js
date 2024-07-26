@@ -1,20 +1,18 @@
 import {React, useState, useEffect} from "react";
-import { FaImage } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
  
 const Edit_Item = () => {
 
-
     const [itemInfo, setItemInfo] = useState(null);
-    const userId = "1";
-    const itemId = "1";
+    const routeParams = useParams();
+    console.log(routeParams)
 
     useEffect(() => {
 
         async function fetchItemInfo() {
 
             try {
-                const response = await fetch(`http://localhost:3001/useritem/${userId}/${itemId}`);
+                const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
                 if (!response.ok) {
                     throw new Error(`Response status: ${response.status}`);
                 }
