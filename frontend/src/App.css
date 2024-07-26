@@ -116,7 +116,7 @@
 }
 
 .core {
-  padding: 2%;
+  padding: 20px;
   font-family: 'Roboto';
   min-height: 130vh;
   flex-wrap: wrap;
@@ -162,7 +162,9 @@ th {
   border-radius: 30px;
   float: inline-start;
   margin: 30px;
-  max-width: 45%;
+  max-width: 400px;
+  outline: solid black;
+  filter: drop-shadow(15px 15px 0px black);
   
 }
 
