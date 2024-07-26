@@ -181,6 +181,20 @@ th {
   max-width: 45%;
 }
 
+.tag {
+  background-color: black;
+  color: white;
+  padding: 8px;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+input[type="number"] {
+  width: 100%;
+  border: solid black;
+  padding: 5px 15px;
+}
+
 
 select {
   margin: 10px;
@@ -192,8 +206,6 @@ input:not([type="submit"]) {
   margin: 10px 10px 10px 0;
   border-radius: 50px;
   height: 25px;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-
 }
 
 input[type="submit"] {
@@ -205,7 +217,6 @@ input[type="submit"] {
   padding: 15px;
   cursor: pointer;
   border-radius: 5px;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: 16px;
   margin: 10px 10px 10px 0;
 }
@@ -233,13 +244,13 @@ button {
   padding: 15px 30px;
   cursor: pointer;
   border-radius: 5px;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: 16px;
 }
 
 
 
- 
+/* phone, small display specific values */
+
 @media only screen and (max-width: 600px) {
   
   .edit-img {

@@ -1,6 +1,6 @@
 import {React, useState, useEffect} from "react";
 import { useLocation, useParams } from "react-router-dom";
- 
+
 const Edit_Item = () => {
 
     const [itemInfo, setItemInfo] = useState(null);
@@ -33,39 +33,42 @@ const Edit_Item = () => {
         return(<h2>Loading...</h2>)
 
     } else {
-    return (
 
-        <div className="core">
+        if (itemInfo[0].tagname == null) {itemInfo[0].tagname = 'Tag'}
 
-            <img className="edit-img"
-                  src={itemInfo[0].imagefilepath}
-                  alt=""
-            />
+        return (
+
+            <div className="core">
+
+                <img className="edit-img"
+                    src={itemInfo[0].imagefilepath}
+                    alt=""
+                />
 
 
-                <div className="edit-content">
-                <h1>{itemInfo[0].itemname}</h1>
+                    <div className="edit-content">
+                    <h1>{itemInfo[0].itemname}</h1>
 
-                <div className="tag">{itemInfo[0].tagname}</div>
+                    <div className="tag">{itemInfo[0].tagname}</div>
 
-                <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
-                <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
+                    <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
+                    <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
-                <br/><br/>
+                    <br/><br/>
 
-                <label form="fname">Update Quantity</label> <br/>
-                <input type="number" id="quantity" name="quantity" value="1"/> <br/>
-                <input type="submit" value="Spoiled"></input>
-                <input type="submit" value="Finished"></input>
+                    <label form="fname"><b>Update Quantity:</b></label> <br/>
+                    <input type="number" id="quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
+                    <input type="submit" value="Spoiled"></input>
+                    <input type="submit" value="Finished"></input>
 
-                <br/><br/>
-                <a href="/">Return to Dashboard</a>
-                </div>
+                    <br/><br/>
+                    <a href="/">Return to Dashboard</a>
+                    </div>
 
-            
-        </div>
+                
+            </div>
 
-    );
+        );
 }};
  
 export default Edit_Item;
