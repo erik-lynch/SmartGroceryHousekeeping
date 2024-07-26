@@ -39,6 +39,9 @@ app.get('/items', async (req, res) => {
   }
 });
 
+//----------------------------------------------------------------------------
+//                Add Item Page requests
+//----------------------------------------------------------------------------
 
 app.post('/api/add-item', async (req, res) => {
   const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 
@@ -97,6 +100,151 @@ app.post('/api/add-item', async (req, res) => {
     res.status(500).json({ message: 'Error adding item', error: error.message });
   }
 });
+
+//----------------------------------------------------------------------------
+//                Edit Item Page requests
+//----------------------------------------------------------------------------
+
+app.get('/useritem/:userId/:itemId', async (req, res) => {
+
+  try{
+    const getItemDetails = await pool.query(
+      `SELECT
+        users.userid,
+        items.itemid,
+        items.itemname,
+        usersitems.quantitypurchased,
+        usersitems.quantityremaining,
+        usersitems.dateadded,
+        usersitems.spoilagedate,
+        usersitems.userspoilagedate,
+        usersitems.finished,
+        usersitems.spoiled,
+        usersitems.purchaseagain,
+        usersitems.finishedtotal,
+        usersitems.spoiledtotal,
+        tags.tagname,
+        images.imagefilepath,
+		    units.unitabbreviation
+      FROM usersitems
+      INNER JOIN users ON usersitems.fk_users_userid = users.userid
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+      INNER JOIN itemstags ON items.itemid = itemstags.fk_items_itemid
+      INNER JOIN tags ON itemstags.fk_tags_tagid = tags.tagid
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      INNER JOIN images ON images.imageid = itemsimages.fk_images_imageid
+	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
+
+    res.json(getItemDetails.rows);
+    
+  } catch (err){
+      console.error(err);
+      res.status(500).send('Server error')
+  }
+
+});
+
+//----------------------------------------------------------------------------
+//                Dashboard Page requests
+//----------------------------------------------------------------------------
+
+// get items spoiling soon
+app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
+  
+  try{
+    const getUserSpoilingSoon = await pool.query(
+      `SELECT 
+        users.userid as "userId",
+        items.itemid as "itemId",
+        items.itemname as "itemName",
+        usersitems.quantityremaining as "itemQuantity",
+        usersitems.spoilagedate as "spoilDate",
+        current_date as "today",
+        images.imagefilepath as "imagePath",
+        units.unitabbreviation as "itemUnit",
+        usersitems.spoiled as "isSpoiled"
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = ${req.params.userId}
+      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False);`);
+
+    res.json(getUserSpoilingSoon.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+// get items recently purchased
+app.get('/dashboard/:userId/recentitems', async(req, res) => {
+  
+  try{
+    const getUserRecentItems = await pool.query(
+      `SELECT 
+        users.userid as "userId",
+        items.itemid as "itemId",
+        items.itemname as "itemName",
+        usersitems.quantityremaining as "itemQuantity",
+        current_date as "today",
+        usersitems.dateadded as "dateAdded",
+        images.imagefilepath as "imagePath",
+        units.unitabbreviation as "itemUnit"
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = 1
+	    AND usersitems.dateadded >= (current_date - 5)
+	    ORDER BY usersitems.dateadded DESC;`);
+
+    res.json(getUserRecentItems.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+// get all items
+app.get('/dashboard/:userId/allitems', async(req, res) => {
+  
+  try{
+    const getAllUserItems = await pool.query(
+      `SELECT 
+        users.userid as "userId",
+        items.itemid as "itemId",
+        items.itemname as "itemName", 
+        usersitems.quantityremaining as "itemQuantity", 
+        images.imagefilepath as "imagePath", 
+        units.unitabbreviation as "itemUnit" 
+      FROM users
+      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
+      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
+      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
+      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
+      WHERE users.userid = ${req.params.userId};`
+    );
+    res.json(getAllUserItems.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+
+})
 
 //----------------------------------------------------------------------------
 //                View Recipe Page requests
@@ -176,104 +324,6 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
     res.status(500).send('Server error');
   }
 });
-
-//----------------------------------------------------------------------------
-//                Dashboard Page requests
-//----------------------------------------------------------------------------
-
-// get items spoiling soon
-app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
-  
-  try{
-    const getUserSpoilingSoon = await pool.query(
-      `SELECT 
-        users.userid as "id",
-        items.itemname as "itemName",
-        usersitems.quantityremaining as "itemQuantity",
-        usersitems.spoilagedate as "spoilDate",
-        current_date as "today",
-        images.imagefilepath as "imagePath",
-        units.unitname as "itemUnit",
-        usersitems.spoiled as "isSpoiled"
-      FROM users
-      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
-      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId}
-      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False);`);
-
-    res.json(getUserSpoilingSoon.rows)
-    
-  }catch (err){
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-})
-
-
-// get items recently purchased
-app.get('/dashboard/:userId/recentitems', async(req, res) => {
-  
-  try{
-    const getUserRecentItems = await pool.query(
-      `SELECT 
-        users.userid as "id",
-        items.itemname as "itemName",
-        usersitems.quantityremaining as "itemQuantity",
-        current_date as "today",
-        usersitems.dateadded as "dateAdded",
-        images.imagefilepath as "imagePath",
-        units.unitname as "itemUnit"
-      FROM users
-      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
-      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = 1
-	    AND usersitems.dateadded >= (current_date - 5)
-	    ORDER BY usersitems.dateadded DESC;`);
-
-    res.json(getUserRecentItems.rows)
-    
-  }catch (err){
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-})
-
-// get all items
-app.get('/dashboard/:userId/allitems', async(req, res) => {
-  
-  try{
-    const getAllUserItems = await pool.query(
-      `SELECT users.userid as "id", 
-            items.itemname as "itemName", 
-            usersitems.quantityremaining as "itemQuantity", 
-            images.imagefilepath as "imagePath", 
-            units.unitname as "itemUnit" 
-      FROM users
-      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
-      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
-      WHERE users.userid = ${req.params.userId};`
-    );
-    res.json(getAllUserItems.rows)
-    
-  }catch (err){
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-
-})
-
 
 //----------------------------------------------------------------------------
 //                Recipes Page requests

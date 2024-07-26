@@ -1,6 +1,5 @@
 import { useState, useEffect, React } from "react";
 import ItemCarousel from "../components/Carousel/ItemCarousel";
-import dashboardTestData from "../components/Carousel/dashboard-test-data";
 
 
 const Dashboard = () => {

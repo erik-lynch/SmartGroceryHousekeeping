@@ -118,17 +118,16 @@
 .core {
   padding: 2%;
   font-family: 'Roboto';
-  min-height: 100vh;
+  min-height: 130vh;
   flex-wrap: wrap;
+  align-content: top;
 }
 
 h2 {
-
   margin: 20px 0;
   padding-bottom: 8px;
   border-bottom: 1px solid black;
   font-size: large;
-
 }
 
 h3 {
@@ -157,24 +156,22 @@ th {
   background-color: lightgray;
 }
 
-.image-placeholder {
-  width: 100%;
-  height: 100%;
+/* edit image page */
+
+.edit-img {
+  border-radius: 30px;
+  float: inline-start;
+  margin: 30px;
+  max-width: 45%;
+  
 }
 
-.left-inline-div {
-  float: left;
-  min-width: 300px;
-  margin: 0 40px;
-  align-content: center;
+.edit-content {
+  float: inline-start;
+  margin: 30px;
+  max-width: 45%;
 }
 
-.right-inline-div {
-  float: left;
-  min-width: 300px;
-  margin: 0 40px;
-  align-content: center;
-}
 
 select {
   margin: 10px;
@@ -231,3 +228,15 @@ button {
   font-size: 16px;
 }
 
+
+
+ 
+@media only screen and (max-width: 600px) {
+  
+  .edit-img {
+    max-width: 80%;
+  }
+  .edit-content {
+    max-width: 80%;
+  }
+}

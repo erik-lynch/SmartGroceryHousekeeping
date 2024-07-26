@@ -1,4 +1,5 @@
 import { React, Component } from "react";
+import { Link } from 'react-router-dom';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import './Carousel.css'
@@ -55,20 +56,23 @@ class ItemCarousel extends Component {
         
           {this.props.content.map((e) => (
 
-            <a href={e.link}>
-            <div className="CardContent">
-                    
-              <img 
-                src={e.imagePath}
-                style={{ width: "100%"}}
-                alt={e.altText} 
-              />
+            <Link to={{
+              pathname: '/edit_item',
+              state: {itemId: e.itemID, userId: e.userId}
+            }}>
+              <div className="CardContent">
+                      
+                <img 
+                  src={e.imagePath}
+                  style={{ width: "100%"}}
+                  alt={e.altText} 
+                />
 
-                <div className="item-name">{e.itemName}</div>
-                <div className="item-quantity">{e.itemQuantity} {e.itemUnit}</div>
+                  <div className="item-name">{e.itemName}</div>
+                  <div className="item-quantity">{e.itemQuantity} {e.itemUnit}</div>
 
-            </div>
-            </a>
+              </div>
+            </Link>
 
           ))}
 
