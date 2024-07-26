@@ -116,7 +116,7 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
         usersitems.quantitypurchased,
         usersitems.quantityremaining,
         usersitems.dateadded,
-        usersitems.spoilagedate,
+        TO_CHAR(usersitems.spoilagedate, 'mm/dd/yyyy') as formatspoilagedate,
         usersitems.userspoilagedate,
         usersitems.finished,
         usersitems.spoiled,
@@ -133,8 +133,8 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
       LEFT JOIN tags ON itemstags.fk_tags_tagid = tags.tagid
       LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
       LEFT JOIN images ON images.imageid = itemsimages.fk_images_imageid
-	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+	  INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+	  INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
 
     res.json(getItemDetails.rows);

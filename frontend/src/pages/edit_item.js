@@ -5,7 +5,6 @@ const Edit_Item = () => {
 
     const [itemInfo, setItemInfo] = useState(null);
     const routeParams = useParams();
-    console.log(routeParams)
 
     useEffect(() => {
 
@@ -45,12 +44,12 @@ const Edit_Item = () => {
 
 
                 <div className="edit-content">
-                <h2>{itemInfo[0].itemname}</h2>
+                <h1>{itemInfo[0].itemname}</h1>
 
-                <p>{itemInfo[0].tagname}</p>
+                <div className="tag">{itemInfo[0].tagname}</div>
 
-                <p>Expiring: {itemInfo[0].spoilagedate}</p>
-                <p>{itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
+                <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
+                <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
                 <br/><br/>
 
