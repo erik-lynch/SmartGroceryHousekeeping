@@ -70,35 +70,6 @@ app.post('/api/add-item', async (req, res) => {
   }
 });
 
-app.post('/api/add-item', async (req, res) => {
-  const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 
-
-  try {
-    const itemResult = await pool.query(
-      'SELECT itemId FROM Items WHERE itemName = $1 OR itemName = $2',
-      [iname, barcode]
-    );
-
-    let itemId;
-
-    if (itemResult.rows.length > 0) {
-      // Item exists
-      itemId = itemResult.rows[0].itemid;
-    } else {
-      // Insert new item
-      const insertItemResult = await pool.query(
-        'INSERT INTO Items (itemName, itemDescription) VALUES ($1, $2) RETURNING itemId',
-        [iname, itemDescription] 
-      );
-      itemId = insertItemResult.rows[0].itemid;
-    }
-    res.status(200).json({ message: 'Item added successfully' });
-  } catch (error) {
-    console.error('Error adding item:', error); 
-    res.status(500).json({ message: 'Error adding item', error: error.message });
-  }
-});
-
 //----------------------------------------------------------------------------
 //                View Recipe Page requests
 //----------------------------------------------------------------------------
@@ -373,12 +344,157 @@ app.get('/api/users/:userid/items', async(req,res) => {
 });
 
 // make recipe
-app.post('/api/users/:userid/add-recipe', async (req, res) => {
-  console.log(req.body)
-  //TODO add sql to make recipe
+app.post('/api/add-recipe/recipe', async (req, res) => {
+  const recipeName = (req.body.recipeName);
+  const recipeDescription = (req.body.recipeDescription);
+
+  if (recipeName === null || recipeName === "")  {
+    res.status(400).json({ message: 'Error adding recipe name'});
+  }
+  else if (recipeDescription === null || recipeDescription === "") {
+    res.status(400).json({ message: 'Error adding recipe description'});
+  }
+  else {
+    try {
+        // Insert new recipe name and description
+        const insertRecipeRes = await pool.query(
+          `INSERT INTO Recipes (recipeName, recipeDescription)
+          VALUES (${recipeName}, ${recipeDescription})
+          RETURNING recipeId`
+        );
+        //return recipe id
+        res.status(200).json(insertRecipeRes.rows);
+      }
+    catch (error) {
+      console.error('Error adding recipe:', error); 
+      res.status(500).json({ message: 'Error adding recipe', error: error.message });
+    }
+  }
 });
 
+app.post('/api/add-recipe/steps', async (req, res) => {
+  const stepNumber = (req.body.stepNumber);
+  const stepDescription = (req.body.stepDescription);
 
+  if (stepNumber === null || stepNumber <=0 || !(isNumber(stepNumber)) ) {
+    res.status(400).json({ message: 'Error adding step number'});
+  }
+  else if (stepDescription === null || stepDescription === "") {
+    res.status(400).json({ message: 'Error adding step description'});
+  }
+  else {
+    try {
+        // Insert new recipe name and description
+        const insertStepRes = await pool.query(
+          `INSERT INTO Steps (stepNumber, stepDescription)
+          VALUES (${stepNumber}, ${stepDescription})
+          RETURNING stepId`
+        );
+        //return step id
+        res.status(200).json(insertStepRes.rows);
+      }
+    catch (error) {
+      console.error('Error adding step:', error); 
+      res.status(500).json({ message: 'Error adding step', error: error.message });
+    }
+  }
+});
+
+app.post('/api/add-recipe/recipessteps', async (req, res) => {
+  const recipeId = (req.body.recipeId);
+  const stepId = (req.body.stepId);
+
+  try {
+    // Insert new recipessteps
+    const insertRecipesStepRes = await pool.query(
+      `INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_steps_stepid)
+      VALUES (${recipeId}, ${stepId})`
+    );
+    //return step id
+    res.status(200).json(
+      {message: `Linked stepId: ${stepId} and recipeId: ${recipeId} succesfully`}
+    );
+  }
+catch (error) {
+  console.error('Error adding step:', error); 
+  res.status(500).json({ message: 'Error adding step', error: error.message });
+}
+});
+
+app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
+  const recipeId = (req.body.recipeId);
+  const itemId = (req.body.itemName);
+  const quantity = (req.body.quantity);
+  const quantityUnit = (req.body.quantityUnit);
+
+  if (recipeId === null || recipeId <=0 || !(isNumber(recipeId)) ) {
+    res.status(400).json({ message: 'Error with recipeId'});
+  }
+  else if (itemId === null || itemId <=0 || !(isNumber(itemId)) ) {
+    res.status(400).json({ message: 'Error with itemId'});
+  }
+  else if (quantity === null || quantity === "") {
+    res.status(400).json({ message: 'Error with quantity'});
+  }
+  else if (quantityUnit === "") {
+    res.status(400).json({ message: 'Error with quantity unit'});
+  }
+  else {
+    try {
+      // Insert new itemsrecipes
+      const insertItemsRecipesRes = await pool.query(
+        `INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit)
+        VALUES (${recipeId}, ${itemId}, ${quantity}, ${quantityUnit})`
+      );
+      // state linked item and recipe succesfully
+      res.status(200).json(
+        {message: `Linked itemId: ${itemId} and recipeId: ${recipeId} succesfully`}
+      );
+    }
+  catch (error) {
+    console.error('Error adding step:', error); 
+    res.status(500).json({ message: 'Error adding itemsrecipes', error: error.message });
+  }
+  }
+});
+
+app.delete('/api/add-recipe/unsuccesful/recipe', async (req, res) => {
+  const recipeId = (req.body.recipeId);
+  try {
+    // attemp recipe deletion
+    const deleteRecipeRes = await pool.query(
+      `DELETE FROM Recipes
+       WHERE ${recipeId}`
+    );
+    //return succesful delete message for recipe
+    res.status(200).json(
+      {message: `Succesfully deleted recipeId: ${recipeId}`}
+    );
+  }
+catch (error) {
+  console.error('Error deleting recipe:', error); 
+  res.status(500).json({ message: 'Error deleting recipe', error: error.message });
+}
+});
+
+app.delete('/api/add-recipe/unsuccesful/step', async (req, res) => {
+  const stepId = (req.body.stepId);
+  try {
+    // attemp step deletion
+    const deleteStepRes = await pool.query(
+      `DELETE FROM Steps
+       WHERE ${stepId}`
+    );
+    //return succesful delete message for step
+    res.status(200).json(
+      {message: `Succesfully deleted stepId: ${stepId}`}
+    );
+  }
+catch (error) {
+  console.error('Error deleting step:', error);
+  res.status(500).json({ message: 'Error deleting step', error: error.message });
+}
+});
 
 //----------------------------------------------------------------------------
 //                Reports Page
