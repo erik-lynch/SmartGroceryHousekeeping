@@ -158,15 +158,14 @@ table {
 }
 
 th, td {
-  padding-right: 50px;
+  padding: 5px 20px 5px 10px;
   text-align: left;
-  padding-left: 3px;
 }
 
 th {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 20px 20px 20px 10px;
 }
+
 
 .header-row {
   background-color: lightgray;
@@ -272,6 +271,4 @@ button {
   input {
     width: 70%;
   }
-
-
 }

@@ -151,7 +151,8 @@ app.get('/useritem/:itemId', async (req, res) => {
       FROM tags
       FULL OUTER JOIN itemstags ON tags.tagid = itemstags.fk_tags_tagid
       FULL OUTER JOIN items ON itemstags.fk_items_itemid = items.itemid
-      WHERE items.itemid = ${req.params.itemId}`);
+      WHERE items.itemid = ${req.params.itemId}
+      ORDER BY tags.tagname`);
 
     res.json(getItemTags.rows);
     
