@@ -4,7 +4,9 @@ import { useLocation, useParams } from "react-router-dom";
 const Edit_Item = () => {
 
     const [itemInfo, setItemInfo] = useState(null);
+    const [itemTags, setItemTags] = useState(null);
     const routeParams = useParams();
+    console.log(routeParams)
 
     useEffect(() => {
 
@@ -16,7 +18,6 @@ const Edit_Item = () => {
                     throw new Error(`Response status: ${response.status}`);
                 }
                 setItemInfo(await response.json());
-                console.log(await itemInfo);
 
             } catch (error) {
                 console.error(error.message);
@@ -24,17 +25,34 @@ const Edit_Item = () => {
 
         };
 
+        async function fetchTags() {
+
+            try {
+                const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                setItemTags(await response.json());
+
+            } catch (error) {
+                console.error(error.message);
+            }
+
+        };
+        
+        fetchTags();
         fetchItemInfo();
+
+
 
     }, []);
 
-    if (!itemInfo) {
+    if (!itemInfo || !itemTags) {
 
         return(<h2>Loading...</h2>)
 
     } else {
 
-        if (itemInfo[0].tagname == null) {itemInfo[0].tagname = 'Tag'}
 
         return (
 
@@ -49,15 +67,17 @@ const Edit_Item = () => {
                     <div className="edit-content">
                     <h1>{itemInfo[0].itemname}</h1>
 
-                    <div className="tag">{itemInfo[0].tagname}</div>
+                   {itemTags.map((e) => (
+                         <div className="tag">{e.tagname}</div>
+                    ))}
 
                     <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
                     <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
-                    <br/><br/>
+                    <br/>
 
                     <label form="fname"><b>Update Quantity:</b></label> <br/>
-                    <input type="number" id="quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
+                    <input type="number" id="item-quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
                     <input type="submit" value="Spoiled"></input>
                     <input type="submit" value="Finished"></input>
 

@@ -69,11 +69,13 @@ class ItemCarousel extends Component {
 
                   <div className="item-name">{e.itemName}</div>
                   <div className="item-quantity">{e.itemQuantity} {e.itemUnit}</div>
+                  <div className="date">{e.formatspoilagedate}{e.formatdateadded}</div>
 
               </div>
             </Link>
 
           ))}
+          
 
         </Carousel>
 

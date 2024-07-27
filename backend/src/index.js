@@ -26,7 +26,6 @@ app.use((req, res, next) => {
   next();
 })
 
-
 app.use(bodyParser.json());
 
 app.get('/items', async (req, res) => {
@@ -123,18 +122,15 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
         usersitems.purchaseagain,
         usersitems.finishedtotal,
         usersitems.spoiledtotal,
-        tags.tagname,
         images.imagefilepath,
 		    units.unitabbreviation
       FROM usersitems
       INNER JOIN users ON usersitems.fk_users_userid = users.userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      LEFT JOIN itemstags ON items.itemid = itemstags.fk_items_itemid
-      LEFT JOIN tags ON itemstags.fk_tags_tagid = tags.tagid
       LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
       LEFT JOIN images ON images.imageid = itemsimages.fk_images_imageid
-	  INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-	  INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
 
     res.json(getItemDetails.rows);
@@ -145,6 +141,27 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
   }
 
 });
+
+app.get('/useritem/:itemId', async (req, res) => {
+
+  try{
+    const getItemTags = await pool.query(
+      `SELECT
+	      tags.tagname
+      FROM tags
+      FULL OUTER JOIN itemstags ON tags.tagid = itemstags.fk_tags_tagid
+      FULL OUTER JOIN items ON itemstags.fk_items_itemid = items.itemid
+      WHERE items.itemid = ${req.params.itemId}`);
+
+    res.json(getItemTags.rows);
+    
+  } catch (err){
+      console.error(err);
+      res.status(500).send('Server error')
+  }
+
+});
+
 
 //----------------------------------------------------------------------------
 //                Dashboard Page requests
@@ -160,7 +177,7 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
         items.itemid as "itemId",
         items.itemname as "itemName",
         usersitems.quantityremaining as "itemQuantity",
-        usersitems.spoilagedate as "spoilDate",
+        TO_CHAR(usersitems.spoilagedate, 'mm/dd') as formatspoilagedate,
         current_date as "today",
         images.imagefilepath as "imagePath",
         units.unitabbreviation as "itemUnit",
@@ -173,7 +190,8 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
-      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False);`);
+      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False)
+	    ORDER BY formatspoilagedate`);
 
     res.json(getUserSpoilingSoon.rows)
     
@@ -194,7 +212,7 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
         items.itemname as "itemName",
         usersitems.quantityremaining as "itemQuantity",
         current_date as "today",
-        usersitems.dateadded as "dateAdded",
+        TO_CHAR(usersitems.dateadded, 'mm/dd') as formatdateadded,
         images.imagefilepath as "imagePath",
         units.unitabbreviation as "itemUnit"
       FROM users
@@ -206,7 +224,7 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
 	    AND usersitems.dateadded >= (current_date - 5)
-	    ORDER BY usersitems.dateadded DESC;`);
+	    ORDER BY usersitems.dateadded;`);
 
     res.json(getUserRecentItems.rows)
     
