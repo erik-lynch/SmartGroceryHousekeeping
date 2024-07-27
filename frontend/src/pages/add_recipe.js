@@ -2,9 +2,6 @@ import React from "react";
 import{ useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 
-
-
- 
 const Add_Recipe = () => {
 
     let { userId } = useParams();
@@ -54,9 +51,10 @@ const Add_Recipe = () => {
     // Add new fields (steps and items)
 
     const handleNewRecipeStep = async(e) => {
-        setStepFormNumber(stepFormNumber + 1);
+        const newCount = stepFormNumber + 1;
+        setStepFormNumber(newCount);
         let newStep = {
-            stepNumber: stepFormNumber,
+            stepNumber: stepFormNumber + 1,
             stepDescription: ""
         };
         setRecipeSteps([...recipeSteps, newStep]);
@@ -97,11 +95,12 @@ const Add_Recipe = () => {
         e.preventDefault();
         const recipeInfoToSend = {
             recipeInfo,
-            ...recipeSteps,
-            ...recipeItems
+            recipeSteps,
+            recipeItems
         };
 
         try {
+            console.log(recipeInfoToSend)
             const response = await fetch("http://localhost:3001/api/add-recipe", {
                 method: "POST",
                 headers: {
@@ -136,7 +135,7 @@ const Add_Recipe = () => {
         <div class="core">
             <h2>Add a Recipe to the Cookbook</h2>
             <form onSubmit={handleSubmit}>
-                <h3>Recipe Name</h3>
+                <h3>Recipe Name:</h3>
                     <textarea 
                         id="recipeName" 
                         name="recipeName" 
@@ -205,7 +204,7 @@ const Add_Recipe = () => {
                         {recipeSteps.map((steps, i) => {
                             return(
                                 <div>
-                                    <label htmlFor="stepDescription">Step {i+1} :</label><br/><br/>
+                                    <label htmlFor="stepDescription">Step {steps.stepNumber} :</label><br/><br/>
                                     <textarea
                                         id="stepDescription" 
                                         name="stepDescription"
@@ -219,14 +218,10 @@ const Add_Recipe = () => {
                     })}
                     <div><button onClick={handleNewRecipeStep}>Add More Steps</button></div><br/><br/><br/>
             </form>
-            <div><button>Submit</button></div><br/><br/><br/>
+            <div><button onClick={handleSubmit}>Submit</button></div><br/><br/><br/>
         </div>
     );
 };
 }
 
-//<label htmlFor="recipeName">Recipe name:</label><br/><br/>
-//<label htmlFor="recipeDescription">Recipe Description:</label><br/><br/>
-//<label htmlFor="Ingredients">Ingredients List:</label><br/><br/>
-//<label htmlFor="Steps">Directions:</label><br/><br/>
 export default Add_Recipe;

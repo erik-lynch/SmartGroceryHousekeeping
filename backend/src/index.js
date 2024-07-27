@@ -352,6 +352,7 @@ app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
 //                Add Recipe Page
 //----------------------------------------------------------------------------
 
+// Get all items for selection on ingredient list
 app.get('/api/users/:userid/items', async(req,res) => {
   try{
     const getAllUserItems = await pool.query(
@@ -369,6 +370,12 @@ app.get('/api/users/:userid/items', async(req,res) => {
     console.error(err);
     res.status(500).send('Server error');
   }
+});
+
+// make recipe
+app.post('/api/users/:userid/add-recipe', async (req, res) => {
+  console.log(req.body)
+  //TODO add sql to make recipe
 });
 
 

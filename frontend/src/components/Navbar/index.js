@@ -22,6 +22,9 @@ const Navbar = () => {
                     <NavLink to="/users/1/recipes" activeStyle>
                         Recipes
                     </NavLink>
+                    <NavLink to="/users/1/add_recipe" activeStyle>
+                        Add Recipe
+                    </NavLink>
                     <LoginLogout>
                         Login
                     </LoginLogout>
