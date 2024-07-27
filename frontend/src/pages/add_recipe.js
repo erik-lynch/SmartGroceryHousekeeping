@@ -4,12 +4,18 @@ import { useParams } from "react-router-dom";
 
 const Add_Recipe = () => {
 
+    
     let { userId } = useParams();
+
+    // for page loading
     const [allUserIdItems, setAllUserIdItems] = useState([]);
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
 
-    // States
+    // 
+    const [recipeId, setRecipeId] = useState([]);
+    const [stepIdArr, setRecipeIdArr] = useState([]);
+
 
     const [stepFormNumber, setStepFormNumber] = useState(1);
 
@@ -93,36 +99,61 @@ const Add_Recipe = () => {
     const handleSubmit = async (e) => {
         //prevent page from reloading
         e.preventDefault();
-        const recipeInfoToSend = {
-            recipeInfo,
-            recipeSteps,
-            recipeItems
-        };
-
-        try {
-            console.log(recipeInfoToSend)
-            const response = await fetch("http://localhost:3001/api/add-recipe", {
-                method: "POST",
-                headers: {
-            "Content-Type": "application/json",
-                },
-            body: JSON.stringify(recipeInfoToSend),
-            });
         
-            if (response.ok) {
-                console.log("Recipe added successfully");
+        // Add recipe to recipe table and get recipeId
+        try {
+            console.log(recipeInfo)
+            const recipeRes = await fetch("http://localhost:3001/api/add-recipe/recipe", {
+                method: "POST",
+                headers: {"Content-Type": "application/json",},
+                body: JSON.stringify(recipeInfo),
+            });
+            if (recipeRes.ok) {
+                var recipeResData = await recipeRes.json();
+                console.log('recipeResData:', recipeResData[0]);
+                console.log('recipeResDataid:', recipeResData[0].recipeid);
+                setRecipeId(recipeResData[0].recipeid);
+                /*console.log("Recipe added successfully");
                 if (recipeInfoToSend.recipeInfo.recipeName) {
                     alert(`Recipe added sucessfully ${recipeInfoToSend.recipeInfo.recipeName}`);
-                }
+                }*/
             } else {
-                const errorText = await response.text();
-                console.error("Failed to add recipe:", errorText);
-                alert('Failed to add recipe:', errorText)
+                const errorJson = await recipeRes.json();
+                console.error("Failed to add recipe:", errorJson.error);
+                alert('Failed to add recipe. Perhaps recipe already exists? Try a new name.')
             }
             } catch (error) {
             console.error("Error submitting form:", error);
             }
-        };
+
+            try {
+                //get array of stepIds to later link to recipes
+                var tempStepIdArr = [];
+                for (let i=0; i < recipeSteps.length; i++) {
+                    var stepRes = await fetch("http://localhost:3001/api/add-recipe/step", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json",},
+                        body: JSON.stringify(recipeSteps[i]),
+                    });
+                    if (stepRes.ok) {
+                        var stepResData = await stepRes.json();
+                        console.log('stepResData:', stepResData[0]);
+                        console.log('stepResDataid:', stepResData[0].stepid);
+                        tempStepIdArr.push(stepResData[0].stepid);
+                        console.log('stepid array:', stepIdArr);
+                    } else {
+                        const errorJson = await stepRes.json();
+                        console.error("Failed to add step:", errorJson.error);
+                        alert('Failed to step.')
+                    }
+                }
+                setRecipeIdArr(tempStepIdArr);
+                console.log('tempstepidarray:',tempStepIdArr);
+            } catch (error) {
+                console.error("Error submitting form:", error);
+            }
+    };
+
 
         if (loading0) {
             return (<p>Loading</p>)

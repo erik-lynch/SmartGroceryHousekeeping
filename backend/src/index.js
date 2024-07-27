@@ -345,8 +345,14 @@ app.get('/api/users/:userid/items', async(req,res) => {
 
 // make recipe
 app.post('/api/add-recipe/recipe', async (req, res) => {
+  console.log(req.body);
   const recipeName = (req.body.recipeName);
   const recipeDescription = (req.body.recipeDescription);
+  console.log('recipeName:',recipeName);
+  console.log('recipeDescription:',recipeDescription);
+  console.log(`INSERT INTO Recipes (recipeName, recipeDescription)
+          VALUES (${recipeName}, ${recipeDescription})
+          RETURNING recipeId`);
 
   if (recipeName === null || recipeName === "")  {
     res.status(400).json({ message: 'Error adding recipe name'});
@@ -356,10 +362,11 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
   }
   else {
     try {
+        console.log('get to try statement');
         // Insert new recipe name and description
         const insertRecipeRes = await pool.query(
           `INSERT INTO Recipes (recipeName, recipeDescription)
-          VALUES (${recipeName}, ${recipeDescription})
+          VALUES ('${recipeName}', '${recipeDescription}')
           RETURNING recipeId`
         );
         //return recipe id
@@ -372,7 +379,7 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
   }
 });
 
-app.post('/api/add-recipe/steps', async (req, res) => {
+app.post('/api/add-recipe/step', async (req, res) => {
   const stepNumber = (req.body.stepNumber);
   const stepDescription = (req.body.stepDescription);
 
@@ -458,7 +465,7 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   }
 });
 
-app.delete('/api/add-recipe/unsuccesful/recipe', async (req, res) => {
+app.delete('/api/add-recipe/unsuccessful/recipe', async (req, res) => {
   const recipeId = (req.body.recipeId);
   try {
     // attemp recipe deletion
@@ -477,7 +484,7 @@ catch (error) {
 }
 });
 
-app.delete('/api/add-recipe/unsuccesful/step', async (req, res) => {
+app.delete('/api/add-recipe/unsuccessful/step', async (req, res) => {
   const stepId = (req.body.stepId);
   try {
     // attemp step deletion
