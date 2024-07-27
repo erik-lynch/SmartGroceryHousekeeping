@@ -82,7 +82,7 @@ const Edit_Item = () => {
                     <input type="submit" value="Finished"></input>
 
                     <br/><br/>
-                    <a href="/">Return to Dashboard</a>
+                    <a className="returnDashboard" href="/">Return to Dashboard</a>
                     </div>
 
                 

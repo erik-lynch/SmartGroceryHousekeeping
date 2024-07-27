@@ -1,5 +1,6 @@
 import { useState, useEffect, React } from "react";
 import ItemCarousel from "../components/Carousel/ItemCarousel";
+import loadingBar from "../components/Loading/loadingbar";
 
 
 const Dashboard = () => {
@@ -72,14 +73,14 @@ const Dashboard = () => {
             <div className="core">
                 
                 <h2>
-                    Recently Purchased
+                    Items - Recently Purchased
                 </h2>
 
                 <ItemCarousel content={recentItems} />
                 
 
                 <h2>
-                    Spoiling Soon
+                    Items - Spoiling Soon
                 </h2>
 
                 <ItemCarousel content={spoilItems} />
