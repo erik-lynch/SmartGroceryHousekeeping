@@ -239,7 +239,7 @@ input[type="number"] {
   margin: 10px 0px;
 }
 
-button {
+.scan-button {
   width: 150px;
   border: solid black;
   padding: 5px 15px;
@@ -250,6 +250,9 @@ button {
   font-size: 16px;
 }
 
+button {
+  align-self: center;
+}
 
 select {
   margin: 10px;
