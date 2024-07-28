@@ -304,7 +304,7 @@ const Add_Recipe = () => {
                         )
                     })}
                         <br/><div><button onClick={handleNewRecipeItem} >Add More Ingredients</button></div><br/>
-                        <br/><br/>
+
                         <h3>Directions:</h3>
                         {recipeSteps.map((steps, i) => {
                             return(
@@ -321,7 +321,7 @@ const Add_Recipe = () => {
                                 </div>
                         )
                     })}
-                    <div><button onClick={handleNewRecipeStep}>Add More Steps</button></div><br/><br/><br/>
+                    <div><button onClick={handleNewRecipeStep}>Add More Steps</button></div><br/><br/>
             </form>
             <div><button onClick={handleSubmit}>Submit</button></div><br/><br/><br/>
 

@@ -220,7 +220,7 @@ input {
 
 .grid-recipe {
   display:grid;
-  grid-template-columns: 150px 200px;
+  grid-template-columns: 150px 250px;
   padding: 5px;
 }
 
