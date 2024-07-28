@@ -7,6 +7,7 @@ import styled from "styled-components";
 export const Nav = styled.nav`
     background: #FFE7C3;
     padding: 20px;
+    display: grid;
 `;
  
 export const NavLink = styled(Link)`
@@ -17,17 +18,19 @@ export const NavLink = styled(Link)`
     cursor: pointer;
     &.active {
         background: white;
+        font-weight: bold;
     }
     border-radius: 8px;
     margin: 5px;
 `;
  
 export const LoginLogout = styled(Link)`
-    float: left;    
+    float: right;    
     color: white;
     background-color: black;
     border: none;
     text-decoration: none;
+    font-weight: bold;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 8px;
@@ -35,8 +38,11 @@ export const LoginLogout = styled(Link)`
 `;
  
 export const NavMenu = styled.div`
-    display: inline-block;
-    flex-wrap: wrap;
+    display: block;
+    align-items: center;
+    @media only screen and (max-width: 600px) {
+        display: grid;
     }
+
 `;
 

@@ -10,17 +10,20 @@ const Navbar = () => {
             <Nav>
                 <NavMenu>
 
-                    <NavLink to="/" activeStyle>
+                    <NavLink to="/" activestyle="true">
                         Dashboard
                     </NavLink>
-                    <NavLink to="/add_item" activeStyle>
+                    <NavLink to="/add_item" activestyle="true">
                         Add Item
                     </NavLink>
-                    <NavLink to="/reports" activeStyle>
+                    <NavLink to="/users/1/reports" activestyle="true">
                         Reports
                     </NavLink>
-                    <NavLink to="/users/1/recipes" activeStyle>
+                    <NavLink to="/users/1/recipes" activestyle="true">
                         Recipes
+                    </NavLink>
+                    <NavLink to="/users/1/add_recipe" activeStyle="true">
+                        Add Recipe
                     </NavLink>
                     <LoginLogout>
                         Login
