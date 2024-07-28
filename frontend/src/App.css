@@ -211,15 +211,25 @@ td {
   margin-right: 5px;
 }
 
-.returnDashboard {
+.return-dashboard {
   color: grey;
 }
 
 input {
   width: 150px;
-  border: solid black;
+  border: solid black 1px;
   padding: 5px 15px;
 }
+
+
+input.edit-button {
+  color: white;
+  background-color: black;
+  padding: 20px 0 20px;
+  font-size: 16;
+}
+
+/* recipe styles */
 
 .no-style-select{
   margin: 10px;
@@ -248,12 +258,14 @@ input {
   grid-area: 1 / 1 / 1/ 2;
   border-radius: 20px 0px 0px 20px;
 }
+
 .grid-recipe-quantity {
   text-align: left;
   float: left;
   grid-column: 1 / 2 / 1 / 2;
   border-radius: 0px 20px 20px 0px;
 }
+
 .grid-recipe-measurement {
   text-align: left;
   float: left;
@@ -268,8 +280,7 @@ textarea {
 }
 
 input:not([type="submit"]) {
-  margin: 10px 10px 10px 0;
-  border-radius: 50px;
+  border-radius: 5px;
   height: 25px;
 }
 
@@ -306,14 +317,6 @@ input[type="number"] {
   font-size: 16px;
 }
 
-button {
-  align-self: center;
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  border-radius: 5px;
-}
-
 .recipe-button {
   width: 200px;
   border: solid black;
@@ -335,40 +338,31 @@ select {
 }
 
 /* Add Item screen */
-.image-icon {
-  height: 30px;
-  width: 30px;
-  padding-right: 15px;
+
+.additem-core {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-input[type="button"] {
-  color: white;
-  background-color: black;
-  display: grid;
-  text-align: center;
-  padding: 15px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: medium;
-}
-
-  
 .manual-entry {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 800px;
 }
 
 .manual-entry h2 {
-  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .manual-entry form {
   display: flex;
   flex-direction: column;
-
+  gap: 10px;
 }
 
 .manual-entry label {
@@ -378,7 +372,7 @@ input[type="button"] {
 .manual-entry input[type="text"],
 .manual-entry input[type="number"],
 .manual-entry select {
-  width: 90%;
+  width: 100%;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -386,7 +380,7 @@ input[type="button"] {
 }
 
 .manual-entry input[type="submit"] {
-  background-color: black;
+  background-color: #4CAF50;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -406,28 +400,27 @@ input[type="button"] {
   padding-bottom: 50px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
   position: relative; 
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
-  max-width: 800px;
 }
 
 .barcode-scanning h2 {
   margin-bottom: 15px;
-  width: 100%;
 }
 
 .barcode-scanning button {
-  width: 100%;
+  width: 97%;
   background-color: #007BFF;
   color: white;
-  padding: 20px;
+  padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+  position: absolute; 
+  left: 50%; 
+  transform: translateX(-50%);
 }
 
 .barcode-scanning button:hover {
@@ -617,29 +610,6 @@ img {
 border-radius: 8px 8px 0px 0px;
 }
 
-@media only screen and (max-width: 600px) {
-
-.carousel-item {
-  min-width: none;
-}
-
-.item-name {
-  float: none;
-  padding: 10px 12px 5px 12px; 
-}
-
-.item-quantity {
-  float: none;
-  padding: 5px 12px 5px 12px; 
-}
-
-.date {
-  float: none;
-  padding: 5px 12px 15px 12px; 
-}
-
-}
-
 
 
 /* phone, small display specific values */
@@ -651,5 +621,25 @@ border-radius: 8px 8px 0px 0px;
     justify-content: center;
   }
 
+  .carousel-item {
+    min-width: none;
+  }
+  
+  .item-name {
+    float: none;
+    padding: 10px 12px 5px 12px; 
+  }
+  
+  .item-quantity {
+    float: none;
+    padding: 5px 12px 5px 12px; 
+  }
+  
+  .date {
+    float: none;
+    padding: 5px 12px 15px 12px; 
+  }
+  
+  }
 
-}
+

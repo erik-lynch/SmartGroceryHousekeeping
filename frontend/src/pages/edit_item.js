@@ -96,18 +96,18 @@ const Edit_Item = () => {
                     <br/>
 
                     <label form="fname"><b>Update Quantity:</b></label> <br/>
-                    <input type="number" id="item-quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
-                    
-                    {spoilButton && <input type="button" value="Spoiled" onClick={handleSpoiled}></input>}
-                    
+                    <input type="number" id="item-quantity" className="edit-quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
+
+                    <br/>
+                    {spoilButton && <input type="button" className="edit-button" value="Spoiled" onClick={handleSpoiled}></input>}
                     <p>{markedSpoiled}</p>
 
 
-                    {finishButton && <input type="button" value="Finished" onClick={handleFinished} ></input>}
+                    {finishButton && <input type="button" className="edit-button" value="Finished" onClick={handleFinished} ></input>}
                     <p>{markedFinised}</p>
 
                     <br/><br/>
-                    <a className="returnDashboard" href="/">Return to Dashboard</a>
+                    <a className="return-dashboard" href="/">Return to Dashboard</a>
                     </div>
 
                 
