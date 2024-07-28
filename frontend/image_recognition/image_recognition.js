@@ -16,14 +16,14 @@ async function imageProcess(fileName) {
         image: {content: fs.readFileSync(fileName)},
     };
 
+    console.log(`File: ${fileName}`);
+
     const [result] = await client.objectLocalization(request);
     const objects = result.localizedObjectAnnotations;
     objects.forEach(object => {
         
-        console.log(`File: ${fileName}`);
         console.log(`Name: ${object.name}`);
         console.log(`Confidence: ${object.score}`);
-        console.log(`\n`)
         
     });
   }

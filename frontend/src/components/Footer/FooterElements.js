@@ -6,8 +6,7 @@ export const Box = styled.div`
     border-top: solid 1px black;
     bottom: 0px;
     width: 100%;
-    height: 120px;
-    margin-top: 10px;
+    height: 200px;
 `;
 
  

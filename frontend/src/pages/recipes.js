@@ -99,7 +99,7 @@ const Recipes = () => {
             }
             catch (error) {
                 console.log("There was an error:", error);
-                setPageError(error);
+                setPageError(error); 
             }
         }
 
@@ -207,25 +207,25 @@ useEffect(() => {
 
             <div class="core">
             <h2>
-                Recipes Using Items Spoiling Soon
+                Recipes - Items Spoiling Soon
             </h2>
 
             <RecipeCarousel content={apiData} />
 
             <h2>
-                Recipes With Minimal Additional Ingredients
+                Recipes - Minimal Additional Ingredients
             </h2>
 
             <RecipeCarousel content={recipesTestData} />
 
             <h2>
-                Recipes Suggested From Cookbook With Minimal Ingredients
+                Cookbook Recipes - Minimal Ingredients
             </h2>
 
             <RecipeCarousel content={recipesTestData} />
 
             <h2>
-                Recipes Suggested From Cookbook With Items Spoiling Soon
+            Cookbook Recipes - Items Spoiling Soon
             </h2>
 
             <RecipeCarousel content={recipesTestData} />
