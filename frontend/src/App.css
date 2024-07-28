@@ -212,6 +212,43 @@ input {
   padding: 5px 15px;
 }
 
+.no-style-select{
+  margin: 10px;
+  border-radius: 0px;
+  height: 100px;
+}
+
+.grid-recipe {
+  display:grid;
+  grid-template-columns: 150px 250px;
+  padding: 5px;
+}
+
+.grid-recipe > div {
+  text-align: left;
+  padding: 20px 0;
+  padding-left: 10px;
+  padding-right: 200px;
+  background-color:#FFE7C3;
+}
+
+.grid-recipe-item {
+  text-align: left;
+  grid-area: 1 / 1 / 1/ 2;
+  border-radius: 20px 0px 0px 20px;
+}
+.grid-recipe-quantity {
+  text-align: left;
+  grid-column: 1 / 2 / 1 / 2;
+  border-radius: 0px 20px 20px 0px;
+}
+.grid-recipe-measurement {
+  text-align: left;
+  grid-column: 2 / 2 / 2 / 2;
+  border-radius: 0px 20px 20px 0px;
+}
+
+
 input:not([type="submit"]) {
   margin: 10px 10px 10px 0;
   border-radius: 50px;

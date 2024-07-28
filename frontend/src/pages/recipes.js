@@ -1,17 +1,18 @@
 import React from "react";
 import RecipeCarousel from "../components/Carousel/RecipeCarousel";
 import{ useState, useEffect } from 'react';
-import recipesTestData from "../components/Carousel/recipes-test-data";
-import spoon_api_test_data from "../components/Carousel/spoon_api_test_data";
 import { useParams } from "react-router-dom";
+//import recipesTestData from "../components/Carousel/recipes-test-data";
+import spoon_api_test_data from "../components/Carousel/spoon_api_test_data";
+
 
 
 function string_items(obj) {
-    var string_val = "";
+    var string_val = '';
     for (let i=0; i < obj.length; i++) {
-        string_val = string_val + obj[i].itemname;
+        string_val = string_val + "'" + obj[i].itemname + "'";
         if (i < obj.length-1) {
-            string_val = string_val + ", ";
+            string_val = string_val + ', ';
         }
     }
     return string_val;
@@ -31,24 +32,22 @@ function string_nameClean(obj) {
 function fill_api_data(jsonData) {
     var arrayJsonObjApiData = [];
     for (let i=0; i < jsonData.length; i++) {
-        console.log(jsonData[i])
+        //console.log(jsonData[i])
         var recipeIngredientStr = string_nameClean(jsonData[i].extendedIngredients);
         var newJsonApiData = {
-            link : jsonData[i].sourceUrl,
+            link : jsonData[i].spoonacularSourceUrl,
             recipeTitle: jsonData[i].title,
             recipeIngredients: recipeIngredientStr
         }
+        console.log(newJsonApiData);
         arrayJsonObjApiData.push(newJsonApiData);
     }
     return arrayJsonObjApiData
 }
 
 const Recipes = () => {
-        
-        const SPOONACULAR_API_KEY = '';
 
         let { userId } = useParams();
-
 
         // set use effect state changes- steps,ingredient,description for page data
         const [ingredients, setIngredients] = useState("");
@@ -71,13 +70,12 @@ const Recipes = () => {
 //      pull ingredients from fridge
 //---------------------------------------------------------------- 
     useEffect(() => {
-
         const fetchInFridgeIngredients = async () => {
             try {
                 setLoading0(true);
                 const inFridgeIngredientsRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/infridge`);
                 const inFridgeIngredientsData = await inFridgeIngredientsRes.json();
-                console.log(inFridgeIngredientsData)
+                //console.log(inFridgeIngredientsData)
                 const api_str_ingredients = string_items(inFridgeIngredientsData);
                 setIngredients(api_str_ingredients);
                 setLoading0(false);
@@ -113,13 +111,14 @@ const Recipes = () => {
 //---------------------------------------------------------------- 
 
 useEffect(() => {
-/*
+
         const fetchApiInFridgeRecipes = async () => {
             try {
                 setLoading2(true);
-                const apiInFridgeRecipesRes  = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${ingredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=min-missing-ingredients`);
+                const apiInFridgeRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${ingredients}/spoon/infridge`);
                 const apiInFridgeRecipeData = await apiInFridgeRecipesRes.json();
-                setApiInFridge(apiInFridgeRecipeData);
+                const apiFridgeData = fill_api_data(apiInFridgeRecipeData.results)
+                setApiInFridge(apiFridgeData);
                 setLoading2(false);
             }
             catch (error) {
@@ -127,13 +126,41 @@ useEffect(() => {
                 setPageError(error);
             }
         }
-/*
+
         const fetchInFridgeRecipes = async () => {
             try {
                 setLoading4(true);
-                const inFridgeRecipesRes  = await fetch(``);
+                const inFridgeRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${ingredients}/infridge/recipes`);
                 const inFridgeRecipeData = await inFridgeRecipesRes.json();
-                setInFridgeRecipes(inFridgeRecipeData);
+
+                //console.log("in fridge pulled:", inFridgeRecipeData);
+
+                let sortedJsonInFridgeData;
+
+                //couldn't get sql to use temp col value...so this sorts by least ingredients missing (sql secondary-more used ingredient desc , total ingredienst asc)
+                sortedJsonInFridgeData = inFridgeRecipeData.sort((a, b) => {
+                    if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
+                      return -1;
+                    }
+                  });
+
+                //console.log("SORTED in fridge pulled:", sortedJsonInFridgeData);
+                //console.log(sortedJsonInFridgeData[0].recipeid);
+                
+                // get total ingredient list for each recipe and update array
+                for (let i=0; i < sortedJsonInFridgeData.length; i++) {
+                    // send recipeId to get list of ingredients
+                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonInFridgeData[i].recipeid}/ingredientlist`);
+                    var currentRecipeData = await currentRecipeRes.json();
+                    sortedJsonInFridgeData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
+                    sortedJsonInFridgeData[i]['link'] = `/users/${userId}/recipes/${sortedJsonInFridgeData[i].recipeid}/view_recipe`;
+                    sortedJsonInFridgeData[i]['recipeTitle'] = sortedJsonInFridgeData[i].recipename;
+                    //console.log("current recipe list", currentRecipeData[0].ingredientlist)
+                }
+
+                //console.log("finalized",sortedJsonInFridgeData);
+
+                setInFridgeRecipes(sortedJsonInFridgeData);
                 setLoading4(false);
             }
             catch (error) {
@@ -141,11 +168,11 @@ useEffect(() => {
                 setPageError(error);
             }
         }
-*/
+
         if (ingredients) { 
-            console.log("ingredients:", ingredients);
-            //fetchApiInFridgeRecipes();
-            //fetchInFridgeRecipes();
+            //console.log("ingredients:", ingredients);
+            fetchApiInFridgeRecipes();
+            fetchInFridgeRecipes();
         }
         }, [ingredients]);
 
@@ -154,13 +181,14 @@ useEffect(() => {
 //      use soon to spoil in fridge for API and DB
 //---------------------------------------------------------------- 
 useEffect(() => {
-/*
+
             const fetchApiSpoilSoonRecipes = async () => {
                 try {
                     setLoading3(true);
-                    const apiSpoilSoonRecipesRes  = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${spoilIngredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=max-used-ingredients`);
+                    const apiSpoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${spoilIngredients}/spoon/spoilsoon`);
                     const apiSpoilSoonRecipesData = await apiSpoilSoonRecipesRes.json();
-                    setApiSpoilRecipes(apiSpoilSoonRecipesData);
+                    const apiSpoilSoonData = fill_api_data(apiSpoilSoonRecipesData.results)
+                    setApiSpoilRecipes(apiSpoilSoonData);
                     setLoading3(false);
                 }
                 catch (error) {
@@ -168,13 +196,41 @@ useEffect(() => {
                     setPageError(error);
                 }
             }
-/*   
+ 
             const fetchSpoilSoonRecipes = async () => {
                 try {
                     setLoading5(true);
-                    const spoilSoonRecipesRes  = await fetch(``);
+                    const spoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${spoilIngredients}/infridge/recipes`);
                     const spoilSoonRecipesData = await spoilSoonRecipesRes.json();
-                    setFridgeSpoilRecipes(spoilSoonRecipesData);
+                    
+                    //console.log("spoil soon e pulled:", spoilSoonRecipesData);
+
+                    let sortedJsonSpoilSoonData;
+
+                
+                sortedJsonSpoilSoonData = spoilSoonRecipesData.sort((a, b) => {
+                    if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
+                      return -1;
+                    }
+                  });
+
+                //console.log("SORTED spoil soon pulled:", sortedJsonSpoilSoonData);
+                //console.log(sortedJsonSpoilSoonData[0].recipeid);
+                
+                // get total ingredient list for each recipe and update array
+                for (let i=0; i < sortedJsonSpoilSoonData.length; i++) {
+                    // send recipeId to get list of ingredients
+                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonSpoilSoonData[i].recipeid}/ingredientlist`);
+                    var currentRecipeData = await currentRecipeRes.json();
+                    sortedJsonSpoilSoonData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
+                    sortedJsonSpoilSoonData[i]['link'] = `/users/${userId}/recipes/${sortedJsonSpoilSoonData[i].recipeid}/view_recipe`;
+                    sortedJsonSpoilSoonData[i]['recipeTitle'] = sortedJsonSpoilSoonData[i].recipename;
+                    //console.log("current spoil recipe list", currentRecipeData[0].ingredientlist)
+                }
+
+                //console.log("finalized",sortedJsonSpoilSoonData);
+
+                setFridgeSpoilRecipes(sortedJsonSpoilSoonData);
                     setLoading5(false);
                 }
                 catch (error) {
@@ -183,53 +239,57 @@ useEffect(() => {
                 }
                     
             }
-*/
+
             if (spoilIngredients) {
-                console.log(" spoil ingredients:", spoilIngredients);
-                //fetchApiSpoilSoonRecipes();
-                //fetchSpoilSoonRecipes();
+                //console.log("spoil ingredients:", spoilIngredients);
+                fetchApiSpoilSoonRecipes();
+                fetchSpoilSoonRecipes();
             }
             }, [spoilIngredients]);
 
-        if (loading0 || loading1)// || loading2) //|| loading3 //|| loading4 //|| loading5)
+        if (loading0 || loading1 || loading2 || loading3 || loading4 || loading5)
         {
-            return (<h1>Loading</h1>)
+            return (<p>Loading</p>)
         };
 
         if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
         else {
-            console.log(spoon_api_test_data);
-            const apiData =fill_api_data(spoon_api_test_data.results);
+            const testapidata = fill_api_data(spoon_api_test_data.results)
 
             return (
 
-                
-
             <div class="core">
+
             <h2>
-                Recipes - Items Spoiling Soon
+                Recipes Suggested From Cookbook With Minimal Ingredients
             </h2>
 
-            <RecipeCarousel content={apiData} />
+            <RecipeCarousel content={inFridgeRecipes} />
+
+            <h2>
+                Recipes Suggested From Cookbook With Items Spoiling Soon
+            </h2>
+
+            <RecipeCarousel content={fridgeSpoilRecipes} />
 
             <h2>
                 Recipes - Minimal Additional Ingredients
             </h2>
 
-            <RecipeCarousel content={recipesTestData} />
+            <RecipeCarousel content={apiInFridge} />
 
             <h2>
-                Cookbook Recipes - Minimal Ingredients
+                Recipes Using Items Spoiling Soon
             </h2>
 
-            <RecipeCarousel content={recipesTestData} />
+            <RecipeCarousel content={apiSpoilRecipes} />
 
             <h2>
-            Cookbook Recipes - Items Spoiling Soon
+                test api data
             </h2>
 
-            <RecipeCarousel content={recipesTestData} />
-            
+            <RecipeCarousel content={testapidata} />
+
         </div>
     );
 };

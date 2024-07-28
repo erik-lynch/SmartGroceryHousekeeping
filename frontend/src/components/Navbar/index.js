@@ -16,11 +16,14 @@ const Navbar = () => {
                     <NavLink to="/add_item" activestyle="true">
                         Add Item
                     </NavLink>
-                    <NavLink to="/reports" activestyle="true">
+                    <NavLink to="/users/1/reports" activestyle="true">
                         Reports
                     </NavLink>
                     <NavLink to="/users/1/recipes" activestyle="true">
                         Recipes
+                    </NavLink>
+                    <NavLink to="/users/1/add_recipe" activeStyle="true">
+                        Add Recipe
                     </NavLink>
                     <LoginLogout>
                         Login

@@ -7,6 +7,7 @@ const View_Recipe = () => {
     
     // get recipeId for URL parameter
     let { recipeId } = useParams();
+    let { userId } = useParams();
 
     let navigate = useNavigate();
 
@@ -18,7 +19,6 @@ const View_Recipe = () => {
     // set use effect state changes- for page rendering and waiting
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
-
     const [loading1, setLoading1] = useState(true);
     const [loading2, setLoading2] = useState(true);
     const [loading3, setLoading3] = useState(true);
@@ -27,7 +27,7 @@ const View_Recipe = () => {
     const fetchVerifyRecipeId = async () => {
         try {
             setLoading0(true);
-            const verifyRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/verify`);
+            const verifyRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/verify`);
             setLoading0(false);
             if (verifyRes.status === 404) {
                 setPageError(404);
@@ -56,7 +56,7 @@ const View_Recipe = () => {
     const fetchIngredientData = async () => {
         try {
             setLoading2(true);
-            const ingredientRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/ingredients`);
+            const ingredientRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/ingredients`);
             const ingredientData = await ingredientRes.json();
             setIngredients(ingredientData);
             setLoading2(false);
@@ -70,7 +70,7 @@ const View_Recipe = () => {
     const fetchDescriptionData = async () => {
         try {
         setLoading3(true);
-        const descriptionRes  = await fetch(`http://localhost:3001/api/recipes/${recipeId}/namedescription`);
+        const descriptionRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/${recipeId}/namedescription`);
         const descriptionData = await descriptionRes.json();
         setDescription(descriptionData);
         setLoading3(false);
@@ -86,11 +86,11 @@ const View_Recipe = () => {
     fetchStepData();
     fetchIngredientData();
     fetchDescriptionData();
-    }, [recipeId]);
+    }, [userId, recipeId]);
     // added recipeId to dependency array to avoid useEffect compile error
 
     if (loading0 || loading1 || loading2 || loading3) {
-        return (<h1>Loading</h1>)
+        return (<p>Loading</p>)
     };
 
     if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
