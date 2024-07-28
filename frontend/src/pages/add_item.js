@@ -186,7 +186,7 @@ const Add_Item = () => {
   };
 
   return (
-    <div className="core">
+    <div className="additem-core">
       <div className="manual-entry">
         <h2>Manual Input</h2>
         <form onSubmit={handleSubmit}>

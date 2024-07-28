@@ -7,10 +7,23 @@ const Edit_Item = () => {
     const [itemTags, setItemTags] = useState(null);
 
     const [markedSpoiled, setSpoiled] = useState("");
-    const [markedFinised, setFinished] = useState("");
+    const [markedFinished, setFinished] = useState("");
+    const [markedUpdated, setUpdated] = useState("");
 
     const [spoilButton, setSpoilButton] = useState(true);
     const [finishButton, setFinishButton] = useState(true);
+    const [updateButton, setUpdateButton] = useState(true);
+
+    const [formData, setFormData] = useState({
+        newlySpoiled: 0,
+        newlyFinished: 0,
+        newlyAdded: 0,
+    });
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
     function handleSpoiled(e) {
         e.preventDefault();
@@ -23,6 +36,34 @@ const Edit_Item = () => {
         setFinishButton(false)
         setFinished("Item has been marked as finished.");
     }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const dataToSend = {
+          ...formData,
+        };
+    
+        try {
+          const response = await fetch(`http://localhost:3001/api/edit-item/${routeParams.usersItemsId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+          });
+    
+          if (response.ok) {
+            console.log("Item edited successfully");
+            setUpdateButton(false)
+            setUpdated("Item has been updated.");
+          } else {
+            const errorText = await response.text();
+            console.error("Failed to edit item:", errorText);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+    };
 
     const routeParams = useParams();
 
@@ -63,8 +104,6 @@ const Edit_Item = () => {
 
     }, []);
 
-    
-
 
     if (!itemInfo || !itemTags) {
 
@@ -94,17 +133,43 @@ const Edit_Item = () => {
                     <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
                     <br/>
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="newlyAdded">Adding:</label>
+                        <input
+                            type="number"
+                            id="newlyAdded"
+                            name="newlyAdded"
+                            value={formData.newlyAdded}
+                            onChange={handleInputChange}
+                        />
+                        <label htmlFor="newlyFinished">Finished:</label>
+                        <input
+                            type="number"
+                            id="newlyFinished"
+                            name="newlyFinished"
+                            value={formData.newlyFinished}
+                            onChange={handleInputChange}
+                        />
+                        <label htmlFor="newlySpoiled">Lost to Spoilage:</label>
+                        <input
+                            type="number"
+                            id="newlySpoiled"
+                            name="newlySpoiled"
+                            value={formData.newlySpoiled}
+                            onChange={handleInputChange}
+                        />
+                        <input type="submit" value="Save"></input>
+                        
+                    </form>
+                    
+                    
+                    
 
-                    <label form="fname"><b>Update Quantity:</b></label> <br/>
-                    <input type="number" id="item-quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
-                    
-                    {spoilButton && <input type="button" value="Spoiled" onClick={handleSpoiled}></input>}
-                    
+                    {spoilButton && <input type="button" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
                     <p>{markedSpoiled}</p>
 
-
-                    {finishButton && <input type="button" value="Finished" onClick={handleFinished} ></input>}
-                    <p>{markedFinised}</p>
+                    {finishButton && <input type="button" value="Mark All Finished" onClick={handleFinished} ></input>}
+                    <p>{markedFinished}</p>
 
                     <br/><br/>
                     <a className="returnDashboard" href="/">Return to Dashboard</a>

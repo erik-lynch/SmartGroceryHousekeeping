@@ -164,15 +164,38 @@ app.get('/useritem/:itemId', async (req, res) => {
 
 });
 
-// update item quantity
+// update item quantity 
+app.put('/api/edit_item/:usersItemsId', async (req, res) => {
+  const { newlySpoiled, newlyFinished, newlyAdded } = req.body;
+  
+  try {
+    const markUpdated = await pool.query(
+      `UPDATE usersitems
+      SET spoiled = true,
+        spoiledtotal = spoiledtotal + $1,
+        finishedtotal = finishedtotal + $2,
+        quantitypurchased = quantitypurchased + $3,
+        quantityremaining = quantityremaining + $3 - $2 - $1
+      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`, [newlySpoiled, newlyFinished, newlyAdded]);
+
+    res.json(markUpdated.rows);
+    res.status(200).json({ message: 'Item added successfully' });
+  } catch (err){
+      console.error(err);
+      res.status(500).send('Server error')
+  }
+
+});
 
 // update item as spoiled 
-app.get('/useritem/:usersItemsId', async (req, res) => {
+app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
 
   try {
     const markSpoiled = await pool.query(
       `UPDATE usersitems
-      SET spoiled = true
+      SET spoiled = true,
+        spoiledtotal = spoiledtotal + quantityremaining,
+        quantityremaining = 0
       WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
 
     res.json(markSpoiled.rows);
@@ -185,6 +208,24 @@ app.get('/useritem/:usersItemsId', async (req, res) => {
 });
 
 // update item as finished
+app.put('/useritem/:usersItemsId/finished', async (req, res) => {
+
+  try {
+    const markFinished = await pool.query(
+      `UPDATE usersitems
+      SET finished = true, 
+        finishedtotal = finishedtotal + quantityremaining,
+        quantityremaining = 0
+      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
+
+    res.json(markFinished.rows);
+    
+  } catch (err){
+      console.error(err);
+      res.status(500).send('Server error')
+  }
+
+});
 
 //----------------------------------------------------------------------------
 //                Dashboard Page requests
@@ -717,7 +758,7 @@ app.delete('/api/add-recipe/unsuccessful/step', async (req, res) => {
     );
     //return succesful delete message for step
     res.status(200).json(
-      {message: `Succesfully deleted stepId: ${stepId}`}
+      {message: `Successfully deleted stepId: ${stepId}`}
     );
   }
 catch (error) {
