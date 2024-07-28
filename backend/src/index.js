@@ -345,24 +345,21 @@ app.get('/api/users/:userid/items', async(req,res) => {
 
 // make recipe
 app.post('/api/add-recipe/recipe', async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const recipeName = (req.body.recipeName);
   const recipeDescription = (req.body.recipeDescription);
-  console.log('recipeName:',recipeName);
-  console.log('recipeDescription:',recipeDescription);
-  console.log(`INSERT INTO Recipes (recipeName, recipeDescription)
-          VALUES (${recipeName}, ${recipeDescription})
-          RETURNING recipeId`);
+  //console.log('recipeName:',recipeName);
+  //console.log('recipeDescription:',recipeDescription);
 
-  if (recipeName === null || recipeName === "")  {
+  if (recipeName == null || recipeName == "")  {
     res.status(400).json({ message: 'Error adding recipe name'});
   }
-  else if (recipeDescription === null || recipeDescription === "") {
+  else if (recipeDescription == null || recipeDescription == "") {
     res.status(400).json({ message: 'Error adding recipe description'});
   }
   else {
     try {
-        console.log('get to try statement');
+        //console.log('get to try statement');
         // Insert new recipe name and description
         const insertRecipeRes = await pool.query(
           `INSERT INTO Recipes (recipeName, recipeDescription)
@@ -382,23 +379,27 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
 app.post('/api/add-recipe/step', async (req, res) => {
   const stepNumber = (req.body.stepNumber);
   const stepDescription = (req.body.stepDescription);
+  //console.log(stepNumber);
+  //console.log(stepDescription);
 
-  if (stepNumber === null || stepNumber <=0 || !(isNumber(stepNumber)) ) {
+  if (stepNumber == null || stepNumber <=0) {
     res.status(400).json({ message: 'Error adding step number'});
   }
-  else if (stepDescription === null || stepDescription === "") {
+  else if (stepDescription == null || stepDescription == "") {
     res.status(400).json({ message: 'Error adding step description'});
   }
   else {
     try {
+      //console.log("get to step try");
         // Insert new recipe name and description
         const insertStepRes = await pool.query(
           `INSERT INTO Steps (stepNumber, stepDescription)
-          VALUES (${stepNumber}, ${stepDescription})
+          VALUES (${stepNumber}, '${stepDescription}')
           RETURNING stepId`
         );
         //return step id
         res.status(200).json(insertStepRes.rows);
+        console.log('sent 200');
       }
     catch (error) {
       console.error('Error adding step:', error); 
@@ -434,16 +435,16 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   const quantity = (req.body.quantity);
   const quantityUnit = (req.body.quantityUnit);
 
-  if (recipeId === null || recipeId <=0 || !(isNumber(recipeId)) ) {
+  if (recipeId == null || recipeId <=0 ) {
     res.status(400).json({ message: 'Error with recipeId'});
   }
-  else if (itemId === null || itemId <=0 || !(isNumber(itemId)) ) {
+  else if (itemId == null || itemId <=0 ) {
     res.status(400).json({ message: 'Error with itemId'});
   }
-  else if (quantity === null || quantity === "") {
+  else if (quantity == null || quantity == "") {
     res.status(400).json({ message: 'Error with quantity'});
   }
-  else if (quantityUnit === "") {
+  else if (quantityUnit == "") {
     res.status(400).json({ message: 'Error with quantity unit'});
   }
   else {
@@ -451,7 +452,7 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
       // Insert new itemsrecipes
       const insertItemsRecipesRes = await pool.query(
         `INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit)
-        VALUES (${recipeId}, ${itemId}, ${quantity}, ${quantityUnit})`
+        VALUES (${recipeId}, ${itemId}, '${quantity}', '${quantityUnit}')`
       );
       // state linked item and recipe succesfully
       res.status(200).json(

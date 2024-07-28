@@ -14,7 +14,7 @@ const Add_Recipe = () => {
 
     // 
     const [recipeId, setRecipeId] = useState([]);
-    const [stepIdArr, setRecipeIdArr] = useState([]);
+    const [stepIdArr, setStepIdArr] = useState([]);
 
 
     const [stepFormNumber, setStepFormNumber] = useState(1);
@@ -57,6 +57,7 @@ const Add_Recipe = () => {
     // Add new fields (steps and items)
 
     const handleNewRecipeStep = async(e) => {
+        e.preventDefault();
         const newCount = stepFormNumber + 1;
         setStepFormNumber(newCount);
         let newStep = {
@@ -67,6 +68,7 @@ const Add_Recipe = () => {
     };
 
     const handleNewRecipeItem = async(e) => {
+        e.preventDefault();
         let newItem = {
             itemName: "",
             quantity: 1,
@@ -78,20 +80,23 @@ const Add_Recipe = () => {
     // input change handlers
 
     const handleRecipeInfoInputChange = (e) => {
+        e.preventDefault();
         const { name, value } = e.target;
         setRecipeInfo({ ...recipeInfo, [name]: value });
     };
 
     const handleRecipeStepsInputChange = (i,e) => {
+        e.preventDefault();
         let stepData = [...recipeSteps];
         stepData[i][e.target.name] = e.target.value;
         setRecipeSteps(stepData)
     };
 
     const handleRecipeItemsInputChange = (i,e) => {
+        e.preventDefault();
         let itemData = [...recipeItems];
         itemData[i][e.target.name] = e.target.value;
-        setRecipeItems(itemData)
+        setRecipeItems((itemData))
     };
     
     // submission
@@ -128,30 +133,62 @@ const Add_Recipe = () => {
 
             try {
                 //get array of stepIds to later link to recipes
+                //console.log(recipeSteps);
                 var tempStepIdArr = [];
                 for (let i=0; i < recipeSteps.length; i++) {
+                    //console.log(recipeSteps[i]);
                     var stepRes = await fetch("http://localhost:3001/api/add-recipe/step", {
                         method: "POST",
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify(recipeSteps[i]),
-                    });
+                    })
+                    console.log("get here");
                     if (stepRes.ok) {
+                        console.log("past ok");
                         var stepResData = await stepRes.json();
-                        console.log('stepResData:', stepResData[0]);
-                        console.log('stepResDataid:', stepResData[0].stepid);
+                        //console.log('stepResData:', stepResData[0]);
+                        //console.log('stepResDataid:', stepResData[0].stepid);
                         tempStepIdArr.push(stepResData[0].stepid);
-                        console.log('stepid array:', stepIdArr);
+                        console.log('still looping:', tempStepIdArr);
                     } else {
                         const errorJson = await stepRes.json();
                         console.error("Failed to add step:", errorJson.error);
                         alert('Failed to step.')
                     }
-                }
-                setRecipeIdArr(tempStepIdArr);
-                console.log('tempstepidarray:',tempStepIdArr);
+                };
+                console.log('before setting step',tempStepIdArr);
+                setStepIdArr(tempStepIdArr);
+                
             } catch (error) {
                 console.error("Error submitting form:", error);
             }
+            console.log('stepidarray after all:',stepIdArr);
+            console.log('here');
+            try {
+                console.log('in the third try');
+                for (let i=0; i < stepIdArr.length; i++) {
+                    var jsonRecipeStepIds = {
+                        stepId: stepIdArr[i],
+                        recipeId: recipeId
+                    };
+                    console.log('the fk json', jsonRecipeStepIds);
+                    var recipesstepsRes = await fetch("http://localhost:3001/api/add-recipe/recipessteps", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json",},
+                        body: JSON.stringify(jsonRecipeStepIds),
+                    });
+                    if (recipesstepsRes.ok) {
+                        console.log('succesfully added link for: ', jsonRecipeStepIds)
+                    } else {
+                        const errorJson = await recipesstepsRes.json();
+                        console.error("Failed to add step:", errorJson.error);
+                        alert('Failed to add link for recipe and step: ', jsonRecipeStepIds)
+                    }
+                }
+            } catch (error) {
+                console.error("Error submitting form:", error);
+            }
+
     };
 
 
