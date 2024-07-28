@@ -239,6 +239,17 @@ input[type="number"] {
   margin: 10px 0px;
 }
 
+button {
+  width: 150px;
+  border: solid black;
+  padding: 5px 15px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+}
+
 
 select {
   margin: 10px;
