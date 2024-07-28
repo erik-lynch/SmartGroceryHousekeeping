@@ -133,6 +133,7 @@ body {
 }
 
 h1 {
+  width: 250px;
   margin: 20px 0;
   padding-bottom: 8px;
   border-bottom: 1px solid black;
@@ -289,7 +290,5 @@ input[type="button"] {
     justify-content: center;
   }
 
-  input {
-    width: 70%;
-  }
+
 }

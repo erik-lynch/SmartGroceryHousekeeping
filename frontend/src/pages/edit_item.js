@@ -9,6 +9,21 @@ const Edit_Item = () => {
     const [markedSpoiled, setSpoiled] = useState("");
     const [markedFinised, setFinished] = useState("");
 
+    const [spoilButton, setSpoilButton] = useState(true);
+    const [finishButton, setFinishButton] = useState(true);
+
+    function handleSpoiled(e) {
+        e.preventDefault();
+        setSpoilButton(false);
+        setSpoiled("Item has been marked as spoiled.");
+    }
+
+    function handleFinished(e) {
+        e.preventDefault();
+        setFinishButton(false)
+        setFinished("Item has been marked as finished.");
+    }
+
     const routeParams = useParams();
 
     useEffect(() => {
@@ -48,15 +63,7 @@ const Edit_Item = () => {
 
     }, []);
 
-    function handleSpoiled(e) {
-        e.preventDefault();
-        setSpoiled("Item has been marked spoiled.");
-    }
-
-    function handleFinished(e) {
-        e.preventDefault();
-        setFinished("Item has been marked finished.");
-    }
+    
 
 
     if (!itemInfo || !itemTags) {
@@ -91,11 +98,12 @@ const Edit_Item = () => {
                     <label form="fname"><b>Update Quantity:</b></label> <br/>
                     <input type="number" id="item-quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
                     
-                    <input type="button" value="Spoiled" onClick={handleSpoiled}></input>
+                    {spoilButton && <input type="button" value="Spoiled" onClick={handleSpoiled}></input>}
+                    
                     <p>{markedSpoiled}</p>
 
 
-                    <input type="button" value="Finished" onClick={handleFinished}></input>
+                    {finishButton && <input type="button" value="Finished" onClick={handleFinished} ></input>}
                     <p>{markedFinised}</p>
 
                     <br/><br/>
