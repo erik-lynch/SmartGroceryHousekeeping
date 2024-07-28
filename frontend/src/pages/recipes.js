@@ -97,7 +97,7 @@ const Recipes = () => {
             }
             catch (error) {
                 console.log("There was an error:", error);
-                setPageError(error);
+                setPageError(error); 
             }
         }
 
@@ -273,7 +273,7 @@ useEffect(() => {
             <RecipeCarousel content={fridgeSpoilRecipes} />
 
             <h2>
-                Recipes With Minimal Additional Ingredients
+                Recipes - Minimal Additional Ingredients
             </h2>
 
             <RecipeCarousel content={apiInFridge} />

@@ -208,6 +208,7 @@ const Add_Item = () => {
       <h2>Barcode Scanning</h2>
 
       <button
+        className="scan-button"
         onClick={() => {
           setScannedCodes([]);
           setBarcodeData("");
