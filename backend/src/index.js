@@ -1,3 +1,16 @@
+// Multer + Vision API implementation adapted from https://github.com/eliasdouglas/node-google-vision/blob/main/index.js
+const multer = require('multer');
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + '/public/files/');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `admin-${file.fieldname}-${Date.now()}.${ext}`);
+  },
+});
+
+const vision = require('@google-cloud/vision');
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -5,6 +18,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const app = express();
 const https = require('https');
+const path = require('path');
 
 const pool = new Pool({
   max: 5,
@@ -26,6 +40,18 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   next();
 })
+
+const upload = multer({
+  storage: multerStorage,
+}); 
+
+app.use(express.json());
+app.use(express.static('express'));
+app.use( bodyParser.json() );
+app.use( bodyParser.urlencoded({
+
+extended:true
+}));
 
 app.use(bodyParser.json());
 
@@ -780,6 +806,52 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
     console.error(err);
     res.status(500).send('Server error');
   }
+});
+
+
+//----------------------------------------------------------------------------
+//                Google Cloud Vision API
+//----------------------------------------------------------------------------
+
+const CREDENTIALS = JSON.parse(JSON.stringify(
+  {
+    "type": "service_account",
+    "project_id": "clever-guard-429915-v9",
+    "private_key_id": process.env.VISION_API_KEY_ID,
+    "private_key": process.env.VISION_API_KEY,
+    "client_email": "imagerecognition@clever-guard-429915-v9.iam.gserviceaccount.com",
+    "client_id": "102964667298987474008",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/imagerecognition%40clever-guard-429915-v9.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+));
+
+const CONFIG = {
+  credentials: {
+      private_key: CREDENTIALS.private_key,
+      client_email: CREDENTIALS.client_email
+  }
+};
+
+const client = new vision.ImageAnnotatorClient(CONFIG);
+
+app.post("/detectionObject", upload.single('imgfile'), function(request, response){
+
+  console.log(request.file.filename);
+
+  const detectObject = async (file_path) => {
+
+      let [result] = await client.objectLocalization(file_path);
+      const objects = result.localizedObjectAnnotations;
+      response.send("<p>"+objects[0].name+"</p>")
+      
+  };
+
+  detectObject(path.join(__dirname+'/public/files/' + request.file.filename));
+  
 });
 
 
