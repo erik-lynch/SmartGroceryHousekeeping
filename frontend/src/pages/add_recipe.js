@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 
 const Add_Recipe = () => {
 
-    
     let { userId } = useParams();
 
     // for page loading
@@ -12,9 +11,14 @@ const Add_Recipe = () => {
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
 
-    // 
+    
     const [recipeId, setRecipeId] = useState([]);
     const [stepIdArr, setStepIdArr] = useState([]);
+
+    const [recipeAdded, setRecipeAdded]= useState(false);
+    const [stepsAdded, setStepsAdded]= useState(false);
+    const [rsAdded, setRsAdded]= useState(false);
+    const [irAdded, setIrAdded]= useState(false);
 
 
     const [stepFormNumber, setStepFormNumber] = useState(1);
@@ -30,8 +34,8 @@ const Add_Recipe = () => {
     }]);
 
     const [recipeItems, setRecipeItems] = useState([{
-        itemName: "",
-        quantity: 1,
+        itemId: 1,
+        quantity: '1',
         quantityUnit: ""
     }]);
 
@@ -70,8 +74,8 @@ const Add_Recipe = () => {
     const handleNewRecipeItem = async(e) => {
         e.preventDefault();
         let newItem = {
-            itemName: "",
-            quantity: 1,
+            itemId: 1,
+            quantity: '1',
             quantityUnit: ""
         };
         setRecipeItems([...recipeItems, newItem]);
@@ -107,7 +111,7 @@ const Add_Recipe = () => {
         
         // Add recipe to recipe table and get recipeId
         try {
-            console.log(recipeInfo)
+            //console.log(recipeInfo)
             const recipeRes = await fetch("http://localhost:3001/api/add-recipe/recipe", {
                 method: "POST",
                 headers: {"Content-Type": "application/json",},
@@ -118,10 +122,7 @@ const Add_Recipe = () => {
                 console.log('recipeResData:', recipeResData[0]);
                 console.log('recipeResDataid:', recipeResData[0].recipeid);
                 setRecipeId(recipeResData[0].recipeid);
-                /*console.log("Recipe added successfully");
-                if (recipeInfoToSend.recipeInfo.recipeName) {
-                    alert(`Recipe added sucessfully ${recipeInfoToSend.recipeInfo.recipeName}`);
-                }*/
+                setRecipeAdded(true);
             } else {
                 const errorJson = await recipeRes.json();
                 console.error("Failed to add recipe:", errorJson.error);
@@ -130,7 +131,7 @@ const Add_Recipe = () => {
             } catch (error) {
             console.error("Error submitting form:", error);
             }
-
+            
             try {
                 //get array of stepIds to later link to recipes
                 //console.log(recipeSteps);
@@ -142,36 +143,32 @@ const Add_Recipe = () => {
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify(recipeSteps[i]),
                     })
-                    console.log("get here");
+
                     if (stepRes.ok) {
-                        console.log("past ok");
                         var stepResData = await stepRes.json();
                         //console.log('stepResData:', stepResData[0]);
                         //console.log('stepResDataid:', stepResData[0].stepid);
                         tempStepIdArr.push(stepResData[0].stepid);
-                        console.log('still looping:', tempStepIdArr);
                     } else {
                         const errorJson = await stepRes.json();
                         console.error("Failed to add step:", errorJson.error);
                         alert('Failed to step.')
                     }
                 };
-                console.log('before setting step',tempStepIdArr);
                 setStepIdArr(tempStepIdArr);
-                
+                setStepsAdded(true);
             } catch (error) {
                 console.error("Error submitting form:", error);
             }
-            console.log('stepidarray after all:',stepIdArr);
-            console.log('here');
+            
             try {
-                console.log('in the third try');
+                if (recipeAdded && stepsAdded) {
                 for (let i=0; i < stepIdArr.length; i++) {
                     var jsonRecipeStepIds = {
                         stepId: stepIdArr[i],
                         recipeId: recipeId
                     };
-                    console.log('the fk json', jsonRecipeStepIds);
+
                     var recipesstepsRes = await fetch("http://localhost:3001/api/add-recipe/recipessteps", {
                         method: "POST",
                         headers: {"Content-Type": "application/json",},
@@ -181,12 +178,52 @@ const Add_Recipe = () => {
                         console.log('succesfully added link for: ', jsonRecipeStepIds)
                     } else {
                         const errorJson = await recipesstepsRes.json();
-                        console.error("Failed to add step:", errorJson.error);
+                        console.error("Failed to add recipesstep link:", errorJson.error);
                         alert('Failed to add link for recipe and step: ', jsonRecipeStepIds)
                     }
                 }
+                setRsAdded(true);
+            }
             } catch (error) {
                 console.error("Error submitting form:", error);
+            }
+            
+            
+            try {
+                if (recipeAdded) {
+                console.log(recipeItems);
+                console.log(recipeId);
+                for (let i=0; i < recipeItems.length; i++) {
+                    
+                    var jsonItemsRecipesInfo = {
+                        itemId: recipeItems[i].itemId,
+                        recipeId: recipeId,
+                        quantity: recipeItems[i].quantity,
+                        quantityUnit: recipeItems[i].quantityUnit
+                    };
+
+                    var itemsRecipesRes = await fetch("http://localhost:3001/api/add-recipe/itemsrecipes", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json",},
+                        body: JSON.stringify(jsonItemsRecipesInfo),
+                    });
+                    if (itemsRecipesRes.ok) {
+                        console.log('succesfully added link for: ', jsonItemsRecipesInfo)
+                    } else {
+                        const errorJson = await itemsRecipesRes.json();
+                        console.error("Failed to add itemsrecipess link:", errorJson.error);
+                        alert('Failed to add link for recipe and item: ', jsonItemsRecipesInfo)
+                    }
+                }
+                setIrAdded(true);
+            }
+            } catch (error) {
+                console.error("Error submitting form:", error);
+            }
+        
+
+            if (recipeAdded || stepsAdded || rsAdded || irAdded) {
+                alert('Recipe Added succesfully');
             }
 
     };
@@ -228,7 +265,7 @@ const Add_Recipe = () => {
 
                                 <div class = "grid-recipe-item">
                                     <label htmlFor="itemName">Name: </label><br/>
-                                        <select  class = "no-style-select" id="itemName" name="itemName" size="2" value={items.itemName} onChange={e => handleRecipeItemsInputChange(i,e)}>
+                                        <select  class = "no-style-select" id="itemName" name="itemName" size="2" value={items.itemid} onChange={e => handleRecipeItemsInputChange(i,e)}>
                                             {allUserIdItems.map((newItems, i) => {
                                                 return (
                                                     <option key={i} value={newItems.itemid}>{newItems.itemname}</option>

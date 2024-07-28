@@ -399,7 +399,6 @@ app.post('/api/add-recipe/step', async (req, res) => {
         );
         //return step id
         res.status(200).json(insertStepRes.rows);
-        console.log('sent 200');
       }
     catch (error) {
       console.error('Error adding step:', error); 
@@ -431,9 +430,13 @@ catch (error) {
 
 app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   const recipeId = (req.body.recipeId);
-  const itemId = (req.body.itemName);
+  const itemId = (req.body.itemId);
   const quantity = (req.body.quantity);
   const quantityUnit = (req.body.quantityUnit);
+  //console.log('recipeid:', recipeId);
+  //console.log('itemid:',itemId);
+  //console.log('quantity:',quantity);
+  //console.log('quantityunit:',quantityUnit);
 
   if (recipeId == null || recipeId <=0 ) {
     res.status(400).json({ message: 'Error with recipeId'});
@@ -451,7 +454,7 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
     try {
       // Insert new itemsrecipes
       const insertItemsRecipesRes = await pool.query(
-        `INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit)
+        `INSERT INTO ItemsRecipes (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit)
         VALUES (${recipeId}, ${itemId}, '${quantity}', '${quantityUnit}')`
       );
       // state linked item and recipe succesfully
