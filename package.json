@@ -25,6 +25,8 @@
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.24.1",
     "react-scripts": "^5.0.1",
+    "scandit-web-datacapture-barcode": "^6.23.4",
+    "scandit-web-datacapture-core": "^6.23.4",
     "styled-components": "^6.1.11",
     "web-vitals": "^4.2.1"
   },

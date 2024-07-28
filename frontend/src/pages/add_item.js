@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaUpload, FaCamera } from "react-icons/fa";
-import Quagga from "quagga";
-import { debounce } from "lodash";
+import * as SDCCore from "scandit-web-datacapture-core";
+import * as SDCBarcode from "scandit-web-datacapture-barcode";
+import './Add_item.css'; 
 
 const Add_Item = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
   const [scannedCodes, setScannedCodes] = useState([]);
-  const videoRef = useRef(null);
-  const overlayRef = useRef(null);
+  const [productDetailsList, setProductDetailsList] = useState([]);
+  const [itemScannedMessage, setItemScannedMessage] = useState(false);
+  const scannerRef = useRef(null);
   const [formData, setFormData] = useState({
     iname: "",
     unit: "count",
@@ -17,128 +18,83 @@ const Add_Item = () => {
     itemDescription: "",
   });
 
-  const handleDetected = debounce((data) => {
-    if (data && data.codeResult && data.codeResult.code) {
-      const code = data.codeResult.code;
-      console.log("Detected code:", code);
-      setScannedCodes((prevCodes) => [...prevCodes, code]);
-    }
-  }, 300);
+  const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
 
   useEffect(() => {
-    if (isScanning && videoRef.current) {
-      const videoElement = videoRef.current;
+    let context, barcodeCapture, camera;
 
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then((stream) => {
-          videoElement.srcObject = stream;
-          videoElement.play();
-        })
-        .catch((err) => {
-          console.error("Error accessing camera:", err);
-        });
+    const initializeScanner = async () => {
+      if (isScanning) {
+        try {
+          await SDCCore.configure({
+            licenseKey,
+            libraryLocation: "https://cdn.jsdelivr.net/npm/scandit-web-datacapture-barcode@6.x/build/engine/",
+            moduleLoaders: [SDCBarcode.barcodeCaptureLoader()],
+          });
 
-      Quagga.init({
-        inputStream: {
-          type: "LiveStream",
-          constraints: {
-            facingMode: "environment",
-            width: 640,
-            height: 480,
-          },
-          target: videoElement,
-        },
-        locator: {
-          patchSize: "large",
-          halfSample: false,
-        },
-        decoder: {
-          readers: [
-            "code_128_reader",
-            "ean_reader",
-            "ean_8_reader",
-            "code_39_reader",
-            "upc_reader",
-          ],
-          debug: {
-            drawBoundingBox: true,
-            drawScanline: true,
-            showPattern: true,
-          },
-        },
-        locate: true,
-        numOfWorkers: navigator.hardwareConcurrency,
-        frequency: 20,
-      }, (err) => {
-        if (err) {
-          console.error("Quagga init error:", err);
-          return;
-        }
-        console.log("Quagga initialized");
-        Quagga.start();
-      });
+          context = await SDCCore.DataCaptureContext.create(licenseKey);
+          const settings = new SDCBarcode.BarcodeCaptureSettings();
 
-      Quagga.onProcessed((result) => {
-        const drawingCtx = overlayRef.current.getContext("2d");
-        const drawingCanvas = overlayRef.current;
+          const allSymbologies = Object.values(SDCBarcode.Symbology);
+          settings.enableSymbologies(allSymbologies);
 
-        if (result) {
-          drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-          if (result.boxes) {
-            result.boxes
-              .filter((box) => box !== result.box)
-              .forEach((box) => {
-                Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
-                  color: "green",
-                  lineWidth: 2,
-                });
+          settings.codeDuplicateFilter = 5000;
+
+          barcodeCapture = await SDCBarcode.BarcodeCapture.forContext(context, settings);
+
+          barcodeCapture.addListener({
+            didScan: async (_, session) => {
+              const recognizedBarcodes = session.newlyRecognizedBarcodes;
+              recognizedBarcodes.forEach(async barcode => {
+                if (!scannedCodes.includes(barcode.data)) {
+                  console.log("Scanned barcode:", barcode.data);
+                  setScannedCodes(prevCodes => [...prevCodes, barcode.data]);
+                  const itemDetails = await fetchItemDetails(barcode.data);
+                  if (itemDetails) {
+                    setProductDetailsList(prevDetails => [...prevDetails, itemDetails]);
+                    setFormData({
+                      ...formData,
+                      iname: itemDetails.name,
+                      unit: "count",
+                      quantity: 1,
+                      ripeRating: "",
+                      itemDescription: `${itemDetails.brand} - ${itemDetails.categories} - ${itemDetails.description}`,
+                    });
+                    setItemScannedMessage(true);
+                    setTimeout(() => setItemScannedMessage(false), 3000);
+                  }
+                }
               });
-          }
+            },
+          });
 
-          if (result.box) {
-            Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, {
-              color: "#00F",
-              lineWidth: 2,
-            });
-          }
+          camera = SDCCore.Camera.default;
+          await camera.applySettings(SDCBarcode.BarcodeCapture.recommendedCameraSettings);
+          await context.setFrameSource(camera);
 
-          if (result.codeResult && result.codeResult.code) {
-            Quagga.ImageDebug.drawPath(result.line, { x: "x", y: "y" }, drawingCtx, {
-              color: "red",
-              lineWidth: 3,
-            });
-            console.log("Barcode detected: ", result.codeResult.code);
-          }
+          const view = await SDCCore.DataCaptureView.forContext(context);
+          view.connectToElement(scannerRef.current);
+          await SDCBarcode.BarcodeCaptureOverlay.withBarcodeCaptureForView(barcodeCapture, view);
+
+          barcodeCapture.enabled = true;
+          await camera.switchToDesiredState(SDCCore.FrameSourceState.On);
+        } catch (error) {
+          console.error("Error initializing scanner:", error);
         }
-      });
-
-      Quagga.onDetected(handleDetected);
-
-      return () => {
-        if (videoElement && videoElement.srcObject) {
-          videoElement.srcObject.getTracks().forEach(track => track.stop());
-        }
-        Quagga.stop();
-        Quagga.offDetected(handleDetected);
-      };
-    }
-  }, [isScanning, handleDetected]);
-
-  useEffect(() => {
-    if (scannedCodes.length > 0) {
-      const counts = {};
-      scannedCodes.forEach((code) => {
-        counts[code] = (counts[code] || 0) + 1;
-      });
-
-      const mostFrequentCode = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
-      if (counts[mostFrequentCode] > 2) {
-        console.log("Most frequent code:", mostFrequentCode);
-        setBarcodeData(mostFrequentCode);
-        setIsScanning(false);
       }
-    }
-  }, [scannedCodes]);
+    };
+
+    initializeScanner();
+
+    return () => {
+      if (camera) {
+        camera.switchToDesiredState(SDCCore.FrameSourceState.Off);
+      }
+      if (barcodeCapture) {
+        barcodeCapture.enabled = false;
+      }
+    };
+  }, [isScanning, licenseKey]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -172,71 +128,170 @@ const Add_Item = () => {
     }
   };
 
+  const handleAddItem = async (product) => {
+    const dataToSend = {
+      iname: product.name,
+      itemDescription: product.itemDescription,
+      unit: product.unit,
+      quantity: product.quantity,
+      barcode: product.barcode,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/api/add-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (response.ok) {
+        console.log("Item added successfully");
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to add item:", errorText);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  const fetchItemDetails = async (barcode) => {
+    try {
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 1) {
+          return {
+            imageUrl: data.product.image_front_small_url || "No Image",
+            name: data.product.product_name || "Unknown Product",
+            brand: data.product.brands || "Unknown Brand",
+            categories: data.product.categories_tags ? data.product.categories_tags.join(", ") : "Unknown Category",
+            description: data.product.generic_name || "No description available",
+            barcode: barcode,
+          };
+        } else {
+          console.error("Product not found");
+          return null;
+        }
+      } else {
+        console.error("Failed to fetch item details:", response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching item details:", error);
+      return null;
+    }
+  };
+
   return (
     <div className="core">
-      <h2>Image Input</h2>
-      <form>
-        <input type="file" accept="image/*" style={{ display: "none" }} id="button-upload" />
-        <label htmlFor="button-upload">
-          <FaUpload className="image-icon"/>
-        </label>
-        <input accept="image/*" id="icon-button-file" type="file" capture="user" style={{ display: "none" }} />
-        <label htmlFor="icon-button-file">
-          <FaCamera className="image-icon"/>
-        </label>
-      </form>
-      <h2>Manual Input</h2>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="iname">Item name:</label> <br />
-        <input type="text" id="iname" name="iname" value={formData.iname} onChange={handleInputChange} /> <br />
-        <label htmlFor="itemDescription">Item Description:</label> <br />
-        <input type="text" id="itemDescription" name="itemDescription" value={formData.itemDescription} onChange={handleInputChange} /> <br />
-        <label htmlFor="unit">Item Measurement Unit:</label> <br />
-        <select id="unit" name="unit" value={formData.unit} onChange={handleInputChange}>
-          <option value="count">Count</option>
-          <option value="gallons">Gallons</option>
-          <option value="grams">Grams</option>
-        </select>
-        <br />
-        <label htmlFor="quantity">Quantity of Item:</label> <br />
-        <input type="number" id="quantity" name="quantity" value={formData.quantity} onChange={handleInputChange} /> <br />
-        <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label> <br />
-        <input type="text" id="ripeRating" name="ripeRating" value={formData.ripeRating} onChange={handleInputChange} /> <br />
-        <input type="submit" value="Submit" />
-      </form>
+      <div className="manual-entry">
+        <h2>Manual Input</h2>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="iname">Item name:</label>
+          <input
+            type="text"
+            id="iname"
+            name="iname"
+            value={formData.iname}
+            onChange={handleInputChange}
+          />
+          <label htmlFor="itemDescription">Item Description:</label>
+          <input
+            type="text"
+            id="itemDescription"
+            name="itemDescription"
+            value={formData.itemDescription}
+            onChange={handleInputChange}
+          />
+          <label htmlFor="unit">Item Measurement Unit:</label>
+          <select
+            id="unit"
+            name="unit"
+            value={formData.unit}
+            onChange={handleInputChange}
+          >
+            <option value="count">Count</option>
+            <option value="gallons">Gallons</option>
+            <option value="grams">Grams</option>
+          </select>
+          <label htmlFor="quantity">Quantity of Item:</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleInputChange}
+          />
+          <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
+          <input
+            type="text"
+            id="ripeRating"
+            name="ripeRating"
+            value={formData.ripeRating}
+            onChange={handleInputChange}
+          />
+          <input type="submit" className="button submit-button" value="Submit" />
+        </form>
+      </div>
 
-      <h2>Barcode Scanning</h2>
+      <div className="barcode-scanning">
+        <h2>Barcode Scanning</h2>
+        <button
+          className="button scan-button"
+          onClick={() => {
+            setScannedCodes([]);
+            setIsScanning(!isScanning);
+          }}
+        >
+          {isScanning ? 'Stop Scanning' : 'Start Scanning'}
+        </button>
+        {isScanning && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="close" onClick={() => setIsScanning(false)}>&times;</span>
+              <div ref={scannerRef} className="scanner-view" />
+              {itemScannedMessage && <div className="item-scanned-message">Item Scanned</div>}
+            </div>
+          </div>
+        )}
+      </div>
 
-      <button
-        onClick={() => {
-          setScannedCodes([]);
-          setBarcodeData("");
-          setIsScanning(!isScanning);
-        }}
-      >
-        {isScanning ? "Stop Scanning" : "Start Scanning"}
-      </button>
-
-
-      {isScanning && (
-
-        <div style={{ position: "relative", width: '640px', height: '480px', margin: '10% 0'}}>
-
-          <video id="scanner" ref={videoRef} style={{ width: '100%', height: '100%' }} autoPlay />
-
-          <canvas ref={overlayRef} className="drawingBuffer" style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 1,
-          }} />
-
+      {productDetailsList.length > 0 && (
+        <div className="product-details">
+          <h3>Scanned Product Details</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Barcode</th>
+                <th>Description</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productDetailsList.map((product, index) => (
+                <tr key={index}>
+                  <td><img src={product.imageUrl} alt="Product" /></td>
+                  <td>{product.name}</td>
+                  <td>{formData.quantity}</td>
+                  <td>{product.barcode}</td>
+                  <td>{formData.itemDescription}</td>
+                  <td>
+                    <button className="button add-button" onClick={() => handleAddItem(product)}>
+                      Add
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-
-      {barcodeData && <p>Scanned Barcode: {barcodeData}</p>}
     </div>
   );
 };
