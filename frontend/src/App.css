@@ -205,24 +205,21 @@ th {
 }
 
 input {
-  width: 100%;
+  width: 200px;
   max-width: 500px;
   border: solid black;
   padding: 5px 15px;
-}
-
-
-
-select {
-  margin: 10px;
-  border-radius: 50px;
-  height: 25px;
 }
 
 input:not([type="submit"]) {
   margin: 10px 10px 10px 0;
   border-radius: 50px;
   height: 25px;
+}
+
+input[type=button] {
+  height: fit-content;
+  width: 150px;
 }
 
 input[type="submit"] {
@@ -242,6 +239,13 @@ input[type="number"] {
   margin: 10px 0px;
 }
 
+
+select {
+  margin: 10px;
+  border-radius: 50px;
+  height: 25px;
+}
+
 /* Add Item screen */
 .image-icon {
   height: 30px;
@@ -249,17 +253,15 @@ input[type="number"] {
   padding-right: 15px;
 }
 
-button {
+input[type="button"] {
   color: white;
   background-color: black;
-  border: none;
-  display: inline-block;
+  display: grid;
   text-align: center;
-  position: absolute;
-  padding: 15px 30px;
+  padding: 15px;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: medium;
 }
 
 

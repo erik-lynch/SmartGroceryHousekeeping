@@ -57,7 +57,7 @@ class ItemCarousel extends Component {
           {this.props.content.map((e) => (
 
             <Link to={{
-              pathname: `/edit_item/${e.userId}/${e.itemId}`,
+              pathname: `/edit_item/${e.userId}/${e.itemId}/${e.usersItemsId}`,
             }}>
               <div className="CardContent">
                       

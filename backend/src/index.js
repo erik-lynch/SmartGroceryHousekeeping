@@ -104,6 +104,7 @@ app.post('/api/add-item', async (req, res) => {
 //                Edit Item Page requests
 //----------------------------------------------------------------------------
 
+// get item info to display
 app.get('/useritem/:userId/:itemId', async (req, res) => {
 
   try{
@@ -112,6 +113,7 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
         users.userid,
         items.itemid,
         items.itemname,
+        usersitems.usersitemsid,
         usersitems.quantitypurchased,
         usersitems.quantityremaining,
         usersitems.dateadded,
@@ -142,9 +144,10 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
 
 });
 
+// get item tags to display
 app.get('/useritem/:itemId', async (req, res) => {
 
-  try{
+  try {
     const getItemTags = await pool.query(
       `SELECT
 	      tags.tagname
@@ -163,6 +166,27 @@ app.get('/useritem/:itemId', async (req, res) => {
 
 });
 
+// update item quantity
+
+// update item as spoiled 
+app.get('/useritem/:usersItemsId', async (req, res) => {
+
+  try {
+    const markSpoiled = await pool.query(
+      `UPDATE usersitems
+      SET spoiled = true
+      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
+
+    res.json(markSpoiled.rows);
+    
+  } catch (err){
+      console.error(err);
+      res.status(500).send('Server error')
+  }
+
+});
+
+// update item as finished
 
 //----------------------------------------------------------------------------
 //                Dashboard Page requests
@@ -177,6 +201,7 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
         users.userid as "userId",
         items.itemid as "itemId",
         items.itemname as "itemName",
+        usersitems.usersitemsid as "usersItemsId",
         usersitems.quantityremaining as "itemQuantity",
         TO_CHAR(usersitems.spoilagedate, 'mm/dd') as formatspoilagedate,
         current_date as "today",
@@ -211,6 +236,7 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
         users.userid as "userId",
         items.itemid as "itemId",
         items.itemname as "itemName",
+        usersitems.usersitemsid as "usersItemsId",
         usersitems.quantityremaining as "itemQuantity",
         current_date as "today",
         TO_CHAR(usersitems.dateadded, 'mm/dd') as formatdateadded,
@@ -244,6 +270,7 @@ app.get('/dashboard/:userId/allitems', async(req, res) => {
         users.userid as "userId",
         items.itemid as "itemId",
         items.itemname as "itemName", 
+        usersitems.usersitemsid as "usersItemsId",
         usersitems.quantityremaining as "itemQuantity", 
         images.imagefilepath as "imagePath", 
         units.unitabbreviation as "itemUnit" 

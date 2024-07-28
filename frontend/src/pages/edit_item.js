@@ -1,12 +1,15 @@
 import {React, useState, useEffect} from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Edit_Item = () => {
-
+    
     const [itemInfo, setItemInfo] = useState(null);
     const [itemTags, setItemTags] = useState(null);
+
+    const [markedSpoiled, setSpoiled] = useState("");
+    const [markedFinised, setFinished] = useState("");
+
     const routeParams = useParams();
-    console.log(routeParams)
 
     useEffect(() => {
 
@@ -39,13 +42,22 @@ const Edit_Item = () => {
             }
 
         };
-        
+
         fetchTags();
         fetchItemInfo();
 
-
-
     }, []);
+
+    function handleSpoiled(e) {
+        e.preventDefault();
+        setSpoiled("Item has been marked spoiled.");
+    }
+
+    function handleFinished(e) {
+        e.preventDefault();
+        setFinished("Item has been marked finished.");
+    }
+
 
     if (!itemInfo || !itemTags) {
 
@@ -78,8 +90,13 @@ const Edit_Item = () => {
 
                     <label form="fname"><b>Update Quantity:</b></label> <br/>
                     <input type="number" id="item-quantity" name="quantity" defaultValue={itemInfo[0].quantityremaining} min="0" max={itemInfo[0].quantityremaining}/> <br/>
-                    <input type="submit" value="Spoiled"></input>
-                    <input type="submit" value="Finished"></input>
+                    
+                    <input type="button" value="Spoiled" onClick={handleSpoiled}></input>
+                    <p>{markedSpoiled}</p>
+
+
+                    <input type="button" value="Finished" onClick={handleFinished}></input>
+                    <p>{markedFinised}</p>
 
                     <br/><br/>
                     <a className="returnDashboard" href="/">Return to Dashboard</a>
