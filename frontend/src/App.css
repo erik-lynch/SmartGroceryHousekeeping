@@ -153,19 +153,29 @@ h3 {
 
 /* Tables */
 
+.table-overflow {
+  overflow-x: scroll;
+}
+
 table {
   width: 100%;
   border: 1px solid black;
   border-collapse: collapse;
+  overflow-x: scroll;
 }
 
 th, td {
-  padding: 5px 10px 5px 10px;
+  padding: 10px;
   text-align: left;
 }
 
 th {
-  padding: 20px 20px 20px 10px;
+  font-size: 14px;
+}
+
+td {
+  font-weight: normal;
+  font-size: 12px;
 }
 
 
@@ -206,8 +216,7 @@ th {
 }
 
 input {
-  width: 200px;
-  max-width: 500px;
+  width: 150px;
   border: solid black;
   padding: 5px 15px;
 }
@@ -222,13 +231,15 @@ input {
   display:grid;
   grid-template-columns: 150px 250px;
   padding: 5px;
+  width: 90%;
 }
 
 .grid-recipe > div {
   text-align: left;
-  padding: 20px 0;
-  padding-left: 10px;
-  padding-right: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px 0px 20px 20px;
+  width: 90%;
   background-color:#FFE7C3;
 }
 
@@ -239,15 +250,22 @@ input {
 }
 .grid-recipe-quantity {
   text-align: left;
+  float: left;
   grid-column: 1 / 2 / 1 / 2;
   border-radius: 0px 20px 20px 0px;
 }
 .grid-recipe-measurement {
   text-align: left;
+  float: left;
   grid-column: 2 / 2 / 2 / 2;
   border-radius: 0px 20px 20px 0px;
 }
 
+textarea {
+  max-width: 100%;
+  border: solid 1px;
+  border-radius: 5px;
+}
 
 input:not([type="submit"]) {
   margin: 10px 10px 10px 0;
@@ -257,7 +275,7 @@ input:not([type="submit"]) {
 
 input[type=button] {
   height: fit-content;
-  width: 150px;
+  width: 200px;
 }
 
 input[type="submit"] {
@@ -290,12 +308,30 @@ input[type="number"] {
 
 button {
   align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.recipe-button {
+  width: 200px;
+  border: solid black;
+  padding: 5px 15px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  font-size: 16px;
 }
 
 select {
-  margin: 10px;
+  margin: 10px 10px 10px 0;
   border-radius: 50px;
-  height: 25px;
+  height: 45px;
+  width: 150px;
+  border: black solid;
+  padding: 5px 15px;
 }
 
 /* Add Item screen */

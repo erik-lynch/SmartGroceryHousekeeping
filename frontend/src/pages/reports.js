@@ -68,6 +68,8 @@ const Reports = () => {
             </h2>
 
             <br></br>
+
+            <div className="table-overflow">
             <table>
                 <tr class="header-row">
                     <th>Item</th>
@@ -83,17 +85,19 @@ const Reports = () => {
                 {freqSpoiled.map((data,key) => {
                     return (
                 <tr key={key}>
-                    <th>{data.item}</th>
-                    <th>{data.dateadded}</th>
-                    <th>{data.spoilagedate}</th>
-                    <th>{data.lastpurchasedtotal}</th>
-                    <th>{data.currentquantityconsumed}</th>
-                    <th>{data.currentquantityremaining}</th>
-                    <th>{data.timesbought}</th>
-                    <th>{data.spoiledpercent}</th>   
+                    <td>{data.item}</td>
+                    <td>{data.dateadded}</td>
+                    <td>{data.spoilagedate}</td>
+                    <td>{data.lastpurchasedtotal}</td>
+                    <td>{data.currentquantityconsumed}</td>
+                    <td>{data.currentquantityremaining}</td>
+                    <td>{data.timesbought}</td>
+                    <td>{data.spoiledpercent}</td>   
                 </tr>
                     )})}
             </table>
+            </div>
+
             <br></br>
             <br></br>
             <br></br>
@@ -103,6 +107,8 @@ const Reports = () => {
             </h2>
 
             <br></br>
+
+            <div className="table-overflow">
             <table>
                 <tr class="header-row">
                     <th>Item</th>
@@ -119,19 +125,21 @@ const Reports = () => {
                 {freqUsed.map((data,key) => {
                     return (
                 <tr key={key}>
-                    <th>{data.item}</th>
-                    <th>{data.dateadded}</th>
-                    <th>{data.spoilagedate}</th>
-                    <th>{data.lastpurchasedtotal}</th>
-                    <th>{data.currentquantityconsumed}</th>
-                    <th>{data.currentquantityremaining}</th>
-                    <th>{data.infridge}</th>
-                    <th>{data.timesbought}</th>
-                    <th>{data.finishedpercent}</th>   
+                    <td>{data.item}</td>
+                    <td>{data.dateadded}</td>
+                    <td>{data.spoilagedate}</td>
+                    <td>{data.lastpurchasedtotal}</td>
+                    <td>{data.currentquantityconsumed}</td>
+                    <td>{data.currentquantityremaining}</td>
+                    <td>{data.infridge}</td>
+                    <td>{data.timesbought}</td>
+                    <td>{data.finishedpercent}</td>   
                 </tr>
                     )})}
                 
             </table>
+            </div>
+            
         </div>
     );
 };
