@@ -132,6 +132,8 @@ body {
   align-content: top;
 }
 
+/* h1, h2, h3 */
+
 h1 {
   width: 250px;
   margin: 20px 0;
@@ -178,12 +180,11 @@ td {
   font-size: 12px;
 }
 
-
 .header-row {
   background-color: lightgray;
 }
 
-/* edit image page */
+/* edit item page */
 
 .edit-img {
   border-radius: 30px;
@@ -221,7 +222,6 @@ input {
   padding: 5px 15px;
 }
 
-
 input.edit-button {
   color: white;
   background-color: black;
@@ -229,7 +229,7 @@ input.edit-button {
   font-size: 16;
 }
 
-/* recipe styles */
+/* recipe page */
 
 .no-style-select{
   margin: 10px;
@@ -338,6 +338,12 @@ select {
 }
 
 /* Add Item screen */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 .additem-core {
   display: flex;
@@ -609,8 +615,6 @@ color: black;
 img {
 border-radius: 8px 8px 0px 0px;
 }
-
-
 
 /* phone, small display specific values */
 
