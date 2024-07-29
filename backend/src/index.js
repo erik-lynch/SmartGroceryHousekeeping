@@ -464,7 +464,6 @@ app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(r
   }
 });
 
-
 // spoonacular api - fetchApiInFridgeRecipes
 app.get('/api/ingredients/:ingredients/spoon/infridge', async(req,res) => {
   try {
@@ -477,8 +476,6 @@ app.get('/api/ingredients/:ingredients/spoon/infridge', async(req,res) => {
     res.status(500).send('Server error');
   }
     });
-
-
 
 // spoonacular api - fetchApiSpoilSoonRecipes
 //https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOONACULAR_API_KEY}&query=recipe&includeIngredients=${spoilIngredients}&instructionsRequired=true&fillIngredients=true&addRecipeInformation=true&addRecipeInstructions=true&number=8&sort=max-used-ingredients

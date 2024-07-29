@@ -77,6 +77,8 @@ const Edit_Item = () => {
 
             <div className="core">
 
+                <div className="edit-image-content">
+
                 <img className="edit-img"
                     src={itemInfo[0].imagefilepath}
                     alt=""
@@ -111,6 +113,7 @@ const Edit_Item = () => {
                     </div>
 
                 
+            </div>
             </div>
 
         );

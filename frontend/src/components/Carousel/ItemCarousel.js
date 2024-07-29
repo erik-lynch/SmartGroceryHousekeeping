@@ -62,6 +62,7 @@ class ItemCarousel extends Component {
               <div className="CardContent">
                       
                 <img 
+                  className="carousel-image"
                   src={e.imagePath}
                   style={{ width: "100%"}}
                   alt={e.altText} 

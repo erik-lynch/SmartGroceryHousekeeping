@@ -112,9 +112,8 @@ body {
 .core {
   padding: 20px;
   font-family: 'Roboto';
-  min-height: 130vh;
+  min-height: 100vh;
   flex-wrap: wrap;
-  align-content: top;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -187,6 +186,11 @@ td {
 
 /* Edit Item Page */
 
+.edit-image-content {
+  height: 50vh;
+  align-items: center;
+}
+
 .edit-img {
   border-radius: 30px;
   float: inline-start;
@@ -201,6 +205,7 @@ td {
   float: inline-start;
   margin: 30px;
   max-width: 100%;
+  align-content: center;
 }
 
 .tag {
@@ -367,7 +372,6 @@ select {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 700px;
 }
 
 .manual-entry h2 {
@@ -417,7 +421,6 @@ select {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
   position: relative; 
-  max-width: 700px;
 }
 
 .barcode-scanning h2 {
@@ -574,14 +577,16 @@ select {
   margin: 10px;
   filter: drop-shadow(10px 10px 0px black);
   border-radius: 8px;
+  max-width: 250px;
 }
 
 .carousel-container {
-background-color: white;
+  background-color: white;
+  margin-bottom: 60px;
 }
 
 .carousel-slider{
-padding: 10px 0px 50px 0px;
+  padding: 10px 0px 50px 0px;
 }
 
 .item-name {
@@ -621,8 +626,10 @@ text-decoration: none;
 color: black;
 }
 
-img {
-border-radius: 8px 8px 0px 0px;
+.carousel-image {
+  border-radius: 8px 8px 0px 0px;
+  max-height: 250px;
+  max-width: 250px;
 }
 
 /* phone, small display specific values */
