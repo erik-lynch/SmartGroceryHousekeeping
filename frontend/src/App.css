@@ -219,11 +219,12 @@ td {
   margin: 10px;
   border-radius: 0px;
   height: 100px;
+  inline-size: 150px;
 }
 
 .grid-recipe {
   display:grid;
-  grid-template-columns: 150px 250px;
+  grid-template-columns: 200px 250px;
   padding: 5px;
   width: 90%;
 }

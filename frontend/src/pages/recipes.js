@@ -2,10 +2,6 @@ import React from "react";
 import RecipeCarousel from "../components/Carousel/RecipeCarousel";
 import{ useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-//import recipesTestData from "../components/Carousel/recipes-test-data";
-import spoon_api_test_data from "../components/Carousel/spoon_api_test_data";
-
-
 
 function string_items(obj) {
     var string_val = '';
@@ -39,7 +35,7 @@ function fill_api_data(jsonData) {
             recipeTitle: jsonData[i].title,
             recipeIngredients: recipeIngredientStr
         }
-        console.log(newJsonApiData);
+        //console.log(newJsonApiData);
         arrayJsonObjApiData.push(newJsonApiData);
     }
     return arrayJsonObjApiData
@@ -254,7 +250,6 @@ useEffect(() => {
 
         if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
         else {
-            const testapidata = fill_api_data(spoon_api_test_data.results)
 
             return (
 
@@ -283,12 +278,6 @@ useEffect(() => {
             </h2>
 
             <RecipeCarousel content={apiSpoilRecipes} />
-
-            <h2>
-                test api data
-            </h2>
-
-            <RecipeCarousel content={testapidata} />
 
         </div>
     );
