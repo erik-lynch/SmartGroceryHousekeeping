@@ -94,12 +94,6 @@ body {
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -115,6 +109,20 @@ body {
   color: #61dafb;
 }
 
+.core {
+  padding: 20px;
+  font-family: 'Roboto';
+  min-height: 130vh;
+  flex-wrap: wrap;
+  align-content: top;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -122,14 +130,6 @@ body {
   to {
     transform: rotate(360deg);
   }
-}
-
-.core {
-  padding: 20px;
-  font-family: 'Roboto';
-  min-height: 130vh;
-  flex-wrap: wrap;
-  align-content: top;
 }
 
 /* h1, h2, h3 */
@@ -151,9 +151,10 @@ h2 {
 
 h3 {
   font-size: medium;
+  margin: 0 0 10px 0;
 }
 
-/* Tables */
+/* Tables - reports */
 
 .table-overflow {
   overflow-x: scroll;
@@ -184,7 +185,7 @@ td {
   background-color: lightgray;
 }
 
-/* edit item page */
+/* Edit Item Page */
 
 .edit-img {
   border-radius: 30px;
@@ -225,16 +226,16 @@ input {
 input.edit-button {
   color: white;
   background-color: black;
-  padding: 20px 0 20px;
-  font-size: 16;
+  padding: 15px;
+  font-size: 16px;
   margin: 8px 0 8px 0;
 }
 
 .item-info {
-  margin: 15px 0;
+  margin: 20px 0 20px 0;
 }
 
-/* recipe page */
+/* Recipe Page */
 
 .no-style-select{
   margin: 10px;
@@ -253,8 +254,8 @@ input.edit-button {
   text-align: left;
   display: flex;
   flex-wrap: wrap;
-  padding: 20px 0px 20px 20px;
-  width: 90%;
+  padding: 20px;
+  width: 100%;
   background-color:#FFE7C3;
 }
 
@@ -282,6 +283,7 @@ textarea {
   max-width: 100%;
   border: solid 1px;
   border-radius: 5px;
+  margin-bottom: 15px;
 }
 
 input:not([type="submit"]) {
@@ -342,7 +344,7 @@ select {
   padding: 5px 15px;
 }
 
-/* Add Item screen */
+/* Add Item Page */
 
 * {
   box-sizing: border-box;
@@ -423,7 +425,7 @@ select {
 }
 
 .barcode-scanning button {
-  width: 90%;
+  width: 95%;
   background-color: #007BFF;
   color: white;
   padding: 10px 15px;
@@ -572,7 +574,6 @@ select {
   margin: 10px;
   filter: drop-shadow(10px 10px 0px black);
   border-radius: 8px;
-  min-width: 250px;
 }
 
 .carousel-container {
