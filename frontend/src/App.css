@@ -323,15 +323,24 @@ button {
   border-radius: 5px;
 }
 
-.recipe-button {
-  width: 200px;
+.recipe-submit-button {
+  width: 100px;
   border: solid black;
   padding: 5px 15px;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   background-color: black;
   color: white;
   font-size: 16px;
+}
+
+.recipe-add-button {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  padding: 5px 5px;
 }
 
 select {
