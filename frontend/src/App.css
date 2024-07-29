@@ -219,11 +219,12 @@ td {
   margin: 10px;
   border-radius: 0px;
   height: 100px;
+  inline-size: 150px;
 }
 
 .grid-recipe {
   display:grid;
-  grid-template-columns: 150px 250px;
+  grid-template-columns: 200px 250px;
   padding: 5px;
   width: 90%;
 }
@@ -322,15 +323,24 @@ button {
   border-radius: 5px;
 }
 
-.recipe-button {
-  width: 200px;
+.recipe-submit-button {
+  width: 100px;
   border: solid black;
   padding: 5px 15px;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   background-color: black;
   color: white;
   font-size: 16px;
+}
+
+.recipe-add-button {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  padding: 5px 5px;
 }
 
 select {

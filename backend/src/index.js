@@ -707,9 +707,7 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   else if (quantity == null || quantity == "") {
     res.status(400).json({ message: 'Error with quantity'});
   }
-  else if (quantityUnit == "") {
-    res.status(400).json({ message: 'Error with quantity unit'});
-  }
+
   else {
     try {
       // Insert new itemsrecipes
