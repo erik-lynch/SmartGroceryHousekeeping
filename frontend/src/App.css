@@ -227,6 +227,11 @@ input.edit-button {
   background-color: black;
   padding: 20px 0 20px;
   font-size: 16;
+  margin: 8px 0 8px 0;
+}
+
+.item-info {
+  margin: 15px 0;
 }
 
 /* recipe page */
@@ -352,6 +357,7 @@ select {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
 .manual-entry {
@@ -359,6 +365,7 @@ select {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 700px;
 }
 
 .manual-entry h2 {
@@ -373,6 +380,7 @@ select {
 
 .manual-entry label {
   font-weight: bold;
+  margin: 15px 0 0 0;
 }
 
 .manual-entry input[type="text"],
@@ -402,12 +410,12 @@ select {
 
 .barcode-scanning {
   background-color: #f9f9f9;
-  padding: 20px;
-  padding-bottom: 50px;
+  padding: 20px 20px 70px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
   position: relative; 
+  max-width: 700px;
 }
 
 .barcode-scanning h2 {
@@ -415,7 +423,7 @@ select {
 }
 
 .barcode-scanning button {
-  width: 97%;
+  width: 90%;
   background-color: #007BFF;
   color: white;
   padding: 10px 15px;

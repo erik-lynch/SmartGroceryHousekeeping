@@ -90,8 +90,8 @@ const Edit_Item = () => {
                          <div className="tag">{e.tagname}</div>
                     ))}
 
-                    <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
-                    <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
+                    <p className="item-info"><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
+                    <p><b className="item-info">Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
                     <br/>
 
