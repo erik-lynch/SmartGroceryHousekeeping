@@ -36,7 +36,7 @@ pool.connect()
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   next();
 })
@@ -177,9 +177,9 @@ app.put('/api/edit_item/:usersItemsId', async (req, res) => {
         quantitypurchased = quantitypurchased + $3,
         quantityremaining = quantityremaining + $3 - $2 - $1
       WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`, [newlySpoiled, newlyFinished, newlyAdded]);
-
+    
     res.json(markUpdated.rows);
-    res.status(200).json({ message: 'Item added successfully' });
+    
   } catch (err){
       console.error(err);
       res.status(500).send('Server error')
@@ -887,7 +887,7 @@ app.post("/detectionObject", upload.single('imgfile'), function(request, respons
 
       let [result] = await client.objectLocalization(file_path);
       const objects = result.localizedObjectAnnotations;
-      response.send("<p>"+objects[0].name+"</p>")
+      response.json(objects[0].name)
       
   };
 

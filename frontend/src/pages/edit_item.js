@@ -37,6 +37,20 @@ const Edit_Item = () => {
         setFinished("Item has been marked as finished.");
     }
 
+    function handleUpdated(e) {
+        e.preventDefault();
+        setUpdateButton(false)
+        setUpdated("Item has been updated.");
+    }
+
+    function handleUpdate() {
+        setUpdateButton(false)
+        setUpdated("Item has been updated.");
+        formData.newlyAdded = 0;
+        formData.newlyFinished = 0;
+        formData.newlySpoiled = 0;
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const dataToSend = {
@@ -44,10 +58,12 @@ const Edit_Item = () => {
         };
     
         try {
-          const response = await fetch(`http://localhost:3001/api/edit-item/${routeParams.usersItemsId}`, {
+          const response = await fetch(`http://localhost:3001/api/edit_item/${routeParams.usersItemsId}`, {
             method: "PUT",
+            mode: "cors",
             headers: {
-              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "Content-Type": "application/json"
             },
             body: JSON.stringify(dataToSend),
           });
@@ -63,6 +79,7 @@ const Edit_Item = () => {
         } catch (error) {
           console.error("Error submitting form:", error);
         }
+        handleUpdate();
     };
 
     const routeParams = useParams();
@@ -134,7 +151,7 @@ const Edit_Item = () => {
 
                     <br/>
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor="newlyAdded">Adding:</label>
+                        <label htmlFor="newlyAdded">Adding: </label>
                         <input
                             type="number"
                             id="newlyAdded"
@@ -142,7 +159,7 @@ const Edit_Item = () => {
                             value={formData.newlyAdded}
                             onChange={handleInputChange}
                         />
-                        <label htmlFor="newlyFinished">Finished:</label>
+                        <label htmlFor="newlyFinished">Finished: </label>
                         <input
                             type="number"
                             id="newlyFinished"
@@ -150,7 +167,7 @@ const Edit_Item = () => {
                             value={formData.newlyFinished}
                             onChange={handleInputChange}
                         />
-                        <label htmlFor="newlySpoiled">Lost to Spoilage:</label>
+                        <label htmlFor="newlySpoiled">Lost to Spoilage: </label>
                         <input
                             type="number"
                             id="newlySpoiled"
@@ -158,12 +175,10 @@ const Edit_Item = () => {
                             value={formData.newlySpoiled}
                             onChange={handleInputChange}
                         />
-                        <input type="submit" value="Save"></input>
+                        {updateButton && <input type="submit" value="Save"></input>}
+                        <p>{markedUpdated}</p>
                         
                     </form>
-                    
-                    
-                    
 
                     {spoilButton && <input type="button" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
                     <p>{markedSpoiled}</p>
