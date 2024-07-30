@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as SDCCore from "scandit-web-datacapture-core";
 import * as SDCBarcode from "scandit-web-datacapture-barcode";
-import './Add_item.css'; 
 
 const Add_Item = () => {
   const [isScanning, setIsScanning] = useState(false);

@@ -133,6 +133,8 @@ const Edit_Item = () => {
 
             <div className="core">
 
+                <div className="edit-image-content">
+
                 <img className="edit-img"
                     src={itemInfo[0].imagefilepath}
                     alt=""
@@ -146,10 +148,11 @@ const Edit_Item = () => {
                          <div className="tag">{e.tagname}</div>
                     ))}
 
-                    <p><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
-                    <p><b>Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
+                    <p className="item-info"><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
+                    <p><b className="item-info">Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
 
                     <br/>
+                   
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="newlyAdded">Adding: </label>
                         <input
@@ -187,10 +190,11 @@ const Edit_Item = () => {
                     <p>{markedFinished}</p>
 
                     <br/><br/>
-                    <a className="returnDashboard" href="/">Return to Dashboard</a>
+                    <a className="return-dashboard" href="/">Return to Dashboard</a>
                     </div>
 
                 
+            </div>
             </div>
 
         );

@@ -94,12 +94,6 @@ body {
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -115,6 +109,19 @@ body {
   color: #61dafb;
 }
 
+.core {
+  padding: 20px;
+  font-family: 'Roboto';
+  min-height: 100vh;
+  flex-wrap: wrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -124,13 +131,7 @@ body {
   }
 }
 
-.core {
-  padding: 20px;
-  font-family: 'Roboto';
-  min-height: 130vh;
-  flex-wrap: wrap;
-  align-content: top;
-}
+/* h1, h2, h3 */
 
 h1 {
   width: 250px;
@@ -149,9 +150,10 @@ h2 {
 
 h3 {
   font-size: medium;
+  margin: 0 0 10px 0;
 }
 
-/* Tables */
+/* Tables - reports */
 
 .table-overflow {
   overflow-x: scroll;
@@ -178,12 +180,16 @@ td {
   font-size: 12px;
 }
 
-
 .header-row {
   background-color: lightgray;
 }
 
-/* edit image page */
+/* Edit Item Page */
+
+.edit-image-content {
+  height: 50vh;
+  align-items: center;
+}
 
 .edit-img {
   border-radius: 30px;
@@ -199,6 +205,7 @@ td {
   float: inline-start;
   margin: 30px;
   max-width: 100%;
+  align-content: center;
 }
 
 .tag {
@@ -211,9 +218,29 @@ td {
   margin-right: 5px;
 }
 
-.returnDashboard {
+.return-dashboard {
   color: grey;
 }
+
+input {
+  width: 150px;
+  border: solid black 1px;
+  padding: 5px 15px;
+}
+
+input.edit-button {
+  color: white;
+  background-color: black;
+  padding: 15px;
+  font-size: 16px;
+  margin: 8px 0 8px 0;
+}
+
+.item-info {
+  margin: 20px 0 20px 0;
+}
+
+/* Recipe Page */
 
 .no-style-select{
   margin: 10px;
@@ -233,8 +260,8 @@ td {
   text-align: left;
   display: flex;
   flex-wrap: wrap;
-  padding: 20px 0px 20px 20px;
-  width: 90%;
+  padding: 20px;
+  width: 100%;
   background-color:#FFE7C3;
 }
 
@@ -243,12 +270,14 @@ td {
   grid-area: 1 / 1 / 1/ 2;
   border-radius: 20px 0px 0px 20px;
 }
+
 .grid-recipe-quantity {
   text-align: left;
   float: left;
   grid-column: 1 / 2 / 1 / 2;
   border-radius: 0px 20px 20px 0px;
 }
+
 .grid-recipe-measurement {
   text-align: left;
   float: left;
@@ -260,16 +289,13 @@ textarea {
   max-width: 100%;
   border: solid 1px;
   border-radius: 5px;
+  margin-bottom: 15px;
 }
 
-input:not[type="file"]{
-  width: 100px;
-  padding: 8px;
-  margin-left: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  display: block;
+
+input:not([type="submit"]) {
+  border-radius: 5px;
+  height: 25px;
 }
 
 input[type="button"] {
@@ -315,16 +341,10 @@ input[type="number"] {
   font-size: 16px;
 }
 
-button {
-  align-self: center;
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  border-radius: 5px;
-}
 
-.recipe-submit-button {
-  width: 100px;
+.recipe-button {
+  width: 200px;
+
   border: solid black;
   padding: 5px 15px;
   padding: 10px;
@@ -352,16 +372,288 @@ select {
   padding: 5px 15px;
 }
 
-/* Add Item screen */
-.image-icon {
-  height: 30px;
-  width: 30px;
-  padding-right: 15px;
+/* Add Item Page */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+.additem-core {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
 
+.manual-entry {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
+.manual-entry h2 {
+  margin-bottom: 15px;
+}
 
+.manual-entry form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.manual-entry label {
+  font-weight: bold;
+  margin: 15px 0 0 0;
+}
+
+.manual-entry input[type="text"],
+.manual-entry input[type="number"],
+.manual-entry select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.manual-entry input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.manual-entry input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.barcode-scanning {
+  background-color: #f9f9f9;
+  padding: 20px 20px 70px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  position: relative; 
+}
+
+.barcode-scanning h2 {
+  margin-bottom: 15px;
+}
+
+.barcode-scanning button {
+  width: 95%;
+  background-color: #007BFF;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  position: absolute; 
+  left: 50%; 
+  transform: translateX(-50%);
+}
+
+.barcode-scanning button:hover {
+  background-color: #0056b3;
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  border-radius: 8px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+.scanner-view {
+  width: 100%;
+  height: 80vh;
+  max-height: 600px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.item-scanned-message {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  z-index: 1001;
+}
+
+.product-details {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-details h3 {
+  margin-bottom: 15px;
+}
+
+.product-details table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-details th,
+.product-details td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.product-details th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.product-details img {
+  max-width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.product-details td:last-child {
+  position: relative;
+  height: 100%;
+}
+
+.product-details td button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.product-details td button:hover {
+  background-color: #45a049;
+}
+
+/* Item Carousel and Recipe Carousel */
+
+.carousel-item {
+  background-color: #FFE7C3;
+  outline: solid black;
+  margin: 10px;
+  filter: drop-shadow(10px 10px 0px black);
+  border-radius: 8px;
+  max-width: 250px;
+}
+
+.carousel-container {
+  background-color: white;
+  margin-bottom: 60px;
+}
+
+.carousel-slider{
+  padding: 10px 0px 50px 0px;
+}
+
+.item-name {
+float: left;
+font-size: medium;
+font-weight: bold;
+display: flex;
+padding: 20px 10px;
+}
+
+.item-quantity {
+float: left;
+font-size: medium;
+display: flex;
+padding: 20px 10px;
+}
+
+.date {
+float: right;
+font-size: medium;
+display: flex;
+padding: 20px 10px;
+}
+
+.recipe-title {
+font-weight: bold;
+font-size: large;
+padding: 20px;
+}
+
+.recipe-ingredients {
+padding: 20px;
+}
+
+a {
+text-decoration: none;
+color: black;
+}
+
+.carousel-image {
+  border-radius: 8px 8px 0px 0px;
+  max-height: 250px;
+  max-width: 250px;
+}
 
 /* phone, small display specific values */
 
@@ -372,5 +664,25 @@ select {
     justify-content: center;
   }
 
+  .carousel-item {
+    min-width: none;
+  }
+  
+  .item-name {
+    float: none;
+    padding: 10px 12px 5px 12px; 
+  }
+  
+  .item-quantity {
+    float: none;
+    padding: 5px 12px 5px 12px; 
+  }
+  
+  .date {
+    float: none;
+    padding: 5px 12px 15px 12px; 
+  }
+  
+  }
 
-}
+

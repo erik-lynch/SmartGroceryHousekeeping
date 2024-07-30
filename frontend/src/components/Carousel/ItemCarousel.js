@@ -2,7 +2,7 @@ import { React, Component } from "react";
 import { Link } from 'react-router-dom';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import './Carousel.css'
+
 
 const responsive = {
   desktop: {
@@ -62,6 +62,7 @@ class ItemCarousel extends Component {
               <div className="CardContent">
                       
                 <img 
+                  className="carousel-image"
                   src={e.imagePath}
                   style={{ width: "100%"}}
                   alt={e.altText} 
