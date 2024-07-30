@@ -112,7 +112,7 @@ body {
 .core {
   padding: 20px;
   font-family: 'Roboto';
-  min-height: 100vh;
+  min-height: 120vh;
   flex-wrap: wrap;
 }
 
@@ -205,7 +205,7 @@ td {
   float: inline-start;
   margin: 30px;
   max-width: 100%;
-  align-content: center;
+  align-content: left;
 }
 
 .tag {
@@ -244,7 +244,7 @@ input.edit-button {
 
 .no-style-select{
   margin: 10px;
-  border-radius: 0px;
+  border-radius: 5px;
   height: 100px;
   inline-size: 150px;
 }
@@ -292,10 +292,14 @@ textarea {
   margin-bottom: 15px;
 }
 
-
 input:not([type="submit"]) {
   border-radius: 5px;
   height: 25px;
+}
+
+input[type=button] {
+  height: fit-content;
+  width: 200px;
 }
 
 input[type="button"] {
@@ -327,24 +331,13 @@ input[type="submit"] {
 }
 
 input[type="number"] {
+  margin: 10px 0px;
   margin-right: 100%;
-}
-
-.scan-button {
-  width: 150px;
-  border: solid black;
-  padding: 5px 15px;
-  padding: 20px;
-  border-radius: 5px;
-  background-color: black;
-  color: white;
-  font-size: 16px;
 }
 
 
 .recipe-button {
   width: 200px;
-
   border: solid black;
   padding: 5px 15px;
   padding: 10px;
@@ -354,14 +347,18 @@ input[type="number"] {
   font-size: 16px;
 }
 
-.recipe-add-button {
+button[class="recipe-submit-button"], button[class="recipe-add-button"] {
   align-self: center;
   background-color: black;
   color: white;
   font-size: 16px;
+  border: 1px solid black;
   border-radius: 5px;
   padding: 5px 5px;
+  width: 150px;
+  padding: 10px;
 }
+
 
 select {
   margin: 10px 10px 10px 0;
@@ -592,7 +589,26 @@ select {
   background-color: #45a049;
 }
 
-/* Item Carousel and Recipe Carousel */
+input[type="file"]{
+  border: none;
+  padding: 20px;
+  height: fit-content;
+  width: 300px;
+  align-content: center;
+}
+
+button[class="upload-button"]{
+  width: 200px;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
+}
+
+
+
+/* Conmponents: Item Carousel and Recipe Carousel */
 
 .carousel-item {
   background-color: #FFE7C3;
@@ -658,6 +674,11 @@ color: black;
 /* phone, small display specific values */
 
 @media only screen and (max-width: 600px) {
+  
+  .core {
+    min-height: 150vh;
+  }
+  
   .edit-img {
     width: 70%;
     align-items: center;
