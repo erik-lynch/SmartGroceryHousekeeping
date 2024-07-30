@@ -184,12 +184,15 @@ const Add_Item = () => {
     }
   };
 
+
   return (
     <div className="additem-core">
       <div className="manual-entry">
+          
+        <br></br>
         <h2>Manual Input</h2>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="iname">Item name:</label>
+        <label htmlFor="iname">Item name:</label>
           <input
             type="text"
             id="iname"
@@ -233,6 +236,14 @@ const Add_Item = () => {
             onChange={handleInputChange}
           />
           <input type="submit" className="button submit-button" value="Submit" />
+        </form>
+      </div>
+
+      <div>
+        <h2>Take Photo or Upload</h2>
+        <form action="http://localhost:3001/detectionObject" method="post" encType="multipart/form-data">
+          <input type="file" accept="image/*" id="imgfile" name="imgfile" />
+          <button type="submit" className="upload-button">Analyze Image</button>
         </form>
       </div>
 
