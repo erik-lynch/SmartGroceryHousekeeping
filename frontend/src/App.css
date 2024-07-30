@@ -202,10 +202,10 @@ td {
 }
 
 .edit-content {
-  float: inline-start;
+  float: left;
   margin: 30px;
-  max-width: 100%;
   align-content: left;
+  max-width: 40%;
 }
 
 .tag {
@@ -223,7 +223,7 @@ td {
 }
 
 input {
-  width: 150px;
+  width: 180px;
   border: solid black 1px;
   padding: 5px 15px;
 }
@@ -239,6 +239,7 @@ input.edit-button {
 .item-info {
   margin: 20px 0 20px 0;
 }
+
 
 /* Recipe Page */
 
@@ -297,18 +298,14 @@ input:not([type="submit"]) {
   height: 25px;
 }
 
-input[type=button] {
-  height: fit-content;
-  width: 200px;
-}
-
 input[type="button"] {
+  height: fit-content;
   width: 180px;
   background-color: #4CAF50;
   margin-bottom: 10px;
   color: white;
   display: flex;
-  padding: 10px 15px;
+  padding: 20px;
   margin-left: 0px;
   border: none;
   border-radius: 4px;
@@ -591,7 +588,7 @@ select {
 
 input[type="file"]{
   border: none;
-  padding: 20px;
+  padding: 20px 0 20px 0;
   height: fit-content;
   width: 300px;
   align-content: center;

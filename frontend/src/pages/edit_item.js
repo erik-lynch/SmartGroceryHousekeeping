@@ -154,7 +154,7 @@ const Edit_Item = () => {
                     <br/>
                    
                     <form onSubmit={handleSubmit}>
-                        <label htmlFor="newlyAdded">Adding: </label>
+                        <label htmlFor="newlyAdded"><b>Adding:</b> </label>
                         <input
                             type="number"
                             id="newlyAdded"
@@ -162,7 +162,7 @@ const Edit_Item = () => {
                             value={formData.newlyAdded}
                             onChange={handleInputChange}
                         />
-                        <label htmlFor="newlyFinished">Finished: </label>
+                        <label htmlFor="newlyFinished"><b>Finished:</b> </label>
                         <input
                             type="number"
                             id="newlyFinished"
@@ -170,7 +170,7 @@ const Edit_Item = () => {
                             value={formData.newlyFinished}
                             onChange={handleInputChange}
                         />
-                        <label htmlFor="newlySpoiled">Lost to Spoilage: </label>
+                        <label htmlFor="newlySpoiled"><b>Lost to Spoilage:</b> </label>
                         <input
                             type="number"
                             id="newlySpoiled"
@@ -182,11 +182,12 @@ const Edit_Item = () => {
                         <p>{markedUpdated}</p>
                         
                     </form>
+                    <br/><br/>
 
-                    {spoilButton && <input type="button" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
+                    {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
                     <p>{markedSpoiled}</p>
 
-                    {finishButton && <input type="button" value="Mark All Finished" onClick={handleFinished} ></input>}
+                    {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinished} ></input>}
                     <p>{markedFinished}</p>
 
                     <br/><br/>

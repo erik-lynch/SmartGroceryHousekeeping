@@ -239,6 +239,8 @@ const Add_Item = () => {
         </form>
       </div>
 
+      <br/>
+      
       <div>
         <h2>Take Photo or Upload</h2>
         <form action="http://localhost:3001/detectionObject" method="post" encType="multipart/form-data">
@@ -246,6 +248,8 @@ const Add_Item = () => {
           <button type="submit" className="upload-button">Analyze Image</button>
         </form>
       </div>
+
+      <br/>
 
       <div className="barcode-scanning">
         <h2>Barcode Scanning</h2>
