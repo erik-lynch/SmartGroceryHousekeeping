@@ -20,6 +20,9 @@ const app = express();
 const https = require('https');
 const path = require('path');
 
+const pl = require('tau-prolog'); 
+
+
 const pool = new Pool({
   max: 5,
   idleTimeoutMillis: 50000,
@@ -844,7 +847,6 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
   }
 });
 
-
 //----------------------------------------------------------------------------
 //                Google Cloud Vision API
 //----------------------------------------------------------------------------
@@ -890,6 +892,39 @@ app.post("/detectionObject", upload.single('imgfile'), function(request, respons
   
 });
 
+//----------------------------------------------------------------------------
+//                Spoilage Dates
+//----------------------------------------------------------------------------
+
+const session = pl.create(1000);
+
+session.consult(
+  
+  `:- use_module(library(lists)).
+  :- consult('spoilagefacts.pl').`, 
+
+  {success: function(){
+    console.log("Prolog loaded 'spoilagefacts' successfully");
+
+  }, 
+   error: function(err){
+    console.log(`Prolog Error: ${err}`);
+
+   } });
+
+session.query(
+  
+  ``,
+
+  {success: function (goal) {
+    console.log(goal);
+  },
+  error: function(err){
+    console.log(`Prolog: ${err}`)
+  }});
+
+
+//----------------------------------------------------------------------------
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

@@ -19,6 +19,8 @@
 % to eat even if the date on the product has passed. 
 
 
+
+
 % Refrigerated ------------------------------------------
 
 refrigerated('cooked rice', 3, 4).
