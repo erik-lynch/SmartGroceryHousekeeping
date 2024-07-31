@@ -25,22 +25,14 @@ const Edit_Item = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    function handleSpoiled(e) {
-        e.preventDefault();
+    function handleSpoiled() {
         setSpoilButton(false);
         setSpoiled("Item has been marked as spoiled.");
     }
 
-    function handleFinished(e) {
-        e.preventDefault();
+    function handleFinished() {
         setFinishButton(false)
         setFinished("Item has been marked as finished.");
-    }
-
-    function handleUpdated(e) {
-        e.preventDefault();
-        setUpdateButton(false)
-        setUpdated("Item has been updated.");
     }
 
     function handleUpdate() {
@@ -70,8 +62,7 @@ const Edit_Item = () => {
     
           if (response.ok) {
             console.log("Item edited successfully");
-            setUpdateButton(false)
-            setUpdated("Item has been updated.");
+            handleUpdate();
           } else {
             const errorText = await response.text();
             console.error("Failed to edit item:", errorText);
@@ -79,7 +70,59 @@ const Edit_Item = () => {
         } catch (error) {
           console.error("Error submitting form:", error);
         }
-        handleUpdate();
+        
+    };
+
+    const handleSpoil = async (e) => {
+        e.preventDefault();
+    
+        try {
+          const response = await fetch(`http://localhost:3001/api/spoil_item/${routeParams.usersItemsId}`, {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+          });
+    
+          if (response.ok) {
+            console.log("Item spoiled successfully");
+            handleSpoiled();
+          } else {
+            const errorText = await response.text();
+            console.error("Failed to spoil item:", errorText);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+        
+    };
+
+    const handleFinish = async (e) => {
+        e.preventDefault();
+    
+        try {
+          const response = await fetch(`http://localhost:3001/api/finish_item/${routeParams.usersItemsId}`, {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+          });
+    
+          if (response.ok) {
+            console.log("Item marked as finished successfully");
+            handleFinished();
+          } else {
+            const errorText = await response.text();
+            console.error("Failed to finish item:", errorText);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+        
     };
 
     const routeParams = useParams();
@@ -184,10 +227,10 @@ const Edit_Item = () => {
                     </form>
                     <br/><br/>
 
-                    {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
+                    {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
                     <p>{markedSpoiled}</p>
 
-                    {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinished} ></input>}
+                    {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
                     <p>{markedFinished}</p>
 
                     <br/><br/>
