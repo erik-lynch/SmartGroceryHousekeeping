@@ -29,7 +29,7 @@ const Edit_Item = () => {
         setSpoiled("Item has been marked as spoiled.");
         fetchItemInfo();
         setTimeout(function(){
-            setUpdated("");
+            setSpoiled("");
         }, 3000);
     }
 
@@ -37,7 +37,7 @@ const Edit_Item = () => {
         setFinished("Item has been marked as finished.");
         fetchItemInfo();
         setTimeout(function(){
-            setUpdated("");
+            setFinished("");
         }, 3000);
     }
 
