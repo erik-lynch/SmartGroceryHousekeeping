@@ -26,21 +26,30 @@ const Edit_Item = () => {
     };
 
     function handleSpoiled() {
-        setSpoilButton(false);
         setSpoiled("Item has been marked as spoiled.");
+        fetchItemInfo();
+        setTimeout(function(){
+            setUpdated("");
+        }, 3000);
     }
 
     function handleFinished() {
-        setFinishButton(false)
         setFinished("Item has been marked as finished.");
+        fetchItemInfo();
+        setTimeout(function(){
+            setUpdated("");
+        }, 3000);
     }
 
     function handleUpdate() {
-        setUpdateButton(false)
         setUpdated("Item has been updated.");
         formData.newlyAdded = 0;
         formData.newlyFinished = 0;
         formData.newlySpoiled = 0;
+        fetchItemInfo();
+        setTimeout(function(){
+            setUpdated("");
+        }, 3000);
     }
 
     const handleSubmit = async (e) => {
@@ -127,37 +136,37 @@ const Edit_Item = () => {
 
     const routeParams = useParams();
 
+    async function fetchItemInfo() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setItemInfo(await response.json());
+
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    };
+
+    async function fetchTags() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setItemTags(await response.json());
+
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    };
+
     useEffect(() => {
-
-        async function fetchItemInfo() {
-
-            try {
-                const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
-                setItemInfo(await response.json());
-
-            } catch (error) {
-                console.error(error.message);
-            }
-
-        };
-
-        async function fetchTags() {
-
-            try {
-                const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
-                setItemTags(await response.json());
-
-            } catch (error) {
-                console.error(error.message);
-            }
-
-        };
 
         fetchTags();
         fetchItemInfo();
