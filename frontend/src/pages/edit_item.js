@@ -223,22 +223,24 @@ const Edit_Item = () => {
                         />
                         {updateButton && <input type="submit" value="Save"></input>}
                         <p>{markedUpdated}</p>
+
+                        {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
+                        <p>{markedSpoiled}</p>
+
+                        {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
+                        <p>{markedFinished}</p>
                         
                     </form>
                     <br/><br/>
 
-                    {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
-                    <p>{markedSpoiled}</p>
-
-                    {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
-                    <p>{markedFinished}</p>
+                    
 
                     <br/><br/>
                     <a className="return-dashboard" href="/">Return to Dashboard</a>
                     </div>
 
                 
-            </div>
+                </div>
             </div>
 
         );
