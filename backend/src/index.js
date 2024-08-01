@@ -187,9 +187,9 @@ app.put('/api/edit_item/:usersItemsId', async (req, res) => {
 
 });
 
-// update item as spoiled 
-app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
-
+// update item quantity - spoil all in stock
+app.put('/api/spoil_item/:usersItemsId', async (req, res) => {
+  
   try {
     const markSpoiled = await pool.query(
       `UPDATE usersitems
@@ -197,7 +197,7 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
         spoiledtotal = spoiledtotal + quantityremaining,
         quantityremaining = 0
       WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
-
+    
     res.json(markSpoiled.rows);
     
   } catch (err){
@@ -207,8 +207,8 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
 
 });
 
-// update item as finished
-app.put('/useritem/:usersItemsId/finished', async (req, res) => {
+// update item quantity - finish all in stock
+app.put('/api/finish_item/:usersItemsId', async (req, res) => {
 
   try {
     const markFinished = await pool.query(
