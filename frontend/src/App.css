@@ -356,7 +356,6 @@ button[class="recipe-submit-button"], button[class="recipe-add-button"] {
   padding: 10px;
 }
 
-
 select {
   margin: 10px 10px 10px 0;
   border-radius: 50px;
@@ -603,7 +602,71 @@ button[class="upload-button"]{
   background-color: black;
 }
 
+select[name="spoilage-select"]{
+  width: 300px;
+  height: 45px;
+  margin: 10px 10px 10px 0;
+  border-radius: 5px;
+  border: 1px black solid;
+  padding: 5px 15px;
+}
 
+.spoilage-all{
+  display: grid;
+  grid-template-rows: .5fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.spoilage-all h2{
+  width: 100%;
+  height: fit-content;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+.spoilage-all h4{
+  margin: 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid black;
+  font-size: medium;
+}
+
+.spoilage-all p{
+  margin: 10px 0 10px 0;
+}
+
+.spoilage-section-category-1{
+  display: block;
+  margin: 20px 20px 20px 0;
+  width: 50%;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+}
+
+.spoilage-section-category-2{
+  display: block;
+  margin: 20px 20px 20px 0;
+  width: 50%;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 3;
+}
+
+.spoilage-section-product{
+  background: #FFE7C3;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid black;
+  width: 80%;
+  filter: drop-shadow(10px 10px 0px black);
+  align-content: center;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 4;
+}
 
 /* Conmponents: Item Carousel and Recipe Carousel */
 

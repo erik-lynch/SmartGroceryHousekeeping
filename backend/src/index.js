@@ -20,8 +20,6 @@ const app = express();
 const https = require('https');
 const path = require('path');
 
-const pl = require('tau-prolog'); 
-
 
 const pool = new Pool({
   max: 5,
@@ -893,36 +891,104 @@ app.post("/detectionObject", upload.single('imgfile'), function(request, respons
 });
 
 //----------------------------------------------------------------------------
-//                Spoilage Dates
+//                Spoilage Queries
 //----------------------------------------------------------------------------
 
-const session = pl.create(1000);
-
-session.consult(
+// get all categories
+app.get('/spoilage/categories', async(req, res) => {
   
-  `:- use_module(library(lists)).
-  :- consult('spoilagefacts.pl').`, 
+  try{
+    const getCategoriesSubcategories = await pool.query(
+      `SELECT 
+	      CONCAT_WS(' - ', categories.categoryname, categories.subcategoryname) as categorySubcategory,
+        categories.categoryid
+      FROM categories
+      ORDER BY categories.categoryname, categories.subcategoryname;`);
 
-  {success: function(){
-    console.log("Prolog loaded 'spoilagefacts' successfully");
+    res.json(getCategoriesSubcategories.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
 
-  }, 
-   error: function(err){
-    console.log(`Prolog Error: ${err}`);
-
-   } });
-
-session.query(
+// get all items in a specific category
+app.get('/spoilage/:categoryid', async(req, res) => {
   
-  ``,
+  try{
+    const getAllItemsCategory = await pool.query(
+      `SELECT
+        categories.categoryid,
+        products.productid,
+        CONCAT_WS(' - ', products.productname, products.productsubtitle) as productname
+      FROM categories
+      INNER JOIN productscategories ON productscategories.fk_categories_categoryid = categories.categoryid
+      INNER JOIN products ON productscategories.fk_products_productid = products.productid
+      WHERE categories.categoryid = ${req.params.categoryid};`);
 
-  {success: function (goal) {
-    console.log(goal);
-  },
-  error: function(err){
-    console.log(`Prolog: ${err}`)
-  }});
+    res.json(getAllItemsCategory.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
 
+// get details for specific item
+app.get('/spoilage/product/:productid', async(req, res) => {
+  
+  try{
+    const getProductDetails = await pool.query(
+      `SELECT
+        products.productid as "id",
+        products.productname as "name",
+        products.productsubtitle as "subtitle",
+        products.keywords as "keys",
+        products.pantry_min as "p_min",
+        products.pantry_max as "p_max",
+        products.pantry_metric as "p_metric",
+        products.pantry_tips as "p_tips",
+        products.dop_pantry_min as "dop_p_min",
+        products.dop_pantry_max as "dop_p_max",
+        products.dop_pantry_metric as "dop_p_metric",
+        products.dop_pantry_tips as "dop_p_tips",
+        products.pantry_after_opening_min as "p_after_opening_min",
+        products.pantry_after_opening_max as "p_after_opening_max",
+        products.pantry_after_opening_metric as "p_after_opening_metric",
+        products.refrigerate_min as "r_min",
+        products.refrigerate_max as "r_max",
+        products.refrigerate_metric as "r_metric",
+        products.refrigerate_tips as "r_tips",
+        products.dop_refrigerate_min as "dop_r_min",
+        products.dop_refrigerate_max as "dop_r_max",
+        products.dop_refrigerate_metric as "dop_r_metric",
+        products.dop_refrigerate_tips as "dop_r_tips",
+        products.refrigerate_after_opening_min as "r_after_opening_min",
+        products.refrigerate_after_opening_max as "r_after_opening_max",
+        products.refrigerate_after_opening_metric as "r_after_opening_metric",
+        products.refrigerate_after_thawing_min as "r_after_thawing_min",
+        products.refrigerate_after_thawing_max as "r_after_thawing_max",
+        products.refrigerate_after_thawing_metric as "r_after_thawing_metric",
+        products.freeze_min as "f_min",
+        products.freeze_max as "f_max",
+        products.freeze_metric as "f_metric",
+        products.freeze_tips as "f_tips",
+        products.dop_freeze_min as "dop_f_min",
+        products.dop_freeze_max as "dop_f_max",
+        products.dop_freeze_metric as "dop_f_metric",
+        products.dop_freeze_tips as "dop_f_tips"
+      FROM products
+      WHERE products.productid = ${req.params.productid}
+      ORDER BY products.productname, products.productsubtitle;`);
+
+    res.json(getProductDetails.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
 
 //----------------------------------------------------------------------------
 

@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
+import Select from 'react-select';
 import * as SDCCore from "scandit-web-datacapture-core";
 import * as SDCBarcode from "scandit-web-datacapture-barcode";
 
+
 const Add_Item = () => {
+
+  const [categories, setCategories] = useState(null);
+  const [selectCategory, setSelectCategory] = useState(null);
+  const [productCategory, setProductCategory] = useState(null);
+  const [selectProduct, setSelectProduct] = useState(null);
+  const [productDetails, setProductDetails] = useState(null);
+
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
   const [scannedCodes, setScannedCodes] = useState([]);
@@ -18,6 +27,74 @@ const Add_Item = () => {
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
+
+  // Spoilage: fetch categories on initial load 
+  useEffect(() => {
+
+    async function fetchCategories() {
+
+      try {
+          const response = await fetch(`http://localhost:3001/spoilage/categories`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setCategories(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchCategories();
+
+  }, [])
+  
+  // Spoilage: fetch all items in a category (when a category has been selected)
+  useEffect(() => {
+    if (selectCategory) {
+
+      async function fetchItems() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/spoilage/${selectCategory}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setProductCategory(await response.json());
+  
+        } catch (error) {
+            console.error(error.message);
+            }
+    }; 
+
+    fetchItems();
+
+  }}, [selectCategory])
+
+  // Spoilage: fetch item details (when an item has been selected)
+  useEffect(() => {
+    if (selectProduct) {
+
+      async function fetchItemDetails() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/spoilage/product/${selectProduct}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setProductDetails(await response.json());
+            console.log(productDetails)
+  
+        } catch (error) {
+            console.error(error.message);
+            }
+    }; 
+
+    fetchItemDetails();
+
+  };
+    
+  }, [selectCategory, selectProduct])
 
   useEffect(() => {
     let context, barcodeCapture, camera;
@@ -184,6 +261,12 @@ const Add_Item = () => {
     }
   };
 
+  if (!categories) {
+
+    return(<h2>Loading...</h2>)
+
+  } 
+  else {
 
   return (
     <div className="additem-core">
@@ -240,6 +323,69 @@ const Add_Item = () => {
       </div>
 
       <br/>
+
+      <div className="spoilage-all">
+        <h2>Food Shelf Life Guidelines</h2>
+
+        <div className="spoilage-section-category-1">
+        <h3>Select Food Category:</h3>
+        <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
+          {categories.map((e) => (
+            <option value={e.categoryid}>{e.categorysubcategory}</option>
+          ))}
+        </select>
+        </div>
+
+        <div className="spoilage-section-category-2">
+        {selectCategory && productCategory && <div>
+        <h3>Select Product:</h3>
+        <select name="spoilage-select" onChange={(e) => setSelectProduct(e.target.value)}>
+          {productCategory.map((e) => (
+            <option value={e.productid}>{e.productname}</option>
+          ))}
+        </select>
+        </div>}
+        </div>
+
+        
+        {selectProduct && productDetails && <div className="spoilage-section-product">
+        
+        {productDetails.map((e) => (
+          <div>
+          
+          {e.name && e.subtitle && <h2>{e.name} - {e.subtitle}</h2>}
+          {e.name && !e.subtitle && <h2>{e.name}</h2>}
+    
+          {e.p_min && e.p_max && e.p_metric && <p><b>Pantry:</b> {e.p_min} - {e.p_max} {e.p_metric}</p>}
+          {e.r_min && e.r_max && e.r_metric && <p><b>Refrigerator:</b> {e.r_min} - {e.r_max} {e.r_metric}</p>}
+          {e.f_min && e.f_max && e.f_metric && <p><b>Freezer:</b> {e.f_min} - {e.f_max} {e.f_metric}</p>}
+
+          {e.dop_p_min && e.dop_p_max && e.dop_p_metric && <p><b>Pantry:</b> {e.dop_p_min} - {e.dop_p_max} {e.dop_p_metric}</p>}
+          {e.dop_r_min && e.dop_r_max && e.dop_r_metric && <p><b>Refrigerator:</b> {e.dop_r_min} - {e.dop_r_max} {e.dop_r_metric}</p>}
+          {e.dop_f_min && e.dop_f_max && e.dop_f_metric && <p><b>Freezer:</b> {e.dop_f_min} - {e.dop_f_max} {e.dop_f_metric}</p>}
+
+          <br/>
+          {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h4>Tips</h4>}
+          {e.p_tips && <p><b>Pantry:</b> {e.p_tips}</p>}
+          {e.r_tips && <p><b>Refrigerator: </b> {e.r_tips}</p>}
+          {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
+
+          {e.dop_p_tips && <p><b>Pantry:</b> {e.dop_p_tips}</p>}
+          {e.dop_r_tips && <p><b>Refrigerator:</b> {e.dop_r_tips}</p>}
+          {e.dop_f_tips && <p><b>Freezer:</b> {e.dop_f_tips}</p>}
+          
+
+
+    
+          </div>
+        ))}
+        </div>}
+
+        
+      </div>
+
+
+
       
       <div>
         <h2>Take Photo or Upload</h2>
@@ -308,6 +454,6 @@ const Add_Item = () => {
       )}
     </div>
   );
-};
+}};
 
 export default Add_Item;
