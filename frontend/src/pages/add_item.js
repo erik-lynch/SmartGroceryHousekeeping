@@ -322,8 +322,6 @@ const Add_Item = () => {
         </form>
       </div>
 
-      <br/>
-
       <div className="spoilage-all">
         <h2>Food Shelf Life Guidelines</h2>
 
@@ -385,8 +383,6 @@ const Add_Item = () => {
       </div>
 
 
-
-      
       <div>
         <h2>Take Photo or Upload</h2>
         <form action="http://localhost:3001/detectionObject" method="post" encType="multipart/form-data">

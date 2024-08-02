@@ -603,7 +603,7 @@ button[class="upload-button"]{
 }
 
 select[name="spoilage-select"]{
-  width: 300px;
+  width: 90%;
   height: 45px;
   margin: 10px 10px 10px 0;
   border-radius: 5px;
@@ -616,6 +616,7 @@ select[name="spoilage-select"]{
   grid-template-rows: .5fr 1fr 1fr;
   grid-template-columns: 1fr 1fr;
   width: 100%;
+  margin: 30px 0 30px 0;
 }
 
 .spoilage-all h2{
@@ -639,7 +640,7 @@ select[name="spoilage-select"]{
 .spoilage-section-category-1{
   display: block;
   margin: 20px 20px 20px 0;
-  width: 50%;
+  width: 100%;
   grid-column-start: 1;
   grid-column-end: 2;
   grid-row-start: 2;
@@ -648,7 +649,7 @@ select[name="spoilage-select"]{
 .spoilage-section-category-2{
   display: block;
   margin: 20px 20px 20px 0;
-  width: 50%;
+  width: 100%;
   grid-column-start: 1;
   grid-column-end: 2;
   grid-row-start: 3;
@@ -659,7 +660,7 @@ select[name="spoilage-select"]{
   padding: 20px;
   border-radius: 5px;
   border: 1px solid black;
-  width: 80%;
+  width: 90%;
   filter: drop-shadow(10px 10px 0px black);
   align-content: center;
   grid-column-start: 2;
