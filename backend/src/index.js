@@ -925,7 +925,8 @@ app.get('/spoilage/:categoryid', async(req, res) => {
       FROM categories
       INNER JOIN productscategories ON productscategories.fk_categories_categoryid = categories.categoryid
       INNER JOIN products ON productscategories.fk_products_productid = products.productid
-      WHERE categories.categoryid = ${req.params.categoryid};`);
+      WHERE categories.categoryid = ${req.params.categoryid}
+      ORDER BY productname;`);
 
     res.json(getAllItemsCategory.rows)
     

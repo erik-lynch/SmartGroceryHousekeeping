@@ -351,25 +351,34 @@ const Add_Item = () => {
         {productDetails.map((e) => (
           <div>
           
-          {e.name && e.subtitle && <h2>{e.name} - {e.subtitle}</h2>}
-          {e.name && !e.subtitle && <h2>{e.name}</h2>}
+          {/* Title and Subtitle Options */}
+          {(e.name && e.subtitle) && <h2>{e.name} - {e.subtitle}</h2>}
+          {(e.name && !e.subtitle) && <h2>{e.name}</h2>}
     
-          {e.p_min && e.p_max && e.p_metric && <p><b>Pantry:</b> {e.p_min} - {e.p_max} {e.p_metric}</p>}
-          {e.r_min && e.r_max && e.r_metric && <p><b>Refrigerator:</b> {e.r_min} - {e.r_max} {e.r_metric}</p>}
-          {e.f_min && e.f_max && e.f_metric && <p><b>Freezer:</b> {e.f_min} - {e.f_max} {e.f_metric}</p>}
+          {/* Pantry */}
+          {(e.p_min && e.p_max && e.p_metric) && <p><b>Pantry:</b> {e.p_min} - {e.p_max} {e.p_metric}</p>}
+          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && <p><b>Pantry:</b> {e.dop_p_min} - {e.dop_p_max} {e.dop_p_metric}</p>}
+          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_min} - {e.p_after_opening_max} {e.p_after_opening_metric}</p>}
 
-          {e.dop_p_min && e.dop_p_max && e.dop_p_metric && <p><b>Pantry:</b> {e.dop_p_min} - {e.dop_p_max} {e.dop_p_metric}</p>}
-          {e.dop_r_min && e.dop_r_max && e.dop_r_metric && <p><b>Refrigerator:</b> {e.dop_r_min} - {e.dop_r_max} {e.dop_r_metric}</p>}
-          {e.dop_f_min && e.dop_f_max && e.dop_f_metric && <p><b>Freezer:</b> {e.dop_f_min} - {e.dop_f_max} {e.dop_f_metric}</p>}
+          {/* Refrigerator */}
+          {(e.r_min && e.r_max && e.r_metric) && <p><b>Refrigerator:</b> {e.r_min} - {e.r_max} {e.r_metric}</p>}
+          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && <p><b>Refrigerator:</b> {e.dop_r_min} - {e.dop_r_max} {e.dop_r_metric}</p>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_min} - {e.r_after_opening_max} {e.r_after_opening_metric}</p>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_min} - {e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
+
+          {/* Freezer */}
+          {(e.f_min && e.f_max && e.f_metric) && <p><b>Freezer:</b> {e.f_min} - {e.f_max} {e.f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && <p><b>Freezer:</b> {e.dop_f_min} - {e.dop_f_max} {e.dop_f_metric}</p>}
 
           <br/>
+
+          {/* Tips */}
           {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h4>Tips</h4>}
           {e.p_tips && <p><b>Pantry:</b> {e.p_tips}</p>}
-          {e.r_tips && <p><b>Refrigerator: </b> {e.r_tips}</p>}
-          {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
-
           {e.dop_p_tips && <p><b>Pantry:</b> {e.dop_p_tips}</p>}
+          {e.r_tips && <p><b>Refrigerator: </b> {e.r_tips}</p>}
           {e.dop_r_tips && <p><b>Refrigerator:</b> {e.dop_r_tips}</p>}
+          {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
           {e.dop_f_tips && <p><b>Freezer:</b> {e.dop_f_tips}</p>}
           
 
