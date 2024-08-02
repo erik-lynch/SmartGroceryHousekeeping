@@ -70,6 +70,7 @@ app.get('/items', async (req, res) => {
 //                Add Item Page requests
 //----------------------------------------------------------------------------
 
+// add item to DB
 app.post('/api/add-item', async (req, res) => {
   const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 
 
@@ -98,6 +99,26 @@ app.post('/api/add-item', async (req, res) => {
     res.status(500).json({ message: 'Error adding item', error: error.message });
   }
 });
+
+// get all units
+app.get('/units', async(req, res) => {
+  
+  try{
+    const getUnits = await pool.query(
+      `SELECT 
+        units.unitid,
+        units.unitname,
+        units.unitabbreviation
+      FROM units
+      ORDER BY units.unitname;`);
+
+    res.json(getUnits.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
 
 //----------------------------------------------------------------------------
 //                Edit Item Page requests

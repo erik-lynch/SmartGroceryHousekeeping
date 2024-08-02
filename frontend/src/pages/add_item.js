@@ -12,6 +12,8 @@ const Add_Item = () => {
   const [selectProduct, setSelectProduct] = useState(null);
   const [productDetails, setProductDetails] = useState(null);
 
+  const [units, setUnits] = useState(null);
+
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
   const [scannedCodes, setScannedCodes] = useState([]);
@@ -27,6 +29,27 @@ const Add_Item = () => {
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
+
+  // fetch units on initial load
+  useEffect(() => {
+
+    async function fetchUnits() {
+
+      try {
+          const response = await fetch(`http://localhost:3001/units`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setUnits(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchUnits();
+
+  }, [])
 
   // Spoilage: fetch categories on initial load 
   useEffect(() => {
@@ -83,7 +106,6 @@ const Add_Item = () => {
                 throw new Error(`Response status: ${response.status}`);
             }
             setProductDetails(await response.json());
-            console.log(productDetails)
   
         } catch (error) {
             console.error(error.message);
@@ -261,7 +283,7 @@ const Add_Item = () => {
     }
   };
 
-  if (!categories) {
+  if (!categories || !units) {
 
     return(<h2>Loading...</h2>)
 
@@ -270,11 +292,12 @@ const Add_Item = () => {
 
   return (
     <div className="additem-core">
+
       <div className="manual-entry">
           
-        <br></br>
         <h2>Manual Input</h2>
         <form onSubmit={handleSubmit}>
+
         <label htmlFor="iname">Item name:</label>
           <input
             type="text"
@@ -282,7 +305,9 @@ const Add_Item = () => {
             name="iname"
             value={formData.iname}
             onChange={handleInputChange}
+            required
           />
+
           <label htmlFor="itemDescription">Item Description:</label>
           <input
             type="text"
@@ -291,17 +316,36 @@ const Add_Item = () => {
             value={formData.itemDescription}
             onChange={handleInputChange}
           />
+
+          <label htmlFor="storageMethod">Storage Method:</label>
+          <select
+            id="storageMethod"
+            name="storageMethod"
+            value={formData.storageMethod}
+            onChange={handleInputChange}
+            required
+          >
+            <option value=""></option>
+            <option value="Pantry">Pantry</option>
+            <option value="Refrigerator">Refrigerator</option>
+            <option value="Freezer">Freezer</option>
+            
+          </select>
+
           <label htmlFor="unit">Item Measurement Unit:</label>
           <select
             id="unit"
             name="unit"
             value={formData.unit}
             onChange={handleInputChange}
+            required
           >
-            <option value="count">Count</option>
-            <option value="gallons">Gallons</option>
-            <option value="grams">Grams</option>
+            <option value=""></option>
+            {units.map((e) => (
+            <option value={e.unitid}>{e.unitname}</option>
+          ))}
           </select>
+
           <label htmlFor="quantity">Quantity of Item:</label>
           <input
             type="number"
@@ -309,7 +353,9 @@ const Add_Item = () => {
             name="quantity"
             value={formData.quantity}
             onChange={handleInputChange}
+            required
           />
+
           <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
           <input
             type="text"
@@ -318,8 +364,10 @@ const Add_Item = () => {
             value={formData.ripeRating}
             onChange={handleInputChange}
           />
-          <input type="submit" className="button submit-button" value="Submit" />
+
+          <input type="submit" className="button-submit-button" value="Submit" />
         </form>
+
       </div>
 
       <div className="spoilage-all">
