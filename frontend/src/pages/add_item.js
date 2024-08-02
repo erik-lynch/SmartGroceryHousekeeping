@@ -328,7 +328,8 @@ const Add_Item = () => {
         <div className="spoilage-section-category-1">
         <h3>Select Food Category:</h3>
         <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
-          {categories.map((e) => (
+            <option value=""></option>
+            {categories.map((e) => (
             <option value={e.categoryid}>{e.categorysubcategory}</option>
           ))}
         </select>
@@ -338,6 +339,7 @@ const Add_Item = () => {
         {selectCategory && productCategory && <div>
         <h3>Select Product:</h3>
         <select name="spoilage-select" onChange={(e) => setSelectProduct(e.target.value)}>
+          <option value=""></option>
           {productCategory.map((e) => (
             <option value={e.productid}>{e.productname}</option>
           ))}

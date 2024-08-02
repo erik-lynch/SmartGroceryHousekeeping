@@ -657,7 +657,7 @@ button[class="upload-button"]{
   border: 1px solid black;
   width: 90%;
   filter: drop-shadow(10px 10px 0px black);
-  align-content: center;
+  align-content: top;
   grid-column-start: 2;
   grid-column-end: 3;
   grid-row-start: 2;
