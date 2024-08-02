@@ -11,6 +11,7 @@ import Recipes from "./pages/recipes";
 import Reports from "./pages/reports";
 import ViewRecipe from "./pages/view_recipe";
 import AddRecipe from "./pages/add_recipe";
+import AddRecipe from "./pages/cookbook";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/edit_item/:userId/:itemId/:usersItemsId" element={<EditItem />} />
                 <Route path="/users/:userId/recipes/:recipeId/view_recipe" element={<ViewRecipe />} />
                 <Route path="/users/:userId/add_recipe" element={<AddRecipe />} />
+                <Route path="/users/:userId/cookbook" element={<Cookbook />} />
             </Routes>
             <Footer />
         </Router>

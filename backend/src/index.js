@@ -690,10 +690,6 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   const itemId = (req.body.itemId);
   const quantity = (req.body.quantity);
   const quantityUnit = (req.body.quantityUnit);
-  //console.log('recipeid:', recipeId);
-  //console.log('itemid:',itemId);
-  //console.log('quantity:',quantity);
-  //console.log('quantityunit:',quantityUnit);
 
   if (recipeId == null || recipeId <=0 ) {
     res.status(400).json({ message: 'Error with recipeId'});
@@ -760,6 +756,132 @@ catch (error) {
   console.error('Error deleting step:', error);
   res.status(500).json({ message: 'Error deleting step', error: error.message });
 }
+});
+
+//----------------------------------------------------------------------------
+//                Cookbook Page
+//----------------------------------------------------------------------------
+
+app.get('api/users/:userId/recipes/all', async (req, res) => {
+  const userId = (req.params.userId);
+  console.log('userid:', userId);
+  
+  // Get all recipes a particular user has in their cookbook
+  try {
+    getAllUserRecipesRes = await pool.query(
+      `SELECT DISTINCT
+	      recipeId,
+        recipeName,
+        recipeDescription
+      FROM recipes AS R
+      INNER JOIN itemsrecipes AS IR ON IR.fk_recipes_recipeid = R.recipeid
+      INNER JOIN items AS I ON IR.fk_items_itemid = I.itemid
+      INNER JOIN usersitems AS UI ON UI.fk_items_itemid = I.itemid
+      INNER JOIN users AS U ON UI.fk_users_userid = U.userid
+      WHERE U.userid = ${userId}`
+    );
+    res.status(200).json(getAllUserRecipesRes.rows);
+  }
+  catch (error) {
+    console.error('Error getting user recipes:', error); 
+    res.status(500).json({error: error.message});
+  }
+});
+
+
+// Get all itemsrecipes ids in a list associated with recipeId
+app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
+  const recipeId = (req.params.recipeId);
+  console.log('itemsrecipes associated recipeid:', recipeId);
+
+  try {
+    const getItemsRecipesIdListRes = await pool.query(
+      `SELECT
+	      STRING_AGG(CHR(39) || CAST(itemsrecipesid AS VARCHAR) || CHR(39), ', ') AS itemsrecipesidlist
+	    FROM itemsrecipes
+	    WHERE fk_recipes_recipeid = ${recipeId}`
+    );
+    res.status(200).json(getItemsRecipesIdListRes.rows);
+  }
+  catch (error) {
+    console.error('Error getting itemsrecipes id list:', error); 
+    res.status(500).json({ message: 'Error getting itemsrecipes id list', error: error.message });
+  }
+});
+
+
+// Get all step ids in a list associated with recipeId
+app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
+  const recipeId = (req.params.recipeId);
+  console.log('steps associated recipeid:', recipeId);
+
+  try {
+    const getStepsIdListRes = await pool.query(
+      `SELECT
+	      STRING_AGG(CHR(39) || CAST(fk_steps_stepid AS VARCHAR) || CHR(39), ', ') AS stepidlist
+	    FROM recipessteps
+	    WHERE fk_recipes_recipeid = ${recipeId}`
+    );
+    res.status(200).json(getStepsIdListRes.rows);
+  }
+  catch (error) {
+    console.error('Error getting steps id list:', error); 
+    res.status(500).json({ message: 'Error getting steps id list', error: error.message });
+  }
+});
+
+// delete items recipe relationship from id (cant just delete recipe)
+app.delete('/api/delete-recipe/itemsrecipes', async (req, res) => {
+  const itemsRecipesIdList = (req.body.itemsrecipesidlist);
+  console.log('the list of IR ids is:', itemsRecipesIdList);
+
+  try {
+    const deleteItemsRecipesRes = await pool.query(
+      `DELETE FROM itemsrecipes
+       WHERE itemsrecipesid IN (${itemsRecipesIdList})`
+    );
+    res.status(200).json(deleteItemsRecipesRes);
+  }
+  catch (error) {
+    console.error('Error deleting itemsrecipes:', error);
+    res.status(500).json({ message: 'Error deleting itemsrecipes', error: error.message });
+  }
+});
+
+// delete all steps from id, will delete the recipestep relationship too
+app.delete('/api/delete-recipe/steps', async (req, res) => {
+  const stepsIdList = (req.body.stepidlist);
+  console.log('the list of step ids is:', stepsIdList);
+
+  try {
+    const deleteStepsRes = await pool.query(
+      `DELETE FROM steps
+       WHERE stepid IN (${stepsIdList})`
+    );
+    res.status(200).json(deleteStepsRes);
+  }
+  catch (error) {
+    console.error('Error deleting steps:', error);
+    res.status(500).json({ message: 'Error deleting steps', error: error.message });
+  }
+});
+
+// delete recipe from recipeId
+app.delete('/api/delete-recipe/recipe', async (req, res) => {
+  const recipeId = (req.body.recipeId);
+  console.log('recipeId to delete is:', recipeId);
+
+  try {
+    const deleteRecipeRes = await pool.query(
+      `DELETE FROM recipes
+       WHERE recipeId = ${recipeId}`
+    );
+    res.status(200).json(deleteRecipeRes );
+  }
+  catch (error) {
+    console.error('Error deleting recipe:', error);
+    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
+  }
 });
 
 //----------------------------------------------------------------------------
