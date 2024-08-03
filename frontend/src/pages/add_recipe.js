@@ -11,13 +11,6 @@ const Add_Recipe = () => {
     const [pageError, setPageError] = useState(false);
     const [loading0, setLoading0] = useState(true);
 
-    
-    // for alert that recipe was created succesfully
-    const [recipeAdded, setRecipeAdded]= useState(false);
-    const [stepsAdded, setStepsAdded]= useState(false);
-    const [rsAdded, setRsAdded]= useState(false);
-    const [irAdded, setIrAdded]= useState(false);
-
     // step counter
     const [stepFormNumber, setStepFormNumber] = useState(1);
 
@@ -131,7 +124,7 @@ const Add_Recipe = () => {
                     //console.log('recipeResData:', recipeResData[0]);
                     //console.log('recipeResDataid:', recipeResData[0].recipeid);
                     //setRecipeId(recipeResData[0].recipeid);
-                    setRecipeAdded(true);
+                    //setRecipeAdded(true);
                     return (recipeResData[0].recipeid)
                 } else {
                     const errorJson = await recipeRes.json();
@@ -168,7 +161,7 @@ const Add_Recipe = () => {
                     }
                 };
                 //setStepIdArr(tempStepIdArr);
-                setStepsAdded(true);
+                //setStepsAdded(true);
                 return (tempStepIdArr)
             } catch (error) {
                 console.error("Error submitting form:", error);
@@ -196,7 +189,7 @@ const Add_Recipe = () => {
                         alert('Failed to add link for recipe and step: ', jsonRecipeStepIds)
                     }
                 }
-                setRsAdded(true);
+                //setRsAdded(true);
                 return(true);
             } catch (error) {
                 console.error("Error submitting form:", error);
@@ -230,7 +223,7 @@ const Add_Recipe = () => {
                         alert('Failed to add link for recipe and item: ', jsonItemsRecipesInfo)
                     }
                 }
-                setIrAdded(true);
+                //setIrAdded(true);
                 return(true);
             }
             catch (error) {
@@ -240,7 +233,17 @@ const Add_Recipe = () => {
         async function wasCreated(recipeId, stepIdArr, linkrsdone, linkirdone) {
             if (recipeId && stepIdArr && linkrsdone && linkirdone) {
                 alert('Recipe added succesfully');
-                //todo reset to empty values for new recipe?
+
+                // clear out saved info
+                setRecipeInfo({recipeName: "", recipeDescription: "",});
+                setRecipeItems([{itemId: -1, quantity: '1', quantityUnit: ""}]);
+                setStepFormNumber(1);
+                setRecipeSteps([{stepNumber: 1, stepDescription: ""}]);
+
+                const recipeForm = document.getElementById("recipeAddForm");
+                recipeForm.reset();
+                
+                
             }
             else { 
                 console.log('error making recipe delete succesful tables')
@@ -263,7 +266,7 @@ const Add_Recipe = () => {
 
         <div class="core">
             <h2>Add a Recipe to the Cookbook</h2>
-            <form onSubmit={handleSubmit}>
+            <form id="recipeAddForm" onSubmit={handleSubmit}>
                 <h3>Recipe Name:</h3>
                     <textarea 
                         id="recipeName" 
@@ -328,7 +331,7 @@ const Add_Recipe = () => {
                             </div>
                         )
                     })}
-                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add More Ingredients</button></div><br/>
+                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredients</button></div><br/>
 
                         <h3>Directions:</h3>
                         {recipeSteps.map((steps, i) => {
@@ -346,9 +349,9 @@ const Add_Recipe = () => {
                                 </div>
                         )
                     })}
-                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add More Steps</button></div><br/>
+                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Steps</button></div><br/>
             </form>
-            <div><button className="recipe-submit-button" onClick={handleSubmit}>Submit</button></div><br/><br/><br/>
+            <div><button className="recipe-submit-button" onClick={handleSubmit}>Submit</button></div>
         </div>
     );
 };
