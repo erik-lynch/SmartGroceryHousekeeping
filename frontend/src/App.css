@@ -291,6 +291,7 @@ textarea {
   border: solid 1px;
   border-radius: 5px;
   margin-bottom: 15px;
+  padding:5px;
 }
 
 input:not([type="submit"]) {
@@ -344,7 +345,7 @@ input[type="number"] {
   font-size: 16px;
 }
 
-button[class="recipe-submit-button"], button[class="recipe-add-button"] {
+button[class="recipe-submit-button"] {
   align-self: center;
   background-color: black;
   color: white;
@@ -354,6 +355,18 @@ button[class="recipe-submit-button"], button[class="recipe-add-button"] {
   padding: 5px 5px;
   width: 150px;
   padding: 10px;
+}
+
+ button[class="recipe-add-button"] {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px 2px;
+  width: 110px;
+  padding: 5px;
 }
 
 
