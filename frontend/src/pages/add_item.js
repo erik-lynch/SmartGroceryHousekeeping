@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import Select from 'react-select';
 import * as SDCCore from "scandit-web-datacapture-core";
 import * as SDCBarcode from "scandit-web-datacapture-barcode";
 
@@ -13,7 +12,6 @@ const Add_Item = () => {
   const [productDetails, setProductDetails] = useState(null);
 
   const [units, setUnits] = useState(null);
-  const [today, setToday] = useState(null);
   const [spoilageDate, setSpoilageDate] = useState(null);
 
   const [isScanning, setIsScanning] = useState(false);
@@ -33,12 +31,6 @@ const Add_Item = () => {
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
-
-  // set today to current date
-  useEffect(() => {
-    setToday(Date());
-    console.log(today);
-  }, [])
 
   // fetch units on initial load
   useEffect(() => {
@@ -294,6 +286,19 @@ const Add_Item = () => {
     }
   };
 
+  //const pantryUpdate = (e) => {};
+
+  //const pantryAfterOpenUpdate = (e) => {};
+
+  //const fridgeUpdate = (e) => {};
+
+  //const fridgeAfterOpenUpdate = (e) => {};
+
+  //const fridgeAfterThawUpdate = (e) => {};
+
+  //const freezerUpdate = (e) => {};
+
+
   if (!categories || !units) {
 
     return(<h2>Loading...</h2>)
@@ -453,7 +458,7 @@ const Add_Item = () => {
           <p>The average of the selected expiration values will be added to the manual entry form above.</p>
 
           {/* Pantry: pantry, pantry (opened) */}
-          {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric) || (e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
+          {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric)) 
           && <button type="submit">Pantry</button>}
           {((e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
           && <button type="submit">Pantry (opened)</button>}
