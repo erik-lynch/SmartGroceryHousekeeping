@@ -18,7 +18,7 @@ const Cookbook = () => {
                 setLoading0(true);
                 const recipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/all`);
                 const recipesData = await recipesRes.json();
-                console.log(recipesData)
+                //console.log(recipesData)
                 setAllRecipes(recipesData);
                 setLoading0(false);
             }
@@ -31,14 +31,12 @@ const Cookbook = () => {
         fetchAllUserRecipes();
         }, [userId]);
         
-        const handleViewRecipe = async (e) => {
-            console.log('view recipe e:', e);
-            navigate(`/users/${userId}/recipes/${e}/view_recipe`)
+        const handleViewRecipe = async (recipeId) => {
+            //console.log('view recipe recipeId:', recipeId);
+            navigate(`/users/${userId}/recipes/${recipeId}/view_recipe`);
         };
 
-        const handleDeleteRecipe = async (e) => {
-            console.log(e);
-            var recipeId = e;
+        const handleDeleteRecipe = async (recipeId) => {
             async function deleteInOrder() {
                 var allItemsRecipes = await getAllItemsRecipes(recipeId);
                 var allSteps = await getAllSteps(recipeId);
@@ -47,7 +45,7 @@ const Cookbook = () => {
                 var recipeDeleted = await deleteRecipe(recipeId, itemsRecipesDeleted, stepsDeleted);
                 await deletedRecipeSuccess(recipeDeleted, itemsRecipesDeleted, stepsDeleted);
             }
-    
+            
             async function getAllItemsRecipes(recipeId) {
                 try {
                     const itemsRecipesRes = await fetch(`http://localhost:3001/api/delete-recipe/${recipeId}/itemsrecipes`, {
@@ -56,8 +54,8 @@ const Cookbook = () => {
                     });
                     if (itemsRecipesRes.ok) {
                         var itemsRecipesData = await itemsRecipesRes.json();
-                        console.log('itemsrecipes id data:', itemsRecipesData);
-                        console.log('itemsrecipes id list:', itemsRecipesData[0]);
+                        //console.log('itemsrecipes id data:', itemsRecipesData);
+                        //console.log('itemsrecipes id list:', itemsRecipesData[0]);
                         return (itemsRecipesData[0]);
                 } else {
                     const itemsRecipesErrorJson = await itemsRecipesRes.json();
@@ -76,8 +74,8 @@ const Cookbook = () => {
                     });
                     if (stepsRes.ok) {
                         var stepsData = await stepsRes.json();
-                        console.log('steps id data:', stepsData);
-                        console.log('steps id list:', stepsData[0]);
+                        //console.log('steps id data:', stepsData);
+                        //console.log('steps id list:', stepsData[0]);
                         return (stepsData[0]);
                 } else {
                     const stepErrorJson = await stepsRes.json();
@@ -96,7 +94,7 @@ const Cookbook = () => {
                         body: JSON.stringify(allItemsRecipes),
                     });
                     if (deleteIRRes.ok) {
-                        console.log("deleted IR ids:", allItemsRecipes)
+                        //console.log("deleted IR ids:", allItemsRecipes)
                         return (true);
                 } else {
                     const deleteIRErrorJson = await deleteIRRes.json();
@@ -117,7 +115,7 @@ const Cookbook = () => {
                         body: JSON.stringify(allSteps),
                     });
                     if (deleteStepsRes.ok) {
-                        console.log("deleted Steps ids:", allSteps)
+                        //console.log("deleted Steps ids:", allSteps)
                         return (true);
                 } else {
                     const deleteStepsErrorJson = await deleteStepsRes.json();
@@ -138,7 +136,7 @@ const Cookbook = () => {
                         body: JSON.stringify({recipeId: recipeId}),
                     });
                     if (deleteRecipeRes.ok) {
-                        console.log("deleted recipeid:", recipeId)
+                        //console.log("deleted recipeid:", recipeId)
                         return (true);
                 } else {
                     const deleteRecipeErrorJson = await deleteRecipeRes.json();
@@ -153,7 +151,7 @@ const Cookbook = () => {
 
             async function deletedRecipeSuccess(recipeDeleted, itemsRecipesDeleted, stepsDeleted) {
                 if (recipeDeleted && itemsRecipesDeleted && stepsDeleted) {
-                    console.log('succesfully deleted recipe');
+                    //console.log('succesfully deleted recipe');
                     window.location.reload();
                 }
                 else {
