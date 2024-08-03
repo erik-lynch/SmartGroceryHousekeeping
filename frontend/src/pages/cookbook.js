@@ -37,7 +37,6 @@ const Cookbook = () => {
         };
 
         const handleDeleteRecipe = async (e) => {
-            e.preventDefault();
             console.log(e);
             var recipeId = e;
             async function deleteInOrder() {
@@ -58,8 +57,8 @@ const Cookbook = () => {
                     if (itemsRecipesRes.ok) {
                         var itemsRecipesData = await itemsRecipesRes.json();
                         console.log('itemsrecipes id data:', itemsRecipesData);
-                        console.log('itemsrecipes id list:', itemsRecipesData.itemsrecipesidlist);
-                        return (itemsRecipesData.itemsrecipesidlist);
+                        console.log('itemsrecipes id list:', itemsRecipesData[0]);
+                        return (itemsRecipesData[0]);
                 } else {
                     const itemsRecipesErrorJson = await itemsRecipesRes.json();
                     console.error("Failed to get itemsRecipes:", itemsRecipesErrorJson.error);
@@ -78,8 +77,8 @@ const Cookbook = () => {
                     if (stepsRes.ok) {
                         var stepsData = await stepsRes.json();
                         console.log('steps id data:', stepsData);
-                        console.log('steps id list:', stepsData.stepidlist);
-                        return (stepsData.stepidlist);
+                        console.log('steps id list:', stepsData[0]);
+                        return (stepsData[0]);
                 } else {
                     const stepErrorJson = await stepsRes.json();
                     console.error("Failed to get steps:", stepErrorJson.error);
@@ -136,7 +135,7 @@ const Cookbook = () => {
                     const deleteRecipeRes = await fetch(`http://localhost:3001/api/delete-recipe/recipe`, {
                         method: "DELETE",
                         headers: {"Content-Type": "application/json",},
-                        body: JSON.stringify(recipeId),
+                        body: JSON.stringify({recipeId: recipeId}),
                     });
                     if (deleteRecipeRes.ok) {
                         console.log("deleted recipeid:", recipeId)
@@ -153,10 +152,13 @@ const Cookbook = () => {
             }
 
             async function deletedRecipeSuccess(recipeDeleted, itemsRecipesDeleted, stepsDeleted) {
-                if (recipeDeleted && itemsRecipesDeleted && stepsDeleted)
+                if (recipeDeleted && itemsRecipesDeleted && stepsDeleted) {
                     console.log('succesfully deleted recipe');
+                    window.location.reload();
+                }
                 else {
                     console.log('recipe was not succesfully deleted');
+                    alert('recipe was not deleted succesfully');
                 }
             }
 
@@ -195,7 +197,7 @@ const Cookbook = () => {
                     <td>{recipeData.recipename}</td>
                     <td>{recipeData.recipedescription}</td>
                     <td><button onClick={() => handleViewRecipe(recipeData.recipeid)}>View</button></td>
-                    <td><button onClick={handleDeleteRecipe}>Delete</button></td>
+                    <td><button onClick={() => handleDeleteRecipe(recipeData.recipeid)}>Delete</button></td>
                 </tr>
                     )})}
             </table>
