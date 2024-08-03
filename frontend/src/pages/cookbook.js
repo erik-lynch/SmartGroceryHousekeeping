@@ -185,8 +185,8 @@ const Cookbook = () => {
                 <tr class="header-row">
                     <th>Name</th>
                     <th>Description</th>
-                    <th>View</th>
-                    <th>Delete</th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <br></br>
                 {allRecipes.map((recipeData) => {

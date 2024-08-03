@@ -764,7 +764,7 @@ catch (error) {
 //http://localhost:3001/api/users/${userId}/recipes/all
 app.get('/api/users/:userId/recipes/all', async (req, res) => {
   const userId = (req.params.userId);
-  console.log('userid:', userId);
+  //console.log('userid:', userId);
   
   // Get all recipes a particular user has in their cookbook
   try {
@@ -793,7 +793,7 @@ app.get('/api/users/:userId/recipes/all', async (req, res) => {
 // Get all itemsrecipes ids in a list associated with recipeId
 app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
   const recipeId = (req.params.recipeId);
-  console.log('itemsrecipes associated recipeid:', recipeId);
+  //console.log('itemsrecipes associated recipeid:', recipeId);
 
   try {
     const getItemsRecipesIdListRes = await pool.query(
@@ -814,7 +814,7 @@ app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
 // Get all step ids in a list associated with recipeId
 app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
   const recipeId = (req.params.recipeId);
-  console.log('steps associated recipeid:', recipeId);
+  //console.log('steps associated recipeid:', recipeId);
 
   try {
     const getStepsIdListRes = await pool.query(
@@ -834,7 +834,7 @@ app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
 // delete items recipe relationship from id (cant just delete recipe)
 app.delete('/api/delete-recipe/itemsrecipes', async (req, res) => {
   const itemsRecipesIdList = (req.body.itemsrecipesidlist);
-  console.log('the list of IR ids is:', itemsRecipesIdList);
+  //console.log('the list of IR ids is:', itemsRecipesIdList);
 
   try {
     const deleteItemsRecipesRes = await pool.query(
@@ -852,7 +852,7 @@ app.delete('/api/delete-recipe/itemsrecipes', async (req, res) => {
 // delete all steps from id, will delete the recipestep relationship too
 app.delete('/api/delete-recipe/steps', async (req, res) => {
   const stepsIdList = (req.body.stepidlist);
-  console.log('the list of step ids is:', stepsIdList);
+  //console.log('the list of step ids is:', stepsIdList);
 
   try {
     const deleteStepsRes = await pool.query(
@@ -870,7 +870,7 @@ app.delete('/api/delete-recipe/steps', async (req, res) => {
 // delete recipe from recipeId
 app.delete('/api/delete-recipe/recipe', async (req, res) => {
   const recipeId = (req.body.recipeId);
-  console.log('recipeId to delete is:', recipeId);
+  //console.log('recipeId to delete is:', recipeId);
 
   try {
     const deleteRecipeRes = await pool.query(
