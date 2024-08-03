@@ -13,6 +13,8 @@ const Add_Item = () => {
   const [productDetails, setProductDetails] = useState(null);
 
   const [units, setUnits] = useState(null);
+  const [today, setToday] = useState(null);
+  const [spoilageDate, setSpoilageDate] = useState(null);
 
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
@@ -31,6 +33,12 @@ const Add_Item = () => {
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
+
+  // set today to current date
+  useEffect(() => {
+    setToday(Date());
+    console.log(today);
+  }, [])
 
   // fetch units on initial load
   useEffect(() => {
@@ -371,7 +379,7 @@ const Add_Item = () => {
         <h2>Food Shelf Life Guidelines</h2>
 
         <div className="spoilage-section-category-1">
-        <h3>Select Food Category:</h3>
+        <h3>Select Category:</h3>
         <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
             <option value=""></option>
             {categories.map((e) => (
@@ -398,24 +406,36 @@ const Add_Item = () => {
         {productDetails.map((e) => (
           <div>
           
-          {/* Title and Subtitle Options */}
-          {(e.name && e.subtitle) && <h2>{e.name} - {e.subtitle}</h2>}
-          {(e.name && !e.subtitle) && <h2>{e.name}</h2>}
+          {/* Title and Subtitle */}
+          {(e.name && e.subtitle) && <h1>{e.name} - {e.subtitle}</h1>}
+          {(e.name && !e.subtitle) && <h1>{e.name}</h1>}
     
           {/* Pantry */}
-          {(e.p_min && e.p_max && e.p_metric) && <p><b>Pantry:</b> {e.p_min} - {e.p_max} {e.p_metric}</p>}
-          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && <p><b>Pantry:</b> {e.dop_p_min} - {e.dop_p_max} {e.dop_p_metric}</p>}
-          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_min} - {e.p_after_opening_max} {e.p_after_opening_metric}</p>}
+          {(e.p_min && e.p_max && e.p_metric) && (e.p_min === e.p_max) && <p><b>Pantry:</b> {e.p_max} {e.p_metric}</p>}
+          {(e.p_min && e.p_max && e.p_metric) && (e.p_min !== e.p_max) && <p><b>Pantry:</b> {e.p_min}-{e.p_max} {e.p_metric}</p>}
+          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && (e.dop_p_min === e.dop_p_max) && <p><b>Pantry:</b> {e.dop_p_max} {e.dop_p_metric}</p>}
+          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && (e.dop_p_min !== e.dop_p_max) && <p><b>Pantry:</b> {e.dop_p_min}-{e.dop_p_max} {e.dop_p_metric}</p>}
+          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && (e.p_after_opening_min === e.p_after_opening_max) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_max} {e.p_after_opening_metric}</p>}
+          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && (e.p_after_opening_min !== e.p_after_opening_max) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_min}-{e.p_after_opening_max} {e.p_after_opening_metric}</p>}
 
           {/* Refrigerator */}
-          {(e.r_min && e.r_max && e.r_metric) && <p><b>Refrigerator:</b> {e.r_min} - {e.r_max} {e.r_metric}</p>}
-          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && <p><b>Refrigerator:</b> {e.dop_r_min} - {e.dop_r_max} {e.dop_r_metric}</p>}
-          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_min} - {e.r_after_opening_max} {e.r_after_opening_metric}</p>}
-          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_min} - {e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
+          {(e.r_min && e.r_max && e.r_metric) && (e.r_min === e.r_max) && <p><b>Refrigerator:</b> {e.r_max} {e.r_metric}</p>}
+          {(e.r_min && e.r_max && e.r_metric) && (e.r_min !== e.r_max) && <p><b>Refrigerator:</b> {e.r_min}-{e.r_max} {e.r_metric}</p>}
+          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && (e.dop_r_min === e.dop_r_max) && <p><b>Refrigerator:</b> {e.dop_r_max} {e.dop_r_metric}</p>}
+          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && (e.dop_r_min !== e.dop_r_max) && <p><b>Refrigerator:</b> {e.dop_r_min}-{e.dop_r_max} {e.dop_r_metric}</p>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && (e.r_after_opening_min === e.r_after_opening_max) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_max} {e.r_after_opening_metric}</p>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && (e.r_after_opening_min !== e.r_after_opening_max) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_min}-{e.r_after_opening_max} {e.r_after_opening_metric}</p>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && (e.r_after_thawing_min === e.r_after_thawing_max) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && (e.r_after_thawing_min !== e.r_after_thawing_max) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_min}-{e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
 
           {/* Freezer */}
-          {(e.f_min && e.f_max && e.f_metric) && <p><b>Freezer:</b> {e.f_min} - {e.f_max} {e.f_metric}</p>}
-          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && <p><b>Freezer:</b> {e.dop_f_min} - {e.dop_f_max} {e.dop_f_metric}</p>}
+          {(e.f_min && e.f_max && e.f_metric) && (e.f_min === e.f_max) && <p><b>Freezer:</b> {e.f_max} {e.f_metric}</p>}
+          {(e.f_min && e.f_max && e.f_metric) && (e.f_min !== e.f_max) && <p><b>Freezer:</b> {e.f_min}-{e.f_max} {e.f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min !== e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_max} {e.dop_f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min !== e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_min}-{e.dop_f_max} {e.dop_f_metric}</p>}
+          
+
+          <br/>
 
           {/* Tips */}
           {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h2>Tips</h2>}
@@ -426,17 +446,19 @@ const Add_Item = () => {
           {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
           {e.dop_f_tips && <p><b>Freezer:</b> {e.dop_f_tips}</p>}
 
-          {/* Use Expiration Values */}
-          <h2>Use Expiration Values</h2>
-          <p>The average of the selected values will be added to the manual entry form above.</p>
+          <br/>
 
-          {/* Pantry */}
+          {/* Use Expiration Date */}
+          <h2>Use Expiration Date</h2>
+          <p>The average of the selected expiration values will be added to the manual entry form above.</p>
+
+          {/* Pantry: pantry, pantry (opened) */}
           {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric) || (e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
           && <button type="submit">Pantry</button>}
           {((e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
           && <button type="submit">Pantry (opened)</button>}
 
-          {/* Refrigerator */}
+          {/* Refrigerator: refrigerator, refrigerator (opened), refrigerator (thawed) */}
           {((e.r_min && e.r_max && e.r_metric) || (e.dop_r_min && e.dop_r_max && e.dop_r_metric)) 
           && <button type="submit">Refrigerator</button>}
           {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) 
