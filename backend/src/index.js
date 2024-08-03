@@ -761,8 +761,8 @@ catch (error) {
 //----------------------------------------------------------------------------
 //                Cookbook Page
 //----------------------------------------------------------------------------
-
-app.get('api/users/:userId/recipes/all', async (req, res) => {
+//http://localhost:3001/api/users/${userId}/recipes/all
+app.get('/api/users/:userId/recipes/all', async (req, res) => {
   const userId = (req.params.userId);
   console.log('userid:', userId);
   
@@ -778,7 +778,8 @@ app.get('api/users/:userId/recipes/all', async (req, res) => {
       INNER JOIN items AS I ON IR.fk_items_itemid = I.itemid
       INNER JOIN usersitems AS UI ON UI.fk_items_itemid = I.itemid
       INNER JOIN users AS U ON UI.fk_users_userid = U.userid
-      WHERE U.userid = ${userId}`
+      WHERE U.userid = ${userId}
+      order by recipename`
     );
     res.status(200).json(getAllUserRecipesRes.rows);
   }

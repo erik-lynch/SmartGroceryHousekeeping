@@ -11,7 +11,7 @@ import Recipes from "./pages/recipes";
 import Reports from "./pages/reports";
 import ViewRecipe from "./pages/view_recipe";
 import AddRecipe from "./pages/add_recipe";
-import AddRecipe from "./pages/cookbook";
+import Cookbook from "./pages/cookbook";
 
 function App() {
 

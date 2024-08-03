@@ -1,10 +1,11 @@
 import React from "react";
 import{ useState, useEffect } from 'react';
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Cookbook = () => {
 
         let { userId } = useParams();
+        const navigate = useNavigate();
 
         const [allRecipes, setAllRecipes] = useState([]);
         const [pageError, setPageError] = useState(false);
@@ -29,6 +30,11 @@ const Cookbook = () => {
         
         fetchAllUserRecipes();
         }, [userId]);
+        
+        const handleViewRecipe = async (e) => {
+            console.log('view recipe e:', e);
+            navigate(`/users/${userId}/recipes/${e}/view_recipe`)
+        };
 
         const handleDeleteRecipe = async (e) => {
             e.preventDefault();
@@ -188,7 +194,7 @@ const Cookbook = () => {
                 <tr key={recipeData.recipeid}>
                     <td>{recipeData.recipename}</td>
                     <td>{recipeData.recipedescription}</td>
-                    <td><button as={Link} to={`/users/${userId}/recipes/${recipeData.recipeid}/view_recipe`}>View</button></td>
+                    <td><button onClick={() => handleViewRecipe(recipeData.recipeid)}>View</button></td>
                     <td><button onClick={handleDeleteRecipe}>Delete</button></td>
                 </tr>
                     )})}
