@@ -274,7 +274,8 @@ const Add_Recipe = () => {
                         value={recipeInfo.recipeName} 
                         onChange={handleRecipeInfoInputChange}
                         rows="2"
-                        cols="50"
+                        cols="55"
+                        class="recipe-text"
                     ></textarea><br/>
                 <h3>Recipe Description:</h3>
                     <textarea 
@@ -283,7 +284,8 @@ const Add_Recipe = () => {
                         value={recipeInfo.recipeDescription} 
                         onChange={handleRecipeInfoInputChange}
                         rows="4"
-                        cols="50"
+                        cols="55"
+                        class="recipe-text"
                         ></textarea> <br/>
                 <h3> Ingredients List:</h3>
                     {recipeItems.map((items, i) => {
@@ -292,7 +294,7 @@ const Add_Recipe = () => {
 
                                 <div class = "grid-recipe-item">
                                     <label htmlFor="itemId">Name: </label><br/>
-                                        <select  class = "no-style-select" id="itemId" name="itemId" size="2" value={items.itemId} onChange={e => handleRecipeItemsInputChange(i,e)}>
+                                        <select  class="recipe-select-ingredient" id="itemId" name="itemId" size="2" value={items.itemId} onChange={e => handleRecipeItemsInputChange(i,e)}>
                                             <option value={-1}> Not selected</option>
                                             {allUserIdItems.map((newItems, i) => {
                                                 return (
@@ -304,12 +306,12 @@ const Add_Recipe = () => {
 
                                 <div class = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
-                                    <input type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
+                                    <input class="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
                                 <div/>
 
                                 <div class= "grid-recipe-measurement">
                                     <label htmlFor="quantityUnit">Measurement:</label>
-                                        <select id="quantityUnit" name="quantityUnit"   value={items.quantityUnit} onChange={e => handleRecipeItemsInputChange(i,e)}>
+                                        <select id="quantityUnit" name="quantityUnit"   class="recipe-select-measurement" value={items.quantityUnit} onChange={e => handleRecipeItemsInputChange(i,e)}>
                                             <option value="">No Unit</option>
                                             <option value="tsp">Teaspoon/Teaspoons</option>
                                             <option value="tbsp">Tablespoon/Tablespoons</option>
@@ -344,7 +346,8 @@ const Add_Recipe = () => {
                                         value={steps.stepDescription} 
                                         onChange={e => handleRecipeStepsInputChange(i,e)}
                                         rows="3"
-                                        cols="50"
+                                        cols="55"
+                                        class="recipe-text"
                                     ></textarea> <br/><br/>
                                 </div>
                         )

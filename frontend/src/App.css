@@ -252,7 +252,7 @@ input.edit-button {
 
 .grid-recipe {
   display:grid;
-  grid-template-columns: 200px 250px;
+  grid-template-columns: 200px 240px;
   padding: 5px;
   width: 90%;
 }
@@ -270,6 +270,9 @@ input.edit-button {
   text-align: left;
   grid-area: 1 / 1 / 1/ 2;
   border-radius: 20px 0px 0px 20px;
+  border-left: black solid;
+  border-top: black solid;
+  border-bottom: black solid;
 }
 
 .grid-recipe-quantity {
@@ -277,6 +280,9 @@ input.edit-button {
   float: left;
   grid-column: 1 / 2 / 1 / 2;
   border-radius: 0px 20px 20px 0px;
+  border-right: black solid;
+  border-top: black solid;
+  border-bottom: black solid;
 }
 
 .grid-recipe-measurement {
@@ -294,9 +300,25 @@ textarea {
   padding:5px;
 }
 
+textarea[class="recipe-text"] {
+  max-width: 100%;
+  border: solid 1px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  padding:5px;
+  border: black solid;
+}
+
 input:not([type="submit"]) {
   border-radius: 5px;
   height: 25px;
+}
+
+input[class="recipe-quantity"] {
+  border-radius: 5px;
+  height: 25px;
+  text-align: center;
+  border: black solid;
 }
 
 input[type="button"] {
@@ -370,11 +392,20 @@ button[class="recipe-submit-button"] {
 }
 
 
-select {
+select[class="recipe-select-ingredient"] {
+  margin: 10px;
+  border-radius: 5px;
+  height: 100px;
+  inline-size: 150px;
+  border: black solid;
+  padding: 5px 15px;
+}
+
+select[class="recipe-select-measurement"] {
   margin: 10px 10px 10px 0;
   border-radius: 50px;
   height: 45px;
-  width: 150px;
+  width: 180px;
   border: black solid;
   padding: 5px 15px;
 }
