@@ -626,29 +626,20 @@ button[class="upload-button"]{
 /* Food Shelf Life Guidelines */
 
 .spoilage-all{
-  display: grid;
-  grid-template-rows: .5fr .5fr .5fr 1fr;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
   margin: 30px 0 30px 0;
 }
 
 .spoilage-section-category-1{
-  display: block;
-  margin: 20px 20px 20px 0;
   width: 100%;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  grid-row-start: 2;
+  margin-bottom: 30px;
 }
 
 .spoilage-section-category-2{
-  display: block;
-  margin: 20px 20px 20px 0;
   width: 100%;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  grid-row-start: 3;
+  margin-bottom: 30px;
 }
 
 .spoilage-section-product{
@@ -656,20 +647,13 @@ button[class="upload-button"]{
   padding: 20px;
   border-radius: 5px;
   border: 1px solid black;
-  width: 90%;
+  width: 100%;
   filter: drop-shadow(10px 10px 0px black);
-  align-content: top;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 5;
 }
 
 .spoilage-all h2{
   width: 100%;
   height: fit-content;
-  grid-column-start: 1;
-  grid-column-end: 3;
 }
 
 .spoilage-all h4{
@@ -699,7 +683,7 @@ button[class="upload-button"]{
 }
 
 select[name="spoilage-select"]{
-  width: 90%;
+  width: 100%;
   height: 45px;
   margin: 10px 10px 10px 0;
   border-radius: 5px;
@@ -795,29 +779,6 @@ color: black;
   .date {
     float: none;
     padding: 5px 12px 15px 12px; 
-  }
-
-  .spoilage-all{
-    display: grid;
-    grid-template-rows: .25fr .5fr .5fr .5fr;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    margin: 30px 0 30px 0;
-  }
-  
-  .spoilage-section-category-1{
-    grid-column-end: 3;
-  }
-  
-  .spoilage-section-category-2{
-    grid-column-end: 3;
-  }
-  
-  .spoilage-section-product{
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 4;
-    grid-row-end: 4;
   }
   
   .edit-image-content {

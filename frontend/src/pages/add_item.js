@@ -428,14 +428,21 @@ const Add_Item = () => {
 
           {/* Use Expiration Values */}
           <h2>Use Expiration Values</h2>
-          <p>The average of the selected value will be added to the manual entry form above.</p>
+          <p>The average of the selected values will be added to the manual entry form above.</p>
 
           {/* Pantry */}
           {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric) || (e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
           && <button type="submit">Pantry</button>}
+          {((e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
+          && <button type="submit">Pantry (opened)</button>}
 
           {/* Refrigerator */}
-          <button type="submit">Refrigerator</button>
+          {((e.r_min && e.r_max && e.r_metric) || (e.dop_r_min && e.dop_r_max && e.dop_r_metric)) 
+          && <button type="submit">Refrigerator</button>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) 
+          && <button type="submit">Refrigerator (opened)</button>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) 
+          && <button type="submit">Refrigerator (thawed)</button>}
           
           {/* Freezer */}
           {((e.f_min && e.f_max && e.f_metric) || (e.dop_f_min && e.dop_f_max && e.dop_f_metric)) 
