@@ -232,6 +232,26 @@ const Add_Item = () => {
       <div className="manual-entry">
           
         <br></br>
+        <h2>Take Photo or Upload</h2>
+        {image.preview && <img src={image.preview} width='100' height='100'/>}
+        
+        <form onSubmit={handleVision} encType="multipart/form-data">
+          <input 
+            type="file" 
+            accept="image/*" 
+            id="imgfile" 
+            name="imgfile" 
+            onChange={handleVisionChange} 
+          />
+          <input 
+            accept="image/*" 
+            id="icon-button-file" 
+            capture="environment"
+            type="file" 
+            onChange={handleVisionChange} 
+          />
+          <button type="submit" className="upload-button">Analyze Image</button>
+        </form>
         <h2>Manual Input</h2>
         <form onSubmit={handleSubmit}>
         <label htmlFor="iname">Item name:</label>
@@ -278,23 +298,6 @@ const Add_Item = () => {
             onChange={handleInputChange}
           />
           <input type="submit" className="button submit-button" value="Submit" />
-        </form>
-      </div>
-
-      <br/>
-      
-      <div>
-        <h2>Take Photo or Upload</h2>
-        {image.preview && <img src={image.preview} width='100' height='100'/>}
-        <form onSubmit={handleVision} encType="multipart/form-data">
-          <input 
-            type="file" 
-            accept="image/*" 
-            id="imgfile" 
-            name="imgfile" 
-            onChange={handleVisionChange} 
-          />
-          <button type="submit" className="upload-button">Analyze Image</button>
         </form>
       </div>
 
