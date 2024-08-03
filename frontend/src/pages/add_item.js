@@ -21,11 +21,13 @@ const Add_Item = () => {
   const [itemScannedMessage, setItemScannedMessage] = useState(false);
   const scannerRef = useRef(null);
   const [formData, setFormData] = useState({
-    iname: "",
-    unit: "count",
+    itemName: "",
+    itemDescription: "",
+    unit: "",
     quantity: 1,
     ripeRating: "",
-    itemDescription: "",
+    expirationDate: "",
+
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
@@ -197,6 +199,7 @@ const Add_Item = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -298,12 +301,12 @@ const Add_Item = () => {
         <h2>Manual Input</h2>
         <form onSubmit={handleSubmit}>
 
-        <label htmlFor="iname">Item name:</label>
+        <label htmlFor="itemName">Item name:</label>
           <input
             type="text"
-            id="iname"
-            name="iname"
-            value={formData.iname}
+            id="itemName"
+            name="itemName"
+            value={formData.itemName}
             onChange={handleInputChange}
             required
           />
@@ -316,21 +319,6 @@ const Add_Item = () => {
             value={formData.itemDescription}
             onChange={handleInputChange}
           />
-
-          <label htmlFor="storageMethod">Storage Method:</label>
-          <select
-            id="storageMethod"
-            name="storageMethod"
-            value={formData.storageMethod}
-            onChange={handleInputChange}
-            required
-          >
-            <option value=""></option>
-            <option value="Pantry">Pantry</option>
-            <option value="Refrigerator">Refrigerator</option>
-            <option value="Freezer">Freezer</option>
-            
-          </select>
 
           <label htmlFor="unit">Item Measurement Unit:</label>
           <select
@@ -362,6 +350,15 @@ const Add_Item = () => {
             id="ripeRating"
             name="ripeRating"
             value={formData.ripeRating}
+            onChange={handleInputChange}
+          />
+
+          <label htmlFor="expirationDate">Item Expiration Date:</label>
+          <input
+            type="date"
+            id="expirationDate"
+            name="expirationDate"
+            value={formData.expirationDate}
             onChange={handleInputChange}
           />
 
@@ -420,18 +417,29 @@ const Add_Item = () => {
           {(e.f_min && e.f_max && e.f_metric) && <p><b>Freezer:</b> {e.f_min} - {e.f_max} {e.f_metric}</p>}
           {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && <p><b>Freezer:</b> {e.dop_f_min} - {e.dop_f_max} {e.dop_f_metric}</p>}
 
-          <br/>
-
           {/* Tips */}
-          {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h4>Tips</h4>}
+          {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h2>Tips</h2>}
           {e.p_tips && <p><b>Pantry:</b> {e.p_tips}</p>}
           {e.dop_p_tips && <p><b>Pantry:</b> {e.dop_p_tips}</p>}
           {e.r_tips && <p><b>Refrigerator: </b> {e.r_tips}</p>}
           {e.dop_r_tips && <p><b>Refrigerator:</b> {e.dop_r_tips}</p>}
           {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
           {e.dop_f_tips && <p><b>Freezer:</b> {e.dop_f_tips}</p>}
-          
 
+          {/* Use Expiration Values */}
+          <h2>Use Expiration Values</h2>
+          <p>The average of the selected value will be added to the manual entry form above.</p>
+
+          {/* Pantry */}
+          {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric) || (e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
+          && <button type="submit">Pantry</button>}
+
+          {/* Refrigerator */}
+          <button type="submit">Refrigerator</button>
+          
+          {/* Freezer */}
+          {((e.f_min && e.f_max && e.f_metric) || (e.dop_f_min && e.dop_f_max && e.dop_f_metric)) 
+          && <button type="submit">Freezer</button>}
 
     
           </div>

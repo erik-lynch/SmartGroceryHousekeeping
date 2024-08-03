@@ -423,6 +423,7 @@ select {
 
 .manual-entry input[type="text"],
 .manual-entry input[type="number"],
+.manual-entry input[type="date"],
 .manual-entry select {
   width: 100%;
   height: 45px;
@@ -626,7 +627,7 @@ button[class="upload-button"]{
 
 .spoilage-all{
   display: grid;
-  grid-template-rows: .5fr 1fr 1fr;
+  grid-template-rows: .5fr .5fr .5fr 1fr;
   grid-template-columns: 1fr 1fr;
   width: 100%;
   margin: 30px 0 30px 0;
@@ -661,7 +662,7 @@ button[class="upload-button"]{
   grid-column-start: 2;
   grid-column-end: 3;
   grid-row-start: 2;
-  grid-row-end: 4;
+  grid-row-end: 5;
 }
 
 .spoilage-all h2{
@@ -680,6 +681,21 @@ button[class="upload-button"]{
 
 .spoilage-all p{
   margin: 10px 0 10px 0;
+}
+
+.spoilage-section-product button{
+  margin: 3px;
+  width: fit-content;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
+}
+
+.spoilage-section-product h2{
+  margin-top: 40px;
 }
 
 select[name="spoilage-select"]{
