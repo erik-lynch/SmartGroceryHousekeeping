@@ -72,7 +72,7 @@ app.get('/items', async (req, res) => {
 
 // add item to DB
 app.post('/api/add-item', async (req, res) => {
-  const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 
+  const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
 
   try {
     const itemResult = await pool.query(
