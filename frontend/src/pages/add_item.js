@@ -36,6 +36,9 @@ const Add_Item = () => {
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
 
+  // temporary for demo
+  const userId = 1;
+
   // fetch units on initial load
   useEffect(() => {
 
@@ -223,7 +226,7 @@ const Add_Item = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/api/add-item", {
+      const response = await fetch(`http://localhost:3001/api/add-item/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -424,15 +427,13 @@ const Add_Item = () => {
     console.log(productDetails);
 
     days = Math.floor((min + max) / 2);
-
-    console.log(`${min} ${max} days`);
-    console.log(`averaged value: ${days}`);
     updateDate.setDate(updateDate.getDate() + days);
     updateDate = updateDate.toISOString().split('T')[0];
     console.log(updateDate);
 
     document.getElementById("expirationDate").value = updateDate;
-
+    setFormData({ ...formData, ['expirationDate']: updateDate });
+    console.log(formData);
 
 
   };
