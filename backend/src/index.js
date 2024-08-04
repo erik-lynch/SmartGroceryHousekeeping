@@ -96,7 +96,7 @@ app.post('/api/add-item/:userId', async (req, res) => {
 
     const updateUsersItems = await pool.query(
       `INSERT INTO usersitems (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
-      VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, CURRENT_DATE + 5);`
+      VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, '${expirationDate}');`
     )
 
     console.log(updateUsersItems.rows)
