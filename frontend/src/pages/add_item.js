@@ -437,7 +437,6 @@ const Add_Item = () => {
 
   };
 
-
   if (!categories || !units) {
 
     return(<h2>Loading...</h2>)
@@ -450,7 +449,7 @@ const Add_Item = () => {
 
       <div className="manual-entry">
           
-        <br></br>
+        
         <h2>Take Photo or Upload</h2>
         {image.preview && <img src={image.preview} width='100' height='100'/>}
         
@@ -471,6 +470,8 @@ const Add_Item = () => {
           />
           <button type="submit" className="upload-button">Analyze Image</button>
         </form>
+
+        <br/><br/>
 
         <h2>Manual Input</h2>
         <form id="manual-input-form" onSubmit={handleSubmit}>
