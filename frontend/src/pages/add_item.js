@@ -29,6 +29,10 @@ const Add_Item = () => {
     expirationDate: "",
 
   });
+  const [image, setImageData] = useState({
+    preview: '',
+    data: ''
+  });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
 
@@ -202,6 +206,15 @@ const Add_Item = () => {
     console.log(formData);
   };
 
+  const handleVisionChange = (e) => {
+
+    const img = {
+      preview: URL.createObjectURL(e.target.files[0]),
+      data: e.target.files[0],
+    } 
+    setImageData(img);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const dataToSend = {
@@ -256,6 +269,35 @@ const Add_Item = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
     }
+  };
+
+  const handleVision = async (e) => {
+    e.preventDefault();
+    const dataToSend = new FormData();
+    dataToSend.append('imgfile', image.data);
+
+    const response = await fetch("http://localhost:3001/detectionObject", {
+      method: "POST",
+        
+      body: dataToSend,
+    })
+      .then((res) => {
+        if(!res.ok) {
+          console.log("Failure:" + res.statusText);
+          throw new Error('HTTP ' + res.status);
+      } else {
+          console.log("Success :" + res.statusText);
+          return res.text();
+      }
+      }).then(function(data) {
+        console.log(data);
+        var img_str = String(data);
+          setFormData({
+            ...formData,
+            iname: img_str
+          });
+      })
+
   };
 
   const fetchItemDetails = async (barcode) => {
@@ -408,6 +450,28 @@ const Add_Item = () => {
 
       <div className="manual-entry">
           
+        <br></br>
+        <h2>Take Photo or Upload</h2>
+        {image.preview && <img src={image.preview} width='100' height='100'/>}
+        
+        <form onSubmit={handleVision} encType="multipart/form-data">
+          <input 
+            type="file" 
+            accept="image/*" 
+            id="imgfile" 
+            name="imgfile" 
+            onChange={handleVisionChange} 
+          />
+          <input 
+            accept="image/*" 
+            id="icon-button-file" 
+            capture="environment"
+            type="file" 
+            onChange={handleVisionChange} 
+          />
+          <button type="submit" className="upload-button">Analyze Image</button>
+        </form>
+
         <h2>Manual Input</h2>
         <form id="manual-input-form" onSubmit={handleSubmit}>
 
@@ -477,6 +541,7 @@ const Add_Item = () => {
         </form>
 
       </div>
+
 
       <div className="spoilage-all">
         <h2>Food Shelf Life Guidelines</h2>

@@ -209,9 +209,9 @@ app.put('/api/edit_item/:usersItemsId', async (req, res) => {
 
 });
 
-// update item as spoiled 
-app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
-
+// update item quantity - spoil all in stock
+app.put('/api/spoil_item/:usersItemsId', async (req, res) => {
+  
   try {
     const markSpoiled = await pool.query(
       `UPDATE usersitems
@@ -219,7 +219,7 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
         spoiledtotal = spoiledtotal + quantityremaining,
         quantityremaining = 0
       WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
-
+    
     res.json(markSpoiled.rows);
     
   } catch (err){
@@ -229,8 +229,8 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
 
 });
 
-// update item as finished
-app.put('/useritem/:usersItemsId/finished', async (req, res) => {
+// update item quantity - finish all in stock
+app.put('/api/finish_item/:usersItemsId', async (req, res) => {
 
   try {
     const markFinished = await pool.query(
@@ -895,19 +895,20 @@ const CONFIG = {
 
 const client = new vision.ImageAnnotatorClient(CONFIG);
 
-app.post("/detectionObject", upload.single('imgfile'), function(request, response){
+app.post("/detectionObject", upload.single('imgfile'), function(req, res){
 
-  console.log(request.file.filename);
-
+  console.log(req.file.filename);
+  
   const detectObject = async (file_path) => {
-
+      console.log(file_path);
       let [result] = await client.objectLocalization(file_path);
       const objects = result.localizedObjectAnnotations;
-      response.json(objects[0].name)
-      
+      console.log(objects[0].name);
+      const img_str = String(objects[0].name);
+      res.send(img_str);
   };
 
-  detectObject(path.join(__dirname+'/public/files/' + request.file.filename));
+  detectObject(path.join(__dirname+'/public/files/' + req.file.filename));
   
 });
 
