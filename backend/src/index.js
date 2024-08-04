@@ -71,13 +71,13 @@ app.get('/items', async (req, res) => {
 //----------------------------------------------------------------------------
 
 // add item to DB
-app.post('/api/add-item', async (req, res) => {
+app.post('/api/add-item/:userId', async (req, res) => {
   const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
 
   try {
     const itemResult = await pool.query(
-      'SELECT itemId FROM Items WHERE itemName = $1 OR itemName = $2',
-      [itemName, barcode]
+      'SELECT itemId FROM Items WHERE itemName = $1',
+      [itemName]
     );
 
     let itemId;
@@ -93,6 +93,14 @@ app.post('/api/add-item', async (req, res) => {
       );
       itemId = insertItemResult.rows[0].itemid;
     }
+
+    const updateUsersItems = await pool.query(
+      `INSERT INTO usersitems (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
+      VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, '${expirationDate}');`
+    )
+
+    console.log(updateUsersItems.rows)
+
     res.status(200).json({ message: 'Item added successfully' });
   } catch (error) {
     console.error('Error adding item:', error); 
