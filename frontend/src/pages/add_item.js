@@ -2,7 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import * as SDCCore from "scandit-web-datacapture-core";
 import * as SDCBarcode from "scandit-web-datacapture-barcode";
 
+
 const Add_Item = () => {
+
+  const [categories, setCategories] = useState(null);
+  const [selectCategory, setSelectCategory] = useState(null);
+  const [productCategory, setProductCategory] = useState(null);
+  const [selectProduct, setSelectProduct] = useState(null);
+  const [productDetails, setProductDetails] = useState(null);
+
+  const [units, setUnits] = useState(null);
+  const [spoilageDate, setSpoilageDate] = useState(null);
+
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
   const [scannedCodes, setScannedCodes] = useState([]);
@@ -10,14 +21,108 @@ const Add_Item = () => {
   const [itemScannedMessage, setItemScannedMessage] = useState(false);
   const scannerRef = useRef(null);
   const [formData, setFormData] = useState({
-    iname: "",
-    unit: "count",
+    itemName: "",
+    itemDescription: "",
+    unit: "",
     quantity: 1,
     ripeRating: "",
-    itemDescription: "",
+    expirationDate: "",
+
+  });
+  const [image, setImageData] = useState({
+    preview: '',
+    data: ''
   });
 
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY;
+
+  // fetch units on initial load
+  useEffect(() => {
+
+    async function fetchUnits() {
+
+      try {
+          const response = await fetch(`http://localhost:3001/units`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setUnits(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchUnits();
+
+  }, [])
+
+  // Spoilage: fetch categories on initial load 
+  useEffect(() => {
+
+    async function fetchCategories() {
+
+      try {
+          const response = await fetch(`http://localhost:3001/spoilage/categories`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setCategories(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchCategories();
+
+  }, [])
+  
+  // Spoilage: fetch all items in a category (when a category has been selected)
+  useEffect(() => {
+    if (selectCategory) {
+
+      async function fetchItems() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/spoilage/${selectCategory}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setProductCategory(await response.json());
+  
+        } catch (error) {
+            console.error(error.message);
+            }
+    }; 
+
+    fetchItems();
+
+  }}, [selectCategory])
+
+  // Spoilage: fetch item details (when an item has been selected)
+  useEffect(() => {
+    if (selectProduct) {
+
+      async function fetchItemDetails() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/spoilage/product/${selectProduct}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setProductDetails(await response.json());
+  
+        } catch (error) {
+            console.error(error.message);
+            }
+    }; 
+
+    fetchItemDetails();
+
+  };
+    
+  }, [selectCategory, selectProduct])
 
   useEffect(() => {
     let context, barcodeCapture, camera;
@@ -53,7 +158,7 @@ const Add_Item = () => {
                     setProductDetailsList(prevDetails => [...prevDetails, itemDetails]);
                     setFormData({
                       ...formData,
-                      iname: itemDetails.name,
+                      itemName: itemDetails.name,
                       unit: "count",
                       quantity: 1,
                       ripeRating: "",
@@ -98,6 +203,16 @@ const Add_Item = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log(formData);
+  };
+
+  const handleVisionChange = (e) => {
+
+    const img = {
+      preview: URL.createObjectURL(e.target.files[0]),
+      data: e.target.files[0],
+    } 
+    setImageData(img);
   };
 
   const handleSubmit = async (e) => {
@@ -129,7 +244,7 @@ const Add_Item = () => {
 
   const handleAddItem = async (product) => {
     const dataToSend = {
-      iname: product.name,
+      itemName: product.name,
       itemDescription: product.itemDescription,
       unit: product.unit,
       quantity: product.quantity,
@@ -154,6 +269,35 @@ const Add_Item = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
     }
+  };
+
+  const handleVision = async (e) => {
+    e.preventDefault();
+    const dataToSend = new FormData();
+    dataToSend.append('imgfile', image.data);
+
+    const response = await fetch("http://localhost:3001/detectionObject", {
+      method: "POST",
+        
+      body: dataToSend,
+    })
+      .then((res) => {
+        if(!res.ok) {
+          console.log("Failure:" + res.statusText);
+          throw new Error('HTTP ' + res.status);
+      } else {
+          console.log("Success :" + res.statusText);
+          return res.text();
+      }
+      }).then(function(data) {
+        console.log(data);
+        var img_str = String(data);
+          setFormData({
+            ...formData,
+            itemName: img_str
+          });
+      })
+
   };
 
   const fetchItemDetails = async (barcode) => {
@@ -184,22 +328,164 @@ const Add_Item = () => {
     }
   };
 
+  const handleUseDate = (e) => {
+    const id = e.target.id;
+    let min = 0;
+    let max = 0;
+    let metric = "";
+    let days = 0;
+    let updateDate = new Date();
+
+    switch (id) {
+      case 'pantry':
+        if (productDetails[0]['p_min'] && productDetails[0]['p_max'] && productDetails[0]['p_metric']) {
+          min = productDetails[0]['p_min'];
+          max = productDetails[0]['p_max'];
+          metric = productDetails[0]['p_metric'];
+
+        } else if (productDetails[0]['dop_p_min'] && productDetails[0]['dop_p_max'] && productDetails[0]['dop_p_metric']) {
+          min = productDetails[0]['dop_p_min'];
+          max = productDetails[0]['dop_p_max'];
+          metric = productDetails[0]['dop_p_metric'];
+        } 
+        break;
+
+      case 'pantry_after_open':
+        if (productDetails[0]['p_after_opening_min'] && productDetails[0]['p_after_opening_max'] && productDetails[0]['p_after_opening_metric']) {
+          min = productDetails[0]['p_after_opening_min'];
+          max = productDetails[0]['p_after_opening_max'];
+          metric = productDetails[0]['p_after_opening_metric'];
+        }
+        break;
+
+      case 'fridge':
+        if (productDetails[0]['r_min'] && productDetails[0]['r_max'] && productDetails[0]['r_metric']) {
+          min = productDetails[0]['r_min'];
+          max = productDetails[0]['r_max'];
+          metric = productDetails[0]['r_metric'];
+
+        } else if (productDetails[0]['dop_r_min'] && productDetails[0]['dop_r_max'] && productDetails[0]['dop_r_metric']) {
+          min = productDetails[0]['dop_r_min'];
+          max = productDetails[0]['dop_r_max'];
+          metric = productDetails[0]['dop_r_metric'];
+        }
+        break;
+
+      case 'fridge_after_open': 
+        if (productDetails[0]['r_after_opening_min'] && productDetails[0]['r_after_opening_max'] && productDetails[0]['r_after_opening_metric']) {
+          min = productDetails[0]['r_after_opening_min'];
+          max = productDetails[0]['r_after_opening_max'];
+          metric = productDetails[0]['r_after_opening_metric'];
+        }
+        break;
+
+      case 'fridge_after_thaw':
+        if (productDetails[0]['r_after_thawing_min'] && productDetails[0]['r_after_thawing_max'] && productDetails[0]['r_after_thawing_metric']) {
+          min = productDetails[0]['r_after_thawing_min'];
+          max = productDetails[0]['r_after_thawing_max'];
+          metric = productDetails[0]['r_after_thawing_metric'];
+        }
+        break;
+
+      case 'freezer':
+        if (productDetails[0]['f_min'] && productDetails[0]['f_max'] && productDetails[0]['f_metric']) {
+          min = productDetails[0]['f_min'];
+          max = productDetails[0]['f_max'];
+          metric = productDetails[0]['f_metric'];
+
+        } else if (productDetails[0]['dop_f_min'] && productDetails[0]['dop_f_max'] && productDetails[0]['dop_f_metric']) {
+          min = productDetails[0]['dop_f_min'];
+          max = productDetails[0]['dop_f_max'];
+          metric = productDetails[0]['dop_f_metric'];
+        }
+        break;
+    }
+
+    switch (metric) {
+      case 'Days':
+        break;
+
+      case 'Weeks':
+        min *= 7;
+        max *= 7;
+        break;
+
+      case 'Months':
+        min *= 30;
+        max *= 30;
+        break;
+      
+      case 'Years':
+        min *= 365;
+        max *= 365;
+        break;
+    }
+
+    console.log(productDetails);
+
+    days = Math.floor((min + max) / 2);
+
+    console.log(`${min} ${max} days`);
+    console.log(`averaged value: ${days}`);
+    updateDate.setDate(updateDate.getDate() + days);
+    updateDate = updateDate.toISOString().split('T')[0];
+    console.log(updateDate);
+
+    document.getElementById("expirationDate").value = updateDate;
+
+
+
+  };
+
+  if (!categories || !units) {
+
+    return(<h2>Loading...</h2>)
+
+  } 
+  else {
 
   return (
     <div className="additem-core">
+
       <div className="manual-entry">
           
-        <br></br>
+        
+        <h2>Take Photo or Upload</h2>
+        {image.preview && <img src={image.preview} width='100' height='100'/>}
+        
+        <form onSubmit={handleVision} encType="multipart/form-data">
+          <input 
+            type="file" 
+            accept="image/*" 
+            id="imgfile" 
+            name="imgfile" 
+            onChange={handleVisionChange} 
+          />
+          <input 
+            accept="image/*" 
+            id="icon-button-file" 
+            capture="environment"
+            type="file" 
+            onChange={handleVisionChange} 
+          />
+          <button type="submit" className="upload-button">Analyze Image</button>
+        </form>
+
+        <br/><br/>
+
         <h2>Manual Input</h2>
-        <form onSubmit={handleSubmit}>
-        <label htmlFor="iname">Item name:</label>
+        <form id="manual-input-form" onSubmit={handleSubmit}>
+
+        <label htmlFor="itemName">Item name:</label>
           <input
             type="text"
-            id="iname"
-            name="iname"
-            value={formData.iname}
+            id="itemName"
+            name="itemName"
+            value={formData.itemName}
             onChange={handleInputChange}
+            required
           />
+
           <label htmlFor="itemDescription">Item Description:</label>
           <input
             type="text"
@@ -208,17 +494,21 @@ const Add_Item = () => {
             value={formData.itemDescription}
             onChange={handleInputChange}
           />
+
           <label htmlFor="unit">Item Measurement Unit:</label>
           <select
             id="unit"
             name="unit"
             value={formData.unit}
             onChange={handleInputChange}
+            required
           >
-            <option value="count">Count</option>
-            <option value="gallons">Gallons</option>
-            <option value="grams">Grams</option>
+            <option value=""></option>
+            {units.map((e) => (
+            <option value={e.unitid}>{e.unitname}</option>
+          ))}
           </select>
+
           <label htmlFor="quantity">Quantity of Item:</label>
           <input
             type="number"
@@ -226,7 +516,9 @@ const Add_Item = () => {
             name="quantity"
             value={formData.quantity}
             onChange={handleInputChange}
+            required
           />
+
           <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
           <input
             type="text"
@@ -235,21 +527,125 @@ const Add_Item = () => {
             value={formData.ripeRating}
             onChange={handleInputChange}
           />
-          <input type="submit" className="button submit-button" value="Submit" />
+
+          <label htmlFor="expirationDate">Item Expiration Date:</label>
+          <p>If you are unsure when your item will expire, you can use the "Food Shelf Life Guidelines" below to get an estimate based on USDA food safety data.</p>
+          <input
+            type="date"
+            id="expirationDate"
+            name="expirationDate"
+            value={formData.expirationDate}
+            onChange={handleInputChange}
+          />
+
+          <input type="submit" className="button-submit-button" value="Submit" />
         </form>
+
       </div>
 
-      <br/>
-      
-      <div>
-        <h2>Take Photo or Upload</h2>
-        <form action="http://localhost:3001/detectionObject" method="post" encType="multipart/form-data">
-          <input type="file" accept="image/*" id="imgfile" name="imgfile" />
-          <button type="submit" className="upload-button">Analyze Image</button>
-        </form>
-      </div>
 
-      <br/>
+      <div className="spoilage-all">
+        <h2>Food Shelf Life Guidelines</h2>
+
+        <div className="spoilage-section-category-1">
+        <h3>Select Category:</h3>
+        <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
+            <option value=""></option>
+            {categories.map((e) => (
+            <option value={e.categoryid}>{e.categorysubcategory}</option>
+          ))}
+        </select>
+        </div>
+
+        <div className="spoilage-section-category-2">
+        {selectCategory && productCategory && <div>
+        <h3>Select Product:</h3>
+        <select name="spoilage-select" onChange={(e) => setSelectProduct(e.target.value)}>
+          <option value=""></option>
+          {productCategory.map((e) => (
+            <option value={e.productid}>{e.productname}</option>
+          ))}
+        </select>
+        </div>}
+        </div>
+
+        
+        {selectProduct && productDetails && <div className="spoilage-section-product">
+        
+        {productDetails.map((e) => (
+          <div>
+          
+          {/* Title and Subtitle */}
+          {(e.name && e.subtitle) && <h1>{e.name} - {e.subtitle}</h1>}
+          {(e.name && !e.subtitle) && <h1>{e.name}</h1>}
+    
+          {/* Pantry */}
+          {(e.p_min && e.p_max && e.p_metric) && (e.p_min === e.p_max) && <p><b>Pantry:</b> {e.p_max} {e.p_metric}</p>}
+          {(e.p_min && e.p_max && e.p_metric) && (e.p_min !== e.p_max) && <p><b>Pantry:</b> {e.p_min}-{e.p_max} {e.p_metric}</p>}
+          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && (e.dop_p_min === e.dop_p_max) && <p><b>Pantry:</b> {e.dop_p_max} {e.dop_p_metric}</p>}
+          {(e.dop_p_min && e.dop_p_max && e.dop_p_metric) && (e.dop_p_min !== e.dop_p_max) && <p><b>Pantry:</b> {e.dop_p_min}-{e.dop_p_max} {e.dop_p_metric}</p>}
+          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && (e.p_after_opening_min === e.p_after_opening_max) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_max} {e.p_after_opening_metric}</p>}
+          {(e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric) && (e.p_after_opening_min !== e.p_after_opening_max) && <p><b>Pantry (After Opening):</b> {e.p_after_opening_min}-{e.p_after_opening_max} {e.p_after_opening_metric}</p>}
+
+          {/* Refrigerator */}
+          {(e.r_min && e.r_max && e.r_metric) && (e.r_min === e.r_max) && <p><b>Refrigerator:</b> {e.r_max} {e.r_metric}</p>}
+          {(e.r_min && e.r_max && e.r_metric) && (e.r_min !== e.r_max) && <p><b>Refrigerator:</b> {e.r_min}-{e.r_max} {e.r_metric}</p>}
+          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && (e.dop_r_min === e.dop_r_max) && <p><b>Refrigerator:</b> {e.dop_r_max} {e.dop_r_metric}</p>}
+          {(e.dop_r_min && e.dop_r_max && e.dop_r_metric) && (e.dop_r_min !== e.dop_r_max) && <p><b>Refrigerator:</b> {e.dop_r_min}-{e.dop_r_max} {e.dop_r_metric}</p>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && (e.r_after_opening_min === e.r_after_opening_max) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_max} {e.r_after_opening_metric}</p>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) && (e.r_after_opening_min !== e.r_after_opening_max) && <p><b>Refrigerator (After Opening):</b> {e.r_after_opening_min}-{e.r_after_opening_max} {e.r_after_opening_metric}</p>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && (e.r_after_thawing_min === e.r_after_thawing_max) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) && (e.r_after_thawing_min !== e.r_after_thawing_max) && <p><b>Refrigerator (After Thawing):</b> {e.r_after_thawing_min}-{e.r_after_thawing_max} {e.r_after_thawing_metric}</p>}
+
+          {/* Freezer */}
+          {(e.f_min && e.f_max && e.f_metric) && (e.f_min === e.f_max) && <p><b>Freezer:</b> {e.f_max} {e.f_metric}</p>}
+          {(e.f_min && e.f_max && e.f_metric) && (e.f_min !== e.f_max) && <p><b>Freezer:</b> {e.f_min}-{e.f_max} {e.f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min === e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_max} {e.dop_f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min !== e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_min}-{e.dop_f_max} {e.dop_f_metric}</p>}
+          
+
+          <br/>
+
+          {/* Tips */}
+          {(e.p_tips || e.r_tips || e.f_tips || e.dop_p_tips || e.dop_r_tips || e.dop_f_tips) && <h2>Tips</h2>}
+          {e.p_tips && <p><b>Pantry:</b> {e.p_tips}</p>}
+          {e.dop_p_tips && <p><b>Pantry:</b> {e.dop_p_tips}</p>}
+          {e.r_tips && <p><b>Refrigerator: </b> {e.r_tips}</p>}
+          {e.dop_r_tips && <p><b>Refrigerator:</b> {e.dop_r_tips}</p>}
+          {e.f_tips && <p><b>Freezer: </b>{e.f_tips}</p>}
+          {e.dop_f_tips && <p><b>Freezer:</b> {e.dop_f_tips}</p>}
+
+          <br/>
+
+          {/* Use Expiration Date */}
+          <h2>Use Expiration Date</h2>
+          <p>The average of the selected expiration values will be added to the manual entry form above.</p>
+
+          {/* Pantry: pantry, pantry (opened) */}
+          {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric)) 
+          && <button type="submit" id="pantry" onClick={handleUseDate}>Pantry</button>}
+          {((e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
+          && <button type="submit" id="pantry_after_open" onClick={handleUseDate}>Pantry (opened)</button>}
+
+          {/* Refrigerator: refrigerator, refrigerator (opened), refrigerator (thawed) */}
+          {((e.r_min && e.r_max && e.r_metric) || (e.dop_r_min && e.dop_r_max && e.dop_r_metric)) 
+          && <button type="submit" id="fridge" onClick={handleUseDate}>Refrigerator</button>}
+          {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) 
+          && <button type="submit" id="fridge_after_open" onClick={handleUseDate}>Refrigerator (opened)</button>}
+          {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) 
+          && <button type="submit" id="fridge_after_thaw" onClick={handleUseDate}>Refrigerator (thawed)</button>}
+          
+          {/* Freezer */}
+          {((e.f_min && e.f_max && e.f_metric) || (e.dop_f_min && e.dop_f_max && e.dop_f_metric)) 
+          && <button type="submit" id="freezer" onClick={handleUseDate}>Freezer</button>}
+
+          </div>
+
+        ))}
+        </div>}
+
+        
+      </div>
 
       <div className="barcode-scanning">
         <h2>Barcode Scanning</h2>
@@ -308,6 +704,6 @@ const Add_Item = () => {
       )}
     </div>
   );
-};
+}};
 
 export default Add_Item;

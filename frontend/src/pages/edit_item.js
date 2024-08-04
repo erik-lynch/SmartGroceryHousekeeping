@@ -25,30 +25,31 @@ const Edit_Item = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    function handleSpoiled(e) {
-        e.preventDefault();
-        setSpoilButton(false);
+    function handleSpoiled() {
         setSpoiled("Item has been marked as spoiled.");
+        fetchItemInfo();
+        setTimeout(function(){
+            setSpoiled("");
+        }, 3000);
     }
 
-    function handleFinished(e) {
-        e.preventDefault();
-        setFinishButton(false)
+    function handleFinished() {
         setFinished("Item has been marked as finished.");
-    }
-
-    function handleUpdated(e) {
-        e.preventDefault();
-        setUpdateButton(false)
-        setUpdated("Item has been updated.");
+        fetchItemInfo();
+        setTimeout(function(){
+            setFinished("");
+        }, 3000);
     }
 
     function handleUpdate() {
-        setUpdateButton(false)
         setUpdated("Item has been updated.");
         formData.newlyAdded = 0;
         formData.newlyFinished = 0;
         formData.newlySpoiled = 0;
+        fetchItemInfo();
+        setTimeout(function(){
+            setUpdated("");
+        }, 3000);
     }
 
     const handleSubmit = async (e) => {
@@ -70,8 +71,7 @@ const Edit_Item = () => {
     
           if (response.ok) {
             console.log("Item edited successfully");
-            setUpdateButton(false)
-            setUpdated("Item has been updated.");
+            handleUpdate();
           } else {
             const errorText = await response.text();
             console.error("Failed to edit item:", errorText);
@@ -79,42 +79,94 @@ const Edit_Item = () => {
         } catch (error) {
           console.error("Error submitting form:", error);
         }
-        handleUpdate();
+        
+    };
+
+    const handleSpoil = async (e) => {
+        e.preventDefault();
+    
+        try {
+          const response = await fetch(`http://localhost:3001/api/spoil_item/${routeParams.usersItemsId}`, {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+          });
+    
+          if (response.ok) {
+            console.log("Item spoiled successfully");
+            handleSpoiled();
+          } else {
+            const errorText = await response.text();
+            console.error("Failed to spoil item:", errorText);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+        
+    };
+
+    const handleFinish = async (e) => {
+        e.preventDefault();
+    
+        try {
+          const response = await fetch(`http://localhost:3001/api/finish_item/${routeParams.usersItemsId}`, {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+          });
+    
+          if (response.ok) {
+            console.log("Item marked as finished successfully");
+            handleFinished();
+          } else {
+            const errorText = await response.text();
+            console.error("Failed to finish item:", errorText);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+        
     };
 
     const routeParams = useParams();
 
+    async function fetchItemInfo() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setItemInfo(await response.json());
+
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    };
+
+    async function fetchTags() {
+
+        try {
+            const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            setItemTags(await response.json());
+
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    };
+
     useEffect(() => {
-
-        async function fetchItemInfo() {
-
-            try {
-                const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
-                setItemInfo(await response.json());
-
-            } catch (error) {
-                console.error(error.message);
-            }
-
-        };
-
-        async function fetchTags() {
-
-            try {
-                const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
-                setItemTags(await response.json());
-
-            } catch (error) {
-                console.error(error.message);
-            }
-
-        };
 
         fetchTags();
         fetchItemInfo();
@@ -131,7 +183,7 @@ const Edit_Item = () => {
 
         return (
 
-            <div className="core">
+            <div className="core-edit-item">
 
                 <div className="edit-image-content">
 
@@ -180,22 +232,24 @@ const Edit_Item = () => {
                         />
                         {updateButton && <input type="submit" value="Save"></input>}
                         <p>{markedUpdated}</p>
+
+                        {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
+                        <p>{markedSpoiled}</p>
+
+                        {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
+                        <p>{markedFinished}</p>
                         
                     </form>
                     <br/><br/>
 
-                    {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoiled}></input>}
-                    <p>{markedSpoiled}</p>
-
-                    {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinished} ></input>}
-                    <p>{markedFinished}</p>
+                    
 
                     <br/><br/>
                     <a className="return-dashboard" href="/">Return to Dashboard</a>
                     </div>
 
                 
-            </div>
+                </div>
             </div>
 
         );

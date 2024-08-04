@@ -20,6 +20,7 @@ const app = express();
 const https = require('https');
 const path = require('path');
 
+
 const pool = new Pool({
   max: 5,
   idleTimeoutMillis: 50000,
@@ -69,13 +70,14 @@ app.get('/items', async (req, res) => {
 //                Add Item Page requests
 //----------------------------------------------------------------------------
 
+// add item to DB
 app.post('/api/add-item', async (req, res) => {
-  const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId } = req.body; 
+  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
 
   try {
     const itemResult = await pool.query(
       'SELECT itemId FROM Items WHERE itemName = $1 OR itemName = $2',
-      [iname, barcode]
+      [itemName, barcode]
     );
 
     let itemId;
@@ -87,7 +89,7 @@ app.post('/api/add-item', async (req, res) => {
       // Insert new item
       const insertItemResult = await pool.query(
         'INSERT INTO Items (itemName, itemDescription) VALUES ($1, $2) RETURNING itemId',
-        [iname, itemDescription] 
+        [itemName, itemDescription] 
       );
       itemId = insertItemResult.rows[0].itemid;
     }
@@ -97,6 +99,26 @@ app.post('/api/add-item', async (req, res) => {
     res.status(500).json({ message: 'Error adding item', error: error.message });
   }
 });
+
+// get all units
+app.get('/units', async(req, res) => {
+  
+  try{
+    const getUnits = await pool.query(
+      `SELECT 
+        units.unitid,
+        units.unitname,
+        units.unitabbreviation
+      FROM units
+      ORDER BY units.unitname;`);
+
+    res.json(getUnits.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
 
 //----------------------------------------------------------------------------
 //                Edit Item Page requests
@@ -187,9 +209,9 @@ app.put('/api/edit_item/:usersItemsId', async (req, res) => {
 
 });
 
-// update item as spoiled 
-app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
-
+// update item quantity - spoil all in stock
+app.put('/api/spoil_item/:usersItemsId', async (req, res) => {
+  
   try {
     const markSpoiled = await pool.query(
       `UPDATE usersitems
@@ -197,7 +219,7 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
         spoiledtotal = spoiledtotal + quantityremaining,
         quantityremaining = 0
       WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
-
+    
     res.json(markSpoiled.rows);
     
   } catch (err){
@@ -207,8 +229,8 @@ app.put('/useritem/:usersItemsId/spoiled', async (req, res) => {
 
 });
 
-// update item as finished
-app.put('/useritem/:usersItemsId/finished', async (req, res) => {
+// update item quantity - finish all in stock
+app.put('/api/finish_item/:usersItemsId', async (req, res) => {
 
   try {
     const markFinished = await pool.query(
@@ -941,7 +963,6 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
   }
 });
 
-
 //----------------------------------------------------------------------------
 //                Google Cloud Vision API
 //----------------------------------------------------------------------------
@@ -971,22 +992,125 @@ const CONFIG = {
 
 const client = new vision.ImageAnnotatorClient(CONFIG);
 
-app.post("/detectionObject", upload.single('imgfile'), function(request, response){
+app.post("/detectionObject", upload.single('imgfile'), function(req, res){
 
-  console.log(request.file.filename);
-
+  console.log(req.file.filename);
+  
   const detectObject = async (file_path) => {
-
+      console.log(file_path);
       let [result] = await client.objectLocalization(file_path);
       const objects = result.localizedObjectAnnotations;
-      response.json(objects[0].name)
-      
+      console.log(objects[0].name);
+      const img_str = String(objects[0].name);
+      res.send(img_str);
   };
 
-  detectObject(path.join(__dirname+'/public/files/' + request.file.filename));
+  detectObject(path.join(__dirname+'/public/files/' + req.file.filename));
   
 });
 
+//----------------------------------------------------------------------------
+//                Spoilage Queries
+//----------------------------------------------------------------------------
+
+// get all categories
+app.get('/spoilage/categories', async(req, res) => {
+  
+  try{
+    const getCategoriesSubcategories = await pool.query(
+      `SELECT 
+	      CONCAT_WS(' - ', categories.categoryname, categories.subcategoryname) as categorySubcategory,
+        categories.categoryid
+      FROM categories
+      ORDER BY categories.categoryname, categories.subcategoryname;`);
+
+    res.json(getCategoriesSubcategories.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+// get all items in a specific category
+app.get('/spoilage/:categoryid', async(req, res) => {
+  
+  try{
+    const getAllItemsCategory = await pool.query(
+      `SELECT
+        categories.categoryid,
+        products.productid,
+        CONCAT_WS(' - ', products.productname, products.productsubtitle) as productname
+      FROM categories
+      INNER JOIN productscategories ON productscategories.fk_categories_categoryid = categories.categoryid
+      INNER JOIN products ON productscategories.fk_products_productid = products.productid
+      WHERE categories.categoryid = ${req.params.categoryid}
+      ORDER BY productname;`);
+
+    res.json(getAllItemsCategory.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+// get details for specific item
+app.get('/spoilage/product/:productid', async(req, res) => {
+  
+  try{
+    const getProductDetails = await pool.query(
+      `SELECT
+        products.productid as "id",
+        products.productname as "name",
+        products.productsubtitle as "subtitle",
+        products.keywords as "keys",
+        products.pantry_min as "p_min",
+        products.pantry_max as "p_max",
+        products.pantry_metric as "p_metric",
+        products.pantry_tips as "p_tips",
+        products.dop_pantry_min as "dop_p_min",
+        products.dop_pantry_max as "dop_p_max",
+        products.dop_pantry_metric as "dop_p_metric",
+        products.dop_pantry_tips as "dop_p_tips",
+        products.pantry_after_opening_min as "p_after_opening_min",
+        products.pantry_after_opening_max as "p_after_opening_max",
+        products.pantry_after_opening_metric as "p_after_opening_metric",
+        products.refrigerate_min as "r_min",
+        products.refrigerate_max as "r_max",
+        products.refrigerate_metric as "r_metric",
+        products.refrigerate_tips as "r_tips",
+        products.dop_refrigerate_min as "dop_r_min",
+        products.dop_refrigerate_max as "dop_r_max",
+        products.dop_refrigerate_metric as "dop_r_metric",
+        products.dop_refrigerate_tips as "dop_r_tips",
+        products.refrigerate_after_opening_min as "r_after_opening_min",
+        products.refrigerate_after_opening_max as "r_after_opening_max",
+        products.refrigerate_after_opening_metric as "r_after_opening_metric",
+        products.refrigerate_after_thawing_min as "r_after_thawing_min",
+        products.refrigerate_after_thawing_max as "r_after_thawing_max",
+        products.refrigerate_after_thawing_metric as "r_after_thawing_metric",
+        products.freeze_min as "f_min",
+        products.freeze_max as "f_max",
+        products.freeze_metric as "f_metric",
+        products.freeze_tips as "f_tips",
+        products.dop_freeze_min as "dop_f_min",
+        products.dop_freeze_max as "dop_f_max",
+        products.dop_freeze_metric as "dop_f_metric",
+        products.dop_freeze_tips as "dop_f_tips"
+      FROM products
+      WHERE products.productid = ${req.params.productid}
+      ORDER BY products.productname, products.productsubtitle;`);
+
+    res.json(getProductDetails.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
+//----------------------------------------------------------------------------
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

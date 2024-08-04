@@ -114,6 +114,7 @@ body {
   font-family: 'Roboto';
   min-height: 120vh;
   flex-wrap: wrap;
+  margin-bottom: 50px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -186,16 +187,33 @@ td {
 
 /* Edit Item Page */
 
+.core-edit-item{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
 .edit-image-content {
-  height: 50vh;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  margin: 30px 0 30px 0;
+}
+
+.edit-image-content h1{
+  margin-top: 0;
+  width: 100%;
 }
 
 .edit-img {
   border-radius: 30px;
-  float: inline-start;
   margin: 30px;
-  max-width: 450px;
+  max-width: 85%;
   outline: solid black;
   filter: drop-shadow(15px 15px 0px black);
   
@@ -205,7 +223,7 @@ td {
   float: left;
   margin: 30px;
   align-content: left;
-  max-width: 40%;
+  max-width: 100%;
 }
 
 .tag {
@@ -215,7 +233,7 @@ td {
   display: inline-block;
   border-radius: 5px;
   font-size: small;
-  margin-right: 5px;
+  margin: 0 5px 5px 0;
 }
 
 .return-dashboard {
@@ -309,26 +327,26 @@ textarea[class="recipe-text"] {
   border: black solid;
 }
 
-input:not([type="submit"]) {
+input:not([type="submit"], [type="button"]) {
   border-radius: 5px;
   height: 25px;
 }
 
 
 input[type="button"] {
-  height: fit-content;
   width: 180px;
   background-color: #4CAF50;
+  text-align: center;
   margin-bottom: 10px;
   color: white;
-  display: flex;
-  padding: 20px;
-  margin-left: 0px;
   border: none;
-  border-radius: 4px;
+  display: inline-block;
+  text-align: center;
+  padding: 15px;
   cursor: pointer;
+  border-radius: 5px;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  margin: 10px 10px 10px 0;
 }
 
 input[type="submit"] {
@@ -348,7 +366,6 @@ input[type="number"] {
   margin: 10px 0px;
   margin-right: 100%;
 }
-
 
 .recipe-button {
   width: 200px;
@@ -459,16 +476,16 @@ input[class="recipe-quantity"] {
   flex-direction: column;
   gap: 20px;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   min-height: 100vh;
 }
 
+/* Manual Entry */
+
 .manual-entry {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  margin: 30px 0 30px 0;
 }
 
 .manual-entry h2 {
@@ -488,36 +505,39 @@ input[class="recipe-quantity"] {
 
 .manual-entry input[type="text"],
 .manual-entry input[type="number"],
+.manual-entry input[type="date"],
 .manual-entry select {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  height: 45px;
+  margin: 10px 10px 10px 0;
+  border-radius: 5px;
+  border: 1px black solid;
+  background-color: white;
+  padding: 5px 15px;
 }
 
 .manual-entry input[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
   transition: background-color 0.3s ease;
+  width: 200px;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
 }
 
 .manual-entry input[type="submit"]:hover {
   background-color: #45a049;
 }
 
+/* Barcode Scanning */
+
 .barcode-scanning {
-  background-color: #f9f9f9;
-  padding: 20px 20px 70px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
   position: relative; 
+  margin: 30px 0 60px 0;
 }
 
 .barcode-scanning h2 {
@@ -525,18 +545,18 @@ input[class="recipe-quantity"] {
 }
 
 .barcode-scanning button {
-  width: 95%;
-  background-color: #007BFF;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
+  width: 100%;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
   position: absolute; 
   left: 50%; 
   transform: translateX(-50%);
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
 }
 
 .barcode-scanning button:hover {
@@ -666,6 +686,8 @@ input[class="recipe-quantity"] {
   background-color: #45a049;
 }
 
+/* Photo or Image Upload */
+
 input[type="file"]{
   border: none;
   padding: 20px 0 20px 0;
@@ -678,14 +700,84 @@ button[class="upload-button"]{
   width: 200px;
   padding: 15px;
   border-radius: 5px;
+  font-size: 16px;
   border: 1px solid black;
   color: white;
   background-color: black;
 }
 
+/* Food Shelf Life Guidelines */
 
+.spoilage-all{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 30px 0 30px 0;
+}
 
-/* Conmponents: Item Carousel and Recipe Carousel */
+.spoilage-section-category-1{
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.spoilage-section-category-2{
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.spoilage-section-product{
+  background: #FFE7C3;
+  padding: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+  width: 100%;
+  filter: drop-shadow(10px 10px 0px black);
+}
+
+.spoilage-all h1{
+  width: 100%;
+  height: fit-content;
+  margin-top: 0;
+}
+
+.spoilage-all h2{
+  width: 100%;
+  height: fit-content;
+}
+
+.spoilage-all h4{
+  margin: 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid black;
+  font-size: medium;
+}
+
+.spoilage-all p{
+  margin: 10px 0 10px 0;
+}
+
+.spoilage-section-product button{
+  margin: 3px;
+  width: fit-content;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
+}
+
+select[name="spoilage-select"]{
+  width: 100%;
+  height: 45px;
+  margin: 10px 10px 10px 0;
+  border-radius: 5px;
+  border: 1px black solid;
+  background-color: white;
+  padding: 5px 15px;
+}
+
+/* Components: Item Carousel and Recipe Carousel */
 
 .carousel-item {
   background-color: #FFE7C3;
@@ -755,12 +847,6 @@ color: black;
   .core {
     min-height: 150vh;
   }
-  
-  .edit-img {
-    width: 70%;
-    align-items: center;
-    justify-content: center;
-  }
 
   .carousel-item {
     min-width: none;
@@ -780,6 +866,26 @@ color: black;
     float: none;
     padding: 5px 12px 15px 12px; 
   }
+  
+  .edit-image-content {
+    display: grid;
+    grid-template-rows: .25fr 1fr;
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin: 30px 0 30px 0;
+  }
+  
+  .edit-img {
+    margin: auto;
+    max-width: 80%;
+  }
+  
+  .edit-content {
+    margin: 50px;
+    align-content: center;
+    max-width: 100%;
+  }
+  
   
   }
 
