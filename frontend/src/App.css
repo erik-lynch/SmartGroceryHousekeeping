@@ -411,6 +411,14 @@ button[class="recipe-delete-item-button"] {
   padding: 5px;
 }
 
+select {
+  margin: 10px 10px 10px 0;
+  border-radius: 50px;
+  height: 45px;
+  width: 150px;
+  border: black solid;
+  padding: 5px 15px;
+}
 
 select[class="recipe-select-ingredient"] {
   margin: 10px;
