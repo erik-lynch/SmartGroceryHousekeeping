@@ -1,6 +1,7 @@
 import React from "react";
 import{ useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
+import handleDeleteRecipe from "../components/Functions/handleDeleteRecipe";
 
 const Add_Recipe = () => {
 
@@ -103,7 +104,9 @@ const Add_Recipe = () => {
         e.preventDefault();
         async function inOrder() {
             var recipeId = await makeRecipe();
-            var stepIdArr = await makeSteps();
+
+            // first value arr second bool for stepIdArr
+            var stepIdArr = await makeSteps(recipeId);
             var linkrsdone = await linkRecipeSteps(recipeId, stepIdArr);
             var linkirdone = await linkItemsRecipe(recipeId);
             
@@ -121,28 +124,24 @@ const Add_Recipe = () => {
                 });
                 if (recipeRes.ok) {
                     var recipeResData = await recipeRes.json();
-                    //console.log('recipeResData:', recipeResData[0]);
-                    //console.log('recipeResDataid:', recipeResData[0].recipeid);
-                    //setRecipeId(recipeResData[0].recipeid);
-                    //setRecipeAdded(true);
                     return (recipeResData[0].recipeid)
                 } else {
                     const errorJson = await recipeRes.json();
-                    console.error("Failed to add recipe:", errorJson.error);
-                    alert('Failed to add recipe. Perhaps recipe already exists? Try a new name.')
+                    console.error("Failed to add recipe:", errorJson.message);
+                    alert(`${errorJson.message}`)
+                    return(false);
                 }
                 } catch (error) {
                 console.error("Error submitting form:", error);
                 }
         }
         
-        async function makeSteps() {
+        async function makeSteps(recipeId) {
+            if (recipeId) {
             try {
                 //get array of stepIds to later link to recipes
-                //console.log(recipeSteps);
                 var tempStepIdArr = [];
                 for (let i=0; i < recipeSteps.length; i++) {
-                    //console.log(recipeSteps[i]);
                     var stepRes = await fetch("http://localhost:3001/api/add-recipe/step", {
                         method: "POST",
                         headers: {"Content-Type": "application/json",},
@@ -151,85 +150,91 @@ const Add_Recipe = () => {
         
                     if (stepRes.ok) {
                         var stepResData = await stepRes.json();
-                        //console.log('stepResData:', stepResData[0]);
-                        //console.log('stepResDataid:', stepResData[0].stepid);
                         tempStepIdArr.push(stepResData[0].stepid);
                     } else {
                         const errorJson = await stepRes.json();
                         console.error("Failed to add step:", errorJson.error);
-                        alert('Failed to step.')
+                        return ([tempStepIdArr, false]);
                     }
                 };
-                //setStepIdArr(tempStepIdArr);
-                //setStepsAdded(true);
-                return (tempStepIdArr)
+                return ([tempStepIdArr, true]);
             } catch (error) {
                 console.error("Error submitting form:", error);
             }
         }
+        else {
+            return([false, false]);
+        }
+    }
         
         async function linkRecipeSteps(recipeId, stepIdArr) {
-            try {
-                for (let i=0; i < stepIdArr.length; i++) {
-                    var jsonRecipeStepIds = {
-                        stepId: stepIdArr[i],
-                        recipeId: recipeId
-                    };
-        
-                    var recipesstepsRes = await fetch("http://localhost:3001/api/add-recipe/recipessteps", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json",},
-                        body: JSON.stringify(jsonRecipeStepIds),
-                    });
-                    if (recipesstepsRes.ok) {
-                        //console.log('succesfully added link for: ', jsonRecipeStepIds)
-                    } else {
-                        const errorJson = await recipesstepsRes.json();
-                        console.error("Failed to add recipesstep link:", errorJson.error);
-                        alert('Failed to add link for recipe and step: ', jsonRecipeStepIds)
+            if (recipeId && stepIdArr[1]) {
+                try {
+                    for (let i=0; i < stepIdArr[0].length; i++) {
+                        var jsonRecipeStepIds = {
+                            stepId: stepIdArr[0][i],
+                            recipeId: recipeId
+                        };
+                        var recipesstepsRes = await fetch("http://localhost:3001/api/add-recipe/recipessteps", {
+                            method: "POST",
+                            headers: {"Content-Type": "application/json",},
+                            body: JSON.stringify(jsonRecipeStepIds),
+                        });
+                        if (recipesstepsRes.ok) {
+                            continue;
+                        } else {
+                            const errorJson = await recipesstepsRes.json();
+                            console.error("Failed to add recipesstep link:", errorJson.error);
+                            return(false)
+                        }
                     }
+                    return(true);
+                } catch (error) {
+                    console.error("Error submitting form:", error);
                 }
-                //setRsAdded(true);
-                return(true);
-            } catch (error) {
-                console.error("Error submitting form:", error);
             }
-            
+            else {
+                console.log("recipe id or steIdArr[1] were false");
+                return(false);
+            }    
         }
         
         async function linkItemsRecipe(recipeId) {
-            try {
-                //console.log(recipeItems);
-                //console.log(recipeId);
-                for (let i=0; i < recipeItems.length; i++) {
-                    
-                    var jsonItemsRecipesInfo = {
-                        itemId: recipeItems[i].itemId,
-                        recipeId: recipeId,
-                        quantity: recipeItems[i].quantity,
-                        quantityUnit: recipeItems[i].quantityUnit
-                    };
-        
-                    var itemsRecipesRes = await fetch("http://localhost:3001/api/add-recipe/itemsrecipes", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json",},
-                        body: JSON.stringify(jsonItemsRecipesInfo),
-                    });
-                    if (itemsRecipesRes.ok) {
-                        //console.log('succesfully added link for: ', jsonItemsRecipesInfo)
-                    } else {
-                        const errorJson = await itemsRecipesRes.json();
-                        console.error("Failed to add itemsrecipess link:", errorJson.error);
-                        alert('Failed to add link for recipe and item: ', jsonItemsRecipesInfo)
+            if (recipeId && recipeItems) {
+                try {
+                    for (let i=0; i < recipeItems.length; i++) {
+                        
+                        var jsonItemsRecipesInfo = {
+                            itemId: recipeItems[i].itemId,
+                            recipeId: recipeId,
+                            quantity: recipeItems[i].quantity,
+                            quantityUnit: recipeItems[i].quantityUnit
+                        };
+            
+                        var itemsRecipesRes = await fetch("http://localhost:3001/api/add-recipe/itemsrecipes", {
+                            method: "POST",
+                            headers: {"Content-Type": "application/json",},
+                            body: JSON.stringify(jsonItemsRecipesInfo),
+                        });
+                        if (itemsRecipesRes.ok) {
+                            continue;
+                        } else {
+                            const errorJson = await itemsRecipesRes.json();
+                            console.error("Failed to add itemsrecipess link:", errorJson.error);
+                            return(false);
+                        }
                     }
+                    return(true);
                 }
-                //setIrAdded(true);
-                return(true);
+                catch (error) {
+                    console.error("Error submitting form:", error);
+                }}
+            else {
+                console.log("recipe id or recipeItems were false");
+                return(false);
             }
-            catch (error) {
-                console.error("Error submitting form:", error);
-            }}
-        
+        }
+
         async function wasCreated(recipeId, stepIdArr, linkrsdone, linkirdone) {
             if (recipeId && stepIdArr && linkrsdone && linkirdone) {
                 alert('Recipe added succesfully');
@@ -242,12 +247,19 @@ const Add_Recipe = () => {
 
                 const recipeForm = document.getElementById("recipeAddForm");
                 recipeForm.reset();
-                
-                
             }
             else { 
                 console.log('error making recipe delete succesful tables')
-                //todo delete steps, recipes, M:M tables needed that were succesful
+                if (recipeId) {
+                    console.log('before send stepidarr', stepIdArr);
+                    const deleteRecipeIdSuccess = handleDeleteRecipe(recipeId, stepIdArr);
+                    if (deleteRecipeIdSuccess){
+                        console.log('Succesfully deleted all recipe associated data');
+                    }
+                    else{
+                        console.log('Not sucesfully deleted all recipe associated data');
+                    }
+                }
             }
         }
 

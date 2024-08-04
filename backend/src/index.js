@@ -609,14 +609,19 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
   //console.log('recipeDescription:',recipeDescription);
 
   if (recipeName == null || recipeName == "")  {
-    res.status(400).json({ message: 'Error adding recipe name'});
+    res.status(400).json({ message: 'No recipe name was given. Please give the recipe a name.'});
   }
   else if (recipeDescription == null || recipeDescription == "") {
-    res.status(400).json({ message: 'Error adding recipe description'});
+    res.status(400).json({ message: 'No recipe description was given. Please fill in a description.'});
   }
   else {
     try {
-        //console.log('get to try statement');
+        // check to see if recipe name is used
+        const checkName = await pool.query(`SELECT recipeName from recipes where recipeName = '${recipeName}'`)
+        if (checkName.rows.length > 0) {res.status(400).json(
+          { message: 'Recipe with that name already exist. Please choose a different name.'}
+        )}
+        else {
         // Insert new recipe name and description
         const insertRecipeRes = await pool.query(
           `INSERT INTO Recipes (recipeName, recipeDescription)
@@ -625,7 +630,7 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
         );
         //return recipe id
         res.status(200).json(insertRecipeRes.rows);
-      }
+      }}
     catch (error) {
       console.error('Error adding recipe:', error); 
       res.status(500).json({ message: 'Error adding recipe', error: error.message });
