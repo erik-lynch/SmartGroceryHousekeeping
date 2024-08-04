@@ -874,19 +874,20 @@ const CONFIG = {
 
 const client = new vision.ImageAnnotatorClient(CONFIG);
 
-app.post("/detectionObject", upload.single('imgfile'), function(request, response){
+app.post("/detectionObject", upload.single('imgfile'), function(req, res){
 
-  console.log(request.file.filename);
-
+  console.log(req.file.filename);
+  
   const detectObject = async (file_path) => {
-
+      console.log(file_path);
       let [result] = await client.objectLocalization(file_path);
       const objects = result.localizedObjectAnnotations;
-      response.json(objects[0].name)
-      
+      console.log(objects[0].name);
+      const img_str = String(objects[0].name);
+      res.send(img_str);
   };
 
-  detectObject(path.join(__dirname+'/public/files/' + request.file.filename));
+  detectObject(path.join(__dirname+'/public/files/' + req.file.filename));
   
 });
 
