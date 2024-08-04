@@ -882,7 +882,6 @@ app.post("/detectionObject", upload.single('imgfile'), function(req, res){
       console.log(file_path);
       let [result] = await client.objectLocalization(file_path);
       const objects = result.localizedObjectAnnotations;
-      //res.json(objects[0].name)
       console.log(objects[0].name);
       const img_str = String(objects[0].name);
       res.send(img_str);
