@@ -91,8 +91,6 @@ const Add_Recipe = () => {
     const handleRecipeItemsInputChange = (i,e) => {
         e.preventDefault();
         let itemData = [...recipeItems];
-        //console.log('name:', itemData[i]);
-        //console.log('value', e.target.value);
         itemData[i][e.target.name] = e.target.value;
         setRecipeItems((itemData))
     };
@@ -116,7 +114,6 @@ const Add_Recipe = () => {
         async function makeRecipe() {
             // Add recipe to recipe table and get recipeId
             try {
-                //console.log(recipeInfo)
                 const recipeRes = await fetch("http://localhost:3001/api/add-recipe/recipe", {
                     method: "POST",
                     headers: {"Content-Type": "application/json",},
@@ -128,7 +125,7 @@ const Add_Recipe = () => {
                 } else {
                     const errorJson = await recipeRes.json();
                     console.error("Failed to add recipe:", errorJson.message);
-                    alert(`${errorJson.message}`)
+                    alert(`${errorJson.message}`);
                     return(false);
                 }
                 } catch (error) {
@@ -153,7 +150,8 @@ const Add_Recipe = () => {
                         tempStepIdArr.push(stepResData[0].stepid);
                     } else {
                         const errorJson = await stepRes.json();
-                        console.error("Failed to add step:", errorJson.error);
+                        console.error("Failed to add step:", errorJson.message);
+                        alert(`${errorJson.message}`);
                         return ([tempStepIdArr, false]);
                     }
                 };
@@ -194,7 +192,6 @@ const Add_Recipe = () => {
                 }
             }
             else {
-                console.log("recipe id or steIdArr[1] were false");
                 return(false);
             }    
         }
@@ -221,6 +218,7 @@ const Add_Recipe = () => {
                         } else {
                             const errorJson = await itemsRecipesRes.json();
                             console.error("Failed to add itemsrecipess link:", errorJson.error);
+                            alert(`${errorJson.message}`);
                             return(false);
                         }
                     }
@@ -249,15 +247,13 @@ const Add_Recipe = () => {
                 recipeForm.reset();
             }
             else { 
-                console.log('error making recipe delete succesful tables')
                 if (recipeId) {
-                    console.log('before send stepidarr', stepIdArr);
                     const deleteRecipeIdSuccess = handleDeleteRecipe(recipeId, stepIdArr);
                     if (deleteRecipeIdSuccess){
-                        console.log('Succesfully deleted all recipe associated data');
+                        console.log('Error Making recipe. Succesfully deleted all recipe associated data');
                     }
                     else{
-                        console.log('Not sucesfully deleted all recipe associated data');
+                        console.log('Error making recipe . Did not sucesfully deleted all recipe associated data');
                     }
                 }
             }

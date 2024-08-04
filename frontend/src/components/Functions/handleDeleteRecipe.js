@@ -66,7 +66,6 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
     }
 
     async function deleteAllSteps(allSteps) {
-        console.log('stepidarr is:', stepIdArr);
         if (!stepIdArr[1]) {
             var string_val = "";
             for (let i=0; i < stepIdArr[0].length; i++) {
