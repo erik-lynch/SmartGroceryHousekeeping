@@ -286,17 +286,114 @@ const Add_Item = () => {
     }
   };
 
-  //const pantryUpdate = (e) => {};
+  const handleUseDate = (e) => {
+    const id = e.target.id;
+    let min = 0;
+    let max = 0;
+    let metric = "";
+    let days = 0;
+    let updateDate = new Date();
 
-  //const pantryAfterOpenUpdate = (e) => {};
+    switch (id) {
+      case 'pantry':
+        if (productDetails[0]['p_min'] && productDetails[0]['p_max'] && productDetails[0]['p_metric']) {
+          min = productDetails[0]['p_min'];
+          max = productDetails[0]['p_max'];
+          metric = productDetails[0]['p_metric'];
 
-  //const fridgeUpdate = (e) => {};
+        } else if (productDetails[0]['dop_p_min'] && productDetails[0]['dop_p_max'] && productDetails[0]['dop_p_metric']) {
+          min = productDetails[0]['dop_p_min'];
+          max = productDetails[0]['dop_p_max'];
+          metric = productDetails[0]['dop_p_metric'];
+        } 
+        break;
 
-  //const fridgeAfterOpenUpdate = (e) => {};
+      case 'pantry_after_open':
+        if (productDetails[0]['p_after_opening_min'] && productDetails[0]['p_after_opening_max'] && productDetails[0]['p_after_opening_metric']) {
+          min = productDetails[0]['p_after_opening_min'];
+          max = productDetails[0]['p_after_opening_max'];
+          metric = productDetails[0]['p_after_opening_metric'];
+        }
+        break;
 
-  //const fridgeAfterThawUpdate = (e) => {};
+      case 'fridge':
+        if (productDetails[0]['r_min'] && productDetails[0]['r_max'] && productDetails[0]['r_metric']) {
+          min = productDetails[0]['r_min'];
+          max = productDetails[0]['r_max'];
+          metric = productDetails[0]['r_metric'];
 
-  //const freezerUpdate = (e) => {};
+        } else if (productDetails[0]['dop_r_min'] && productDetails[0]['dop_r_max'] && productDetails[0]['dop_r_metric']) {
+          min = productDetails[0]['dop_r_min'];
+          max = productDetails[0]['dop_r_max'];
+          metric = productDetails[0]['dop_r_metric'];
+        }
+        break;
+
+      case 'fridge_after_open': 
+        if (productDetails[0]['r_after_opening_min'] && productDetails[0]['r_after_opening_max'] && productDetails[0]['r_after_opening_metric']) {
+          min = productDetails[0]['r_after_opening_min'];
+          max = productDetails[0]['r_after_opening_max'];
+          metric = productDetails[0]['r_after_opening_metric'];
+        }
+        break;
+
+      case 'fridge_after_thaw':
+        if (productDetails[0]['r_after_thawing_min'] && productDetails[0]['r_after_thawing_max'] && productDetails[0]['r_after_thawing_metric']) {
+          min = productDetails[0]['r_after_thawing_min'];
+          max = productDetails[0]['r_after_thawing_max'];
+          metric = productDetails[0]['r_after_thawing_metric'];
+        }
+        break;
+
+      case 'freezer':
+        if (productDetails[0]['f_min'] && productDetails[0]['f_max'] && productDetails[0]['f_metric']) {
+          min = productDetails[0]['f_min'];
+          max = productDetails[0]['f_max'];
+          metric = productDetails[0]['f_metric'];
+
+        } else if (productDetails[0]['dop_f_min'] && productDetails[0]['dop_f_max'] && productDetails[0]['dop_f_metric']) {
+          min = productDetails[0]['dop_f_min'];
+          max = productDetails[0]['dop_f_max'];
+          metric = productDetails[0]['dop_f_metric'];
+        }
+        break;
+    }
+
+    switch (metric) {
+      case 'Days':
+        break;
+
+      case 'Weeks':
+        min *= 7;
+        max *= 7;
+        break;
+
+      case 'Months':
+        min *= 30;
+        max *= 30;
+        break;
+      
+      case 'Years':
+        min *= 365;
+        max *= 365;
+        break;
+    }
+
+    console.log(productDetails);
+
+    days = Math.floor((min + max) / 2);
+
+    console.log(`${min} ${max} days`);
+    console.log(`averaged value: ${days}`);
+    updateDate.setDate(updateDate.getDate() + days);
+    updateDate = updateDate.toISOString().split('T')[0];
+    console.log(updateDate);
+
+    document.getElementById("expirationDate").value = updateDate;
+
+
+
+  };
 
 
   if (!categories || !units) {
@@ -312,7 +409,7 @@ const Add_Item = () => {
       <div className="manual-entry">
           
         <h2>Manual Input</h2>
-        <form onSubmit={handleSubmit}>
+        <form id="manual-input-form" onSubmit={handleSubmit}>
 
         <label htmlFor="itemName">Item name:</label>
           <input
@@ -367,6 +464,7 @@ const Add_Item = () => {
           />
 
           <label htmlFor="expirationDate">Item Expiration Date:</label>
+          <p>If you are unsure when your item will expire, you can use the "Food Shelf Life Guidelines" below to get an estimate based on USDA food safety data.</p>
           <input
             type="date"
             id="expirationDate"
@@ -436,7 +534,7 @@ const Add_Item = () => {
           {/* Freezer */}
           {(e.f_min && e.f_max && e.f_metric) && (e.f_min === e.f_max) && <p><b>Freezer:</b> {e.f_max} {e.f_metric}</p>}
           {(e.f_min && e.f_max && e.f_metric) && (e.f_min !== e.f_max) && <p><b>Freezer:</b> {e.f_min}-{e.f_max} {e.f_metric}</p>}
-          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min !== e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_max} {e.dop_f_metric}</p>}
+          {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min === e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_max} {e.dop_f_metric}</p>}
           {(e.dop_f_min && e.dop_f_max && e.dop_f_metric) && (e.dop_f_min !== e.dop_f_max) && <p><b>Freezer:</b> {e.dop_f_min}-{e.dop_f_max} {e.dop_f_metric}</p>}
           
 
@@ -459,24 +557,24 @@ const Add_Item = () => {
 
           {/* Pantry: pantry, pantry (opened) */}
           {((e.p_min && e.p_max && e.p_metric) || (e.dop_p_min && e.dop_p_max && e.dop_p_metric)) 
-          && <button type="submit">Pantry</button>}
+          && <button type="submit" id="pantry" onClick={handleUseDate}>Pantry</button>}
           {((e.p_after_opening_min && e.p_after_opening_max && e.p_after_opening_metric)) 
-          && <button type="submit">Pantry (opened)</button>}
+          && <button type="submit" id="pantry_after_open" onClick={handleUseDate}>Pantry (opened)</button>}
 
           {/* Refrigerator: refrigerator, refrigerator (opened), refrigerator (thawed) */}
           {((e.r_min && e.r_max && e.r_metric) || (e.dop_r_min && e.dop_r_max && e.dop_r_metric)) 
-          && <button type="submit">Refrigerator</button>}
+          && <button type="submit" id="fridge" onClick={handleUseDate}>Refrigerator</button>}
           {(e.r_after_opening_min && e.r_after_opening_max && e.r_after_opening_metric) 
-          && <button type="submit">Refrigerator (opened)</button>}
+          && <button type="submit" id="fridge_after_open" onClick={handleUseDate}>Refrigerator (opened)</button>}
           {(e.r_after_thawing_min && e.r_after_thawing_max && e.r_after_thawing_metric) 
-          && <button type="submit">Refrigerator (thawed)</button>}
+          && <button type="submit" id="fridge_after_thaw" onClick={handleUseDate}>Refrigerator (thawed)</button>}
           
           {/* Freezer */}
           {((e.f_min && e.f_max && e.f_metric) || (e.dop_f_min && e.dop_f_max && e.dop_f_metric)) 
-          && <button type="submit">Freezer</button>}
+          && <button type="submit" id="freezer" onClick={handleUseDate}>Freezer</button>}
 
-    
           </div>
+
         ))}
         </div>}
 
