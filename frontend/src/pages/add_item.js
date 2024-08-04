@@ -454,6 +454,7 @@ const Add_Item = () => {
         {image.preview && <img src={image.preview} width='100' height='100'/>}
         
         <form onSubmit={handleVision} encType="multipart/form-data">
+          <label for="imgfile">Upload Image: </label>
           <input 
             type="file" 
             accept="image/*" 
@@ -461,13 +462,17 @@ const Add_Item = () => {
             name="imgfile" 
             onChange={handleVisionChange} 
           />
+          
+          <label for="take-photo" class="hide-on-desktop">Take Photo: </label>
           <input 
             accept="image/*" 
-            id="icon-button-file" 
+            id="take-photo" 
             capture="environment"
             type="file" 
+            class="hide-on-desktop"
             onChange={handleVisionChange} 
           />
+          
           <button type="submit" className="upload-button">Analyze Image</button>
         </form>
 
