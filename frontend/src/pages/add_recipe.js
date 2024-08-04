@@ -77,14 +77,22 @@ const Add_Recipe = () => {
 
     const handleDeleteRecipeStep = async(e) => {
         e.preventDefault();
-        const newCount = stepFormNumber - 1;
-        setStepFormNumber(newCount);
-        recipeSteps.splice(-1);
-        setRecipeSteps([...recipeSteps]);
+        //must have at least 1 step
+        if (recipeSteps.length > 1) {
+            const newCount = stepFormNumber - 1;
+            setStepFormNumber(newCount);
+            recipeSteps.splice(-1);
+            setRecipeSteps([...recipeSteps]);
+        }
     };
 
-    const handleDeleteRecipeItem = async(e) => {
+    const handleDeleteRecipeItem = async(i, e) => {
         e.preventDefault();
+        //must have at least 1 item
+        if (recipeItems.length > 1) {
+            recipeItems.splice(i, 1);
+            setRecipeItems([...recipeItems]);
+        }
     };
 
     // input change handlers
@@ -318,9 +326,9 @@ const Add_Recipe = () => {
                                     <label htmlFor="itemId">Name: </label><br/>
                                         <select  class="recipe-select-ingredient" id="itemId" name="itemId" size="2" value={items.itemId} onChange={e => handleRecipeItemsInputChange(i,e)}>
                                             <option value={-1}> Not selected</option>
-                                            {allUserIdItems.map((newItems, i) => {
+                                            {allUserIdItems.map((newItems, k) => {
                                                 return (
-                                                    <option key={i} value={newItems.itemid}>{newItems.itemname}</option>
+                                                    <option key={k} value={newItems.itemid}>{newItems.itemname}</option>
                                                 )
                                             })};
                                         </select><br/>
@@ -328,7 +336,7 @@ const Add_Recipe = () => {
                                 
                                 <div class = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
-                                    <button className="recipe-delete-item-button" onClick={handleDeleteRecipeItem}>X</button>
+                                    <button className="recipe-delete-item-button" onClick={e => handleDeleteRecipeItem(i,e)}>X</button>
                                     <input class="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
                                 <div/>
 
