@@ -383,6 +383,24 @@ select {
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+.section-header {
+  color: black;
+  padding: 10px 0;
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid black;
+  font-size: large;
+  font-weight: bold;
+}
+
+.section-content {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .manual-entry {
@@ -390,64 +408,35 @@ select {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
-.manual-entry h2 {
-  margin-bottom: 15px;
-}
-
-.manual-entry form {
+.section-content form {
   display: flex;
+  width: 100%;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
 }
 
-.manual-entry label {
-  font-weight: bold;
-  margin: 15px 0 0 0;
+.section-content label {
+  margin: 5px 0 0 0;
 }
 
-.manual-entry input[type="text"],
-.manual-entry input[type="number"],
-.manual-entry select {
+.section-content input[type="text"],
+.section-content input[type="number"],
+.section-content select {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   border-radius: 4px;
   font-size: 14px;
 }
 
-.manual-entry input[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.manual-entry input[type="submit"]:hover {
-  background-color: #45a049;
-}
-
-.barcode-scanning {
-  background-color: #f9f9f9;
-  padding: 20px 20px 70px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.section-content input[type="submit"] {
   width: 100%;
-  position: relative; 
-}
-
-.barcode-scanning h2 {
-  margin-bottom: 15px;
-}
-
-.barcode-scanning button {
-  width: 95%;
-  background-color: #007BFF;
+  background-color: #000000;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -455,13 +444,28 @@ select {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
-  position: absolute; 
-  left: 50%; 
-  transform: translateX(-50%);
+}
+
+.section-content input[type="submit"]:hover {
+  background-color: #000000;
+}
+
+
+
+.section-content button {
+  width: 100%;
+  background-color: #000000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .barcode-scanning button:hover {
-  background-color: #0056b3;
+  background-color: #000000;
 }
 
 .modal {
@@ -526,10 +530,11 @@ select {
 }
 
 .product-details {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 20px;
 }
 
 .product-details h3 {
@@ -566,7 +571,7 @@ select {
 }
 
 .product-details td button {
-  background-color: #4CAF50;
+  background-color: #000000;
   color: white;
   border: none;
   padding: 8px 16px;
