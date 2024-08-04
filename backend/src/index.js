@@ -72,12 +72,12 @@ app.get('/items', async (req, res) => {
 
 // add item to DB
 app.post('/api/add-item', async (req, res) => {
-  const { iname, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
+  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
 
   try {
     const itemResult = await pool.query(
       'SELECT itemId FROM Items WHERE itemName = $1 OR itemName = $2',
-      [iname, barcode]
+      [itemName, barcode]
     );
 
     let itemId;
@@ -89,7 +89,7 @@ app.post('/api/add-item', async (req, res) => {
       // Insert new item
       const insertItemResult = await pool.query(
         'INSERT INTO Items (itemName, itemDescription) VALUES ($1, $2) RETURNING itemId',
-        [iname, itemDescription] 
+        [itemName, itemDescription] 
       );
       itemId = insertItemResult.rows[0].itemid;
     }

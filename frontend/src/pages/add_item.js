@@ -158,7 +158,7 @@ const Add_Item = () => {
                     setProductDetailsList(prevDetails => [...prevDetails, itemDetails]);
                     setFormData({
                       ...formData,
-                      iname: itemDetails.name,
+                      itemName: itemDetails.name,
                       unit: "count",
                       quantity: 1,
                       ripeRating: "",
@@ -244,7 +244,7 @@ const Add_Item = () => {
 
   const handleAddItem = async (product) => {
     const dataToSend = {
-      iname: product.name,
+      itemName: product.name,
       itemDescription: product.itemDescription,
       unit: product.unit,
       quantity: product.quantity,
@@ -294,7 +294,7 @@ const Add_Item = () => {
         var img_str = String(data);
           setFormData({
             ...formData,
-            iname: img_str
+            itemName: img_str
           });
       })
 
