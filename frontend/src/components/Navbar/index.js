@@ -25,6 +25,9 @@ const Navbar = () => {
                     <NavLink to="/users/1/add_recipe" activeStyle="true">
                         Add Recipe
                     </NavLink>
+                    <NavLink to="/users/1/cookbook" activeStyle="true">
+                        Cookbook
+                    </NavLink>
                     <LoginLogout>
                         Login
                     </LoginLogout>

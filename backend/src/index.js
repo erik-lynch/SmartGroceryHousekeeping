@@ -525,7 +525,6 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
       limit 16`
   );
-    //console.log(getRecipeInFridgeIngredientsData.rows);
     res.json(getRecipeInFridgeIngredientsData.rows);
   } catch (err) {
     console.error(err);
@@ -553,7 +552,6 @@ app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(r
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
       limit 16`
   );
-    //console.log(getRecipeSpoilSoonIngredientsData.rows);
     res.json(getRecipeSpoilSoonIngredientsDataa.rows);
   } catch (err) {
     console.error(err);
@@ -598,7 +596,6 @@ app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
 	    INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
       where r.recipeId = ${req.params.recipeid}`
   );
-    //console.log(Data.rows);
     res.json(Data.rows);
   } catch (err) {
     console.error(err);
@@ -632,21 +629,30 @@ app.get('/api/users/:userid/items', async(req,res) => {
 
 // make recipe
 app.post('/api/add-recipe/recipe', async (req, res) => {
-  //console.log(req.body);
   const recipeName = (req.body.recipeName);
   const recipeDescription = (req.body.recipeDescription);
-  //console.log('recipeName:',recipeName);
-  //console.log('recipeDescription:',recipeDescription);
 
   if (recipeName == null || recipeName == "")  {
-    res.status(400).json({ message: 'Error adding recipe name'});
+    res.status(400).json({ 
+      message: 'No recipe name was given. Please give the recipe a name.',
+      error: 'bad recipeName'
+    });
   }
   else if (recipeDescription == null || recipeDescription == "") {
-    res.status(400).json({ message: 'Error adding recipe description'});
+    res.status(400).json({ 
+      message: 'No recipe description was given. Please fill in a description.',
+      error: 'bad recipeDescription'
+    });
   }
   else {
     try {
-        //console.log('get to try statement');
+        // check to see if recipe name is used
+        const checkName = await pool.query(`SELECT recipeName from recipes where recipeName = '${recipeName}'`)
+        if (checkName.rows.length > 0) {res.status(400).json({
+          message: 'Recipe with that name already exist. Please choose a different name.',
+          error: 'RecipeName already used'
+        })}
+        else {
         // Insert new recipe name and description
         const insertRecipeRes = await pool.query(
           `INSERT INTO Recipes (recipeName, recipeDescription)
@@ -655,7 +661,7 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
         );
         //return recipe id
         res.status(200).json(insertRecipeRes.rows);
-      }
+      }}
     catch (error) {
       console.error('Error adding recipe:', error); 
       res.status(500).json({ message: 'Error adding recipe', error: error.message });
@@ -666,18 +672,21 @@ app.post('/api/add-recipe/recipe', async (req, res) => {
 app.post('/api/add-recipe/step', async (req, res) => {
   const stepNumber = (req.body.stepNumber);
   const stepDescription = (req.body.stepDescription);
-  //console.log(stepNumber);
-  //console.log(stepDescription);
 
   if (stepNumber == null || stepNumber <=0) {
-    res.status(400).json({ message: 'Error adding step number'});
+    res.status(400).json({ 
+     message: 'Error adding step number.',
+     error: 'bad stepNumber'
+    });
   }
   else if (stepDescription == null || stepDescription == "") {
-    res.status(400).json({ message: 'Error adding step description'});
+    res.status(400).json({
+      message: `No step description was given for step ${stepNumber}. Please fill in a description.`,
+      error: 'bad stepDescription'
+    });
   }
   else {
     try {
-      //console.log("get to step try");
         // Insert new recipe name and description
         const insertStepRes = await pool.query(
           `INSERT INTO Steps (stepNumber, stepDescription)
@@ -710,8 +719,8 @@ app.post('/api/add-recipe/recipessteps', async (req, res) => {
     );
   }
 catch (error) {
-  console.error('Error adding step:', error); 
-  res.status(500).json({ message: 'Error adding step', error: error.message });
+  console.error('Error adding recipestep:', error); 
+  res.status(500).json({ message: 'Error adding recipestep', error: error.message });
 }
 });
 
@@ -720,19 +729,24 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   const itemId = (req.body.itemId);
   const quantity = (req.body.quantity);
   const quantityUnit = (req.body.quantityUnit);
-  //console.log('recipeid:', recipeId);
-  //console.log('itemid:',itemId);
-  //console.log('quantity:',quantity);
-  //console.log('quantityunit:',quantityUnit);
 
   if (recipeId == null || recipeId <=0 ) {
-    res.status(400).json({ message: 'Error with recipeId'});
+    res.status(400).json({ 
+      message: 'Error with recipeId',
+      error: 'bad recipeId'
+    });
   }
   else if (itemId == null || itemId <=0 ) {
-    res.status(400).json({ message: 'Error with itemId'});
+    res.status(400).json({ 
+      message: 'No Ingredient was selected. Please select an ingredient or delete unused item.',
+      error: 'bad itemId'
+    });
   }
   else if (quantity == null || quantity == "") {
-    res.status(400).json({ message: 'Error with quantity'});
+    res.status(400).json({
+      message: `No quantity was given for an item. Please fill in quantity or delete unused item.`,
+      error: 'bad quantity'
+    });
   }
 
   else {
@@ -754,42 +768,125 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
   }
 });
 
-app.delete('/api/add-recipe/unsuccessful/recipe', async (req, res) => {
-  const recipeId = (req.body.recipeId);
+//----------------------------------------------------------------------------
+//                Cookbook Page
+//----------------------------------------------------------------------------
+
+app.get('/api/users/:userId/recipes/all', async (req, res) => {
+  const userId = (req.params.userId);
+  
+  // Get all recipes a particular user has in their cookbook
   try {
-    // attemp recipe deletion
-    const deleteRecipeRes = await pool.query(
-      `DELETE FROM Recipes
-       WHERE ${recipeId}`
+    getAllUserRecipesRes = await pool.query(
+      `SELECT DISTINCT
+	      recipeId,
+        recipeName,
+        recipeDescription
+      FROM recipes AS R
+      INNER JOIN itemsrecipes AS IR ON IR.fk_recipes_recipeid = R.recipeid
+      INNER JOIN items AS I ON IR.fk_items_itemid = I.itemid
+      INNER JOIN usersitems AS UI ON UI.fk_items_itemid = I.itemid
+      INNER JOIN users AS U ON UI.fk_users_userid = U.userid
+      WHERE U.userid = ${userId}
+      order by recipename`
     );
-    //return succesful delete message for recipe
-    res.status(200).json(
-      {message: `Succesfully deleted recipeId: ${recipeId}`}
-    );
+    res.status(200).json(getAllUserRecipesRes.rows);
   }
-catch (error) {
-  console.error('Error deleting recipe:', error); 
-  res.status(500).json({ message: 'Error deleting recipe', error: error.message });
-}
+  catch (error) {
+    console.error('Error getting user recipes:', error); 
+    res.status(500).json({error: error.message});
+  }
 });
 
-app.delete('/api/add-recipe/unsuccessful/step', async (req, res) => {
-  const stepId = (req.body.stepId);
+
+// Get all itemsrecipes ids in a list associated with recipeId
+app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
+  const recipeId = (req.params.recipeId);
+
   try {
-    // attemp step deletion
-    const deleteStepRes = await pool.query(
-      `DELETE FROM Steps
-       WHERE ${stepId}`
+    const getItemsRecipesIdListRes = await pool.query(
+      `SELECT
+	      STRING_AGG(CHR(39) || CAST(itemsrecipesid AS VARCHAR) || CHR(39), ', ') AS itemsrecipesidlist
+	    FROM itemsrecipes
+	    WHERE fk_recipes_recipeid = ${recipeId}`
     );
-    //return succesful delete message for step
-    res.status(200).json(
-      {message: `Successfully deleted stepId: ${stepId}`}
-    );
+    res.status(200).json(getItemsRecipesIdListRes.rows);
   }
-catch (error) {
-  console.error('Error deleting step:', error);
-  res.status(500).json({ message: 'Error deleting step', error: error.message });
-}
+  catch (error) {
+    console.error('Error getting itemsrecipes id list:', error); 
+    res.status(500).json({ message: 'Error getting itemsrecipes id list', error: error.message });
+  }
+});
+
+
+// Get all step ids in a list associated with recipeId
+app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
+  const recipeId = (req.params.recipeId);
+
+  try {
+    const getStepsIdListRes = await pool.query(
+      `SELECT
+	      STRING_AGG(CHR(39) || CAST(fk_steps_stepid AS VARCHAR) || CHR(39), ', ') AS stepidlist
+	    FROM recipessteps
+	    WHERE fk_recipes_recipeid = ${recipeId}`
+    );
+    res.status(200).json(getStepsIdListRes.rows);
+  }
+  catch (error) {
+    console.error('Error getting steps id list:', error); 
+    res.status(500).json({ message: 'Error getting steps id list', error: error.message });
+  }
+});
+
+// delete items recipe relationship from id (cant just delete recipe)
+app.delete('/api/delete-recipe/itemsrecipes', async (req, res) => {
+  const itemsRecipesIdList = (req.body.itemsrecipesidlist);
+
+  try {
+    const deleteItemsRecipesRes = await pool.query(
+      `DELETE FROM itemsrecipes
+       WHERE itemsrecipesid IN (${itemsRecipesIdList})`
+    );
+    res.status(200).json(deleteItemsRecipesRes);
+  }
+  catch (error) {
+    console.error('Error deleting itemsrecipes:', error);
+    res.status(500).json({ message: 'Error deleting itemsrecipes', error: error.message });
+  }
+});
+
+// delete all steps from id, will delete the recipestep relationship too
+app.delete('/api/delete-recipe/steps', async (req, res) => {
+  const stepsIdList = (req.body.stepidlist);
+
+  try {
+    const deleteStepsRes = await pool.query(
+      `DELETE FROM steps
+       WHERE stepid IN (${stepsIdList})`
+    );
+    res.status(200).json(deleteStepsRes);
+  }
+  catch (error) {
+    console.error('Error deleting steps:', error);
+    res.status(500).json({ message: 'Error deleting steps', error: error.message });
+  }
+});
+
+// delete recipe from recipeId
+app.delete('/api/delete-recipe/recipe', async (req, res) => {
+  const recipeId = (req.body.recipeId);
+
+  try {
+    const deleteRecipeRes = await pool.query(
+      `DELETE FROM recipes
+       WHERE recipeId = ${recipeId}`
+    );
+    res.status(200).json(deleteRecipeRes );
+  }
+  catch (error) {
+    console.error('Error deleting recipe:', error);
+    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
+  }
 });
 
 //----------------------------------------------------------------------------

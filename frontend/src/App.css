@@ -270,7 +270,7 @@ input.edit-button {
 
 .grid-recipe {
   display:grid;
-  grid-template-columns: 200px 250px;
+  grid-template-columns: 200px 240px;
   padding: 5px;
   width: 90%;
 }
@@ -288,6 +288,9 @@ input.edit-button {
   text-align: left;
   grid-area: 1 / 1 / 1/ 2;
   border-radius: 20px 0px 0px 20px;
+  border-left: black solid;
+  border-top: black solid;
+  border-bottom: black solid;
 }
 
 .grid-recipe-quantity {
@@ -295,6 +298,9 @@ input.edit-button {
   float: left;
   grid-column: 1 / 2 / 1 / 2;
   border-radius: 0px 20px 20px 0px;
+  border-right: black solid;
+  border-top: black solid;
+  border-bottom: black solid;
 }
 
 .grid-recipe-measurement {
@@ -309,12 +315,23 @@ textarea {
   border: solid 1px;
   border-radius: 5px;
   margin-bottom: 15px;
+  padding:5px;
+}
+
+textarea[class="recipe-text"] {
+  max-width: 100%;
+  border: solid 1px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  padding:5px;
+  border: black solid;
 }
 
 input:not([type="submit"], [type="button"]) {
   border-radius: 5px;
   height: 25px;
 }
+
 
 input[type="button"] {
   width: 180px;
@@ -361,7 +378,7 @@ input[type="number"] {
   font-size: 16px;
 }
 
-button[class="recipe-submit-button"], button[class="recipe-add-button"] {
+button[class="recipe-submit-button"] {
   align-self: center;
   background-color: black;
   color: white;
@@ -373,6 +390,44 @@ button[class="recipe-submit-button"], button[class="recipe-add-button"] {
   padding: 10px;
 }
 
+ button[class="recipe-add-button"] {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px 2px;
+  width: 110px;
+  padding: 5px;
+}
+
+button[class="recipe-delete-step-button"] {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px 2px;
+  width: 110px;
+  padding: 5px;
+  margin-left: 10px
+}
+
+button[class="recipe-delete-item-button"] {
+  margin-right: 0;
+  margin-left: auto; 
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 2px 2px;
+  width: 30px;
+  padding: 5px;
+}
+
 select {
   margin: 10px 10px 10px 0;
   border-radius: 50px;
@@ -380,6 +435,32 @@ select {
   width: 150px;
   border: black solid;
   padding: 5px 15px;
+}
+
+select[class="recipe-select-ingredient"] {
+  margin: 10px;
+  border-radius: 5px;
+  height: 100px;
+  inline-size: 150px;
+  border: black solid;
+  padding: 5px 15px;
+}
+
+select[class="recipe-select-measurement"] {
+  margin: 10px 10px 10px 0;
+  border-radius: 50px;
+  height: 45px;
+  width: 180px;
+  border: black solid;
+  padding: 5px 15px;
+}
+
+input[class="recipe-quantity"] {
+  border-radius: 50px;
+  height: 35px;
+  text-align: center;
+  border: black solid;
+  width: 150px;
 }
 
 /* Add Item Page */
