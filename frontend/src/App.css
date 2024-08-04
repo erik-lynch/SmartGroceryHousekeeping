@@ -314,12 +314,6 @@ input:not([type="submit"]) {
   height: 25px;
 }
 
-input[class="recipe-quantity"] {
-  border-radius: 5px;
-  height: 25px;
-  text-align: center;
-  border: black solid;
-}
 
 input[type="button"] {
   height: fit-content;
@@ -408,6 +402,13 @@ select[class="recipe-select-measurement"] {
   width: 180px;
   border: black solid;
   padding: 5px 15px;
+}
+
+input[class="recipe-quantity"] {
+  border-radius: 50px;
+  height: 35px;
+  text-align: center;
+  border: black solid;
 }
 
 /* Add Item Page */
