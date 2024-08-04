@@ -73,6 +73,29 @@ const Add_Recipe = () => {
         setRecipeItems([...recipeItems, newItem]);
     };
 
+    // handle remove (steps and items)
+
+    const handleDeleteRecipeStep = async(e) => {
+        e.preventDefault();
+        const newCount = stepFormNumber + 1;
+        setStepFormNumber(newCount);
+        let newStep = {
+            stepNumber: stepFormNumber + 1,
+            stepDescription: ""
+        };
+        setRecipeSteps([...recipeSteps, newStep]);
+    };
+
+    const handleDeleteRecipeItem = async(e) => {
+        e.preventDefault();
+        let newItem = {
+            itemId: -1,
+            quantity: '1',
+            quantityUnit: ""
+        };
+        setRecipeItems([...recipeItems, newItem]);
+    };
+
     // input change handlers
 
     const handleRecipeInfoInputChange = (e) => {
@@ -311,9 +334,10 @@ const Add_Recipe = () => {
                                             })};
                                         </select><br/>
                                 </div>
-
+                                
                                 <div class = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
+                                    <button className="recipe-delete-item-button" onClick={handleDeleteRecipeStep}>X</button>
                                     <input class="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
                                 <div/>
 
@@ -341,7 +365,7 @@ const Add_Recipe = () => {
                             </div>
                         )
                     })}
-                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredients</button></div><br/>
+                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredient</button></div><br/>
 
                         <h3>Directions:</h3>
                         {recipeSteps.map((steps, i) => {
@@ -358,9 +382,11 @@ const Add_Recipe = () => {
                                         class="recipe-text"
                                     ></textarea> <br/><br/>
                                 </div>
+                                
                         )
                     })}
-                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Steps</button></div><br/>
+                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Step</button>
+                    <button className="recipe-delete-step-button" onClick={handleDeleteRecipeStep}>Remove Step</button></div><br/>
             </form>
             <div><button className="recipe-submit-button" onClick={handleSubmit}>Submit</button></div>
         </div>

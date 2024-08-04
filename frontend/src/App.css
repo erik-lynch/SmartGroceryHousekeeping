@@ -385,6 +385,32 @@ button[class="recipe-submit-button"] {
   padding: 5px;
 }
 
+button[class="recipe-delete-step-button"] {
+  align-self: center;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px 2px;
+  width: 110px;
+  padding: 5px;
+  margin-left: 10px
+}
+
+button[class="recipe-delete-item-button"] {
+  margin-right: 0;
+  margin-left: auto; 
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 2px 2px;
+  width: 30px;
+  padding: 5px;
+}
+
 
 select[class="recipe-select-ingredient"] {
   margin: 10px;
@@ -409,6 +435,7 @@ input[class="recipe-quantity"] {
   height: 35px;
   text-align: center;
   border: black solid;
+  width: 150px;
 }
 
 /* Add Item Page */
