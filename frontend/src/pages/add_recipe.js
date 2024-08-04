@@ -77,23 +77,14 @@ const Add_Recipe = () => {
 
     const handleDeleteRecipeStep = async(e) => {
         e.preventDefault();
-        const newCount = stepFormNumber + 1;
+        const newCount = stepFormNumber - 1;
         setStepFormNumber(newCount);
-        let newStep = {
-            stepNumber: stepFormNumber + 1,
-            stepDescription: ""
-        };
-        setRecipeSteps([...recipeSteps, newStep]);
+        recipeSteps.splice(-1);
+        setRecipeSteps([...recipeSteps]);
     };
 
     const handleDeleteRecipeItem = async(e) => {
         e.preventDefault();
-        let newItem = {
-            itemId: -1,
-            quantity: '1',
-            quantityUnit: ""
-        };
-        setRecipeItems([...recipeItems, newItem]);
     };
 
     // input change handlers
@@ -337,7 +328,7 @@ const Add_Recipe = () => {
                                 
                                 <div class = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
-                                    <button className="recipe-delete-item-button" onClick={handleDeleteRecipeStep}>X</button>
+                                    <button className="recipe-delete-item-button" onClick={handleDeleteRecipeItem}>X</button>
                                     <input class="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
                                 <div/>
 
