@@ -647,17 +647,6 @@ const Add_Item = () => {
         
       </div>
 
-
-      <div>
-        <h2>Take Photo or Upload</h2>
-        <form action="http://localhost:3001/detectionObject" method="post" encType="multipart/form-data">
-          <input type="file" accept="image/*" id="imgfile" name="imgfile" />
-          <button type="submit" className="upload-button">Analyze Image</button>
-        </form>
-      </div>
-
-      <br/>
-
       <div className="barcode-scanning">
         <h2>Barcode Scanning</h2>
         <button
