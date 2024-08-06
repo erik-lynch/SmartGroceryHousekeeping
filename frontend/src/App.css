@@ -132,6 +132,19 @@ body {
   }
 }
 
+/* hide photo capture on desktop */
+@media screen and (max-width: 480px) {
+  .show-on-desktop {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 481px) {
+  .hide-on-desktop {
+    display: none;
+  }
+}
+
 /* h1, h2, h3 */
 
 h1 {
