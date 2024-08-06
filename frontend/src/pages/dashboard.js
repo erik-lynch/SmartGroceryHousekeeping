@@ -70,7 +70,7 @@ const Dashboard = () => {
 
         return (
 
-            <div className="core">
+            <div className="core-dashboard">
                 
                 <h2>
                     Items - Recently Purchased

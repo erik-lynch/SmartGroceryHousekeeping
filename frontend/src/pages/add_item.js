@@ -448,8 +448,12 @@ const Add_Item = () => {
   return (
 
   <div className="additem-core">
-    <h2 className="section-header">Take Photo or Upload</h2>
+    
     <div className="section-content">
+
+    <br/>
+
+    <h2 >Take Photo or Upload</h2>
 
         {image.preview && <img src={image.preview} width='100' height='100'/>}
         
@@ -472,11 +476,69 @@ const Add_Item = () => {
             class="hide-on-desktop"
             onChange={handleVisionChange} 
           />
+
           
           <button type="submit" className="upload-button">Analyze Image</button>
         </form>
 
-        <br/><br/>
+        
+        
+
+    <h2>Barcode Scanning</h2>
+
+      <button
+        className="button-scan-button"
+        onClick={() => {
+          setScannedCodes([]);
+          setIsScanning(!isScanning);
+        }}
+      >
+        {isScanning ? 'Stop Scanning' : 'Start Scanning'}
+      </button>
+      {isScanning && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setIsScanning(false)}>&times;</span>
+            <div ref={scannerRef} className="scanner-view" />
+            {itemScannedMessage && <div className="item-scanned-message">Item Scanned</div>}
+          </div>
+        </div>
+      )}
+
+
+    {productDetailsList.length > 0 && (
+      <div className="product-details">
+        <h3>Scanned Product Details</h3>
+        <table >
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Barcode</th>
+              <th>Description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productDetailsList.map((product, index) => (
+              <tr key={index}>
+                <td><img src={product.imageUrl} alt="Product" /></td>
+                <td>{product.name}</td>
+                <td>{formData.quantity}</td>
+                <td>{product.barcode}</td>
+                <td>{formData.itemDescription}</td>
+                <td>
+                  <button className="button add-button" onClick={() => handleAddItem(product)}>
+                    Add
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
 
         <h2>Manual Input</h2>
         <form id="manual-input-form" onSubmit={handleSubmit}>
@@ -549,6 +611,8 @@ const Add_Item = () => {
 
       </div>
 
+      
+      <div className="section-content">
 
       <div className="spoilage-all">
         <h2>Food Shelf Life Guidelines</h2>
@@ -652,62 +716,9 @@ const Add_Item = () => {
 
         
       </div>
-
-      <h2 className="section-header">Barcode Scanning</h2>
-      <div className="section-content">
-        <button
-          className="button scan-button"
-          onClick={() => {
-            setScannedCodes([]);
-            setIsScanning(!isScanning);
-          }}
-        >
-          {isScanning ? 'Stop Scanning' : 'Start Scanning'}
-        </button>
-        {isScanning && (
-          <div className="modal">
-            <div className="modal-content">
-              <span className="close" onClick={() => setIsScanning(false)}>&times;</span>
-              <div ref={scannerRef} className="scanner-view" />
-              {itemScannedMessage && <div className="item-scanned-message">Item Scanned</div>}
-            </div>
-          </div>
-        )}
       </div>
-
-      {productDetailsList.length > 0 && (
-        <div className="product-details">
-          <h3>Scanned Product Details</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Barcode</th>
-                <th>Description</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productDetailsList.map((product, index) => (
-                <tr key={index}>
-                  <td><img src={product.imageUrl} alt="Product" /></td>
-                  <td>{product.name}</td>
-                  <td>{formData.quantity}</td>
-                  <td>{product.barcode}</td>
-                  <td>{formData.itemDescription}</td>
-                  <td>
-                    <button className="button add-button" onClick={() => handleAddItem(product)}>
-                      Add
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      
+      
     </div>
   );
 }};
