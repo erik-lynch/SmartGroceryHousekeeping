@@ -446,12 +446,11 @@ const Add_Item = () => {
   else {
 
   return (
-    <div className="additem-core">
 
-      <div className="manual-entry">
-          
-        
-        <h2>Take Photo or Upload</h2>
+  <div className="additem-core">
+    <h2 className="section-header">Take Photo or Upload</h2>
+    <div className="section-content">
+
         {image.preview && <img src={image.preview} width='100' height='100'/>}
         
         <form onSubmit={handleVision} encType="multipart/form-data">
@@ -483,6 +482,7 @@ const Add_Item = () => {
         <form id="manual-input-form" onSubmit={handleSubmit}>
 
         <label htmlFor="itemName">Item name:</label>
+
           <input
             type="text"
             id="itemName"
@@ -653,8 +653,8 @@ const Add_Item = () => {
         
       </div>
 
-      <div className="barcode-scanning">
-        <h2>Barcode Scanning</h2>
+      <h2 className="section-header">Barcode Scanning</h2>
+      <div className="section-content">
         <button
           className="button scan-button"
           onClick={() => {

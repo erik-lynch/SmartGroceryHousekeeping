@@ -492,6 +492,24 @@ input[class="recipe-quantity"] {
   max-width: 1000px;
   margin: 0 auto;
   min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+.section-header {
+  color: black;
+  padding: 10px 0;
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid black;
+  font-size: large;
+  font-weight: bold;
+}
+
+.section-content {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 /* Manual Entry */
@@ -501,19 +519,15 @@ input[class="recipe-quantity"] {
   margin: 30px 0 30px 0;
 }
 
-.manual-entry h2 {
-  margin-bottom: 15px;
-}
-
-.manual-entry form {
+.section-content form {
   display: flex;
+  width: 100%;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
 }
 
-.manual-entry label {
-  font-weight: bold;
-  margin: 15px 0 0 0;
+.section-content label {
+  margin: 5px 0 0 0;
 }
 
 .manual-entry input[type="text"],
@@ -541,8 +555,8 @@ input[class="recipe-quantity"] {
   background-color: black;
 }
 
-.manual-entry input[type="submit"]:hover {
-  background-color: #45a049;
+.section-content input[type="submit"]:hover {
+  background-color: #000000;
 }
 
 /* Barcode Scanning */
@@ -553,9 +567,18 @@ input[class="recipe-quantity"] {
   margin: 30px 0 60px 0;
 }
 
-.barcode-scanning h2 {
-  margin-bottom: 15px;
-}
+
+
+.section-content button {
+  width: 100%;
+  background-color: #000000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 
 .barcode-scanning button {
   width: 100%;
@@ -573,7 +596,7 @@ input[class="recipe-quantity"] {
 }
 
 .barcode-scanning button:hover {
-  background-color: #0056b3;
+  background-color: #000000;
 }
 
 .modal {
@@ -638,10 +661,11 @@ input[class="recipe-quantity"] {
 }
 
 .product-details {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 20px;
 }
 
 .product-details h3 {
@@ -678,7 +702,7 @@ input[class="recipe-quantity"] {
 }
 
 .product-details td button {
-  background-color: #4CAF50;
+  background-color: #000000;
   color: white;
   border: none;
   padding: 8px 16px;
