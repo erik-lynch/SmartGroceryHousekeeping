@@ -115,7 +115,7 @@ useEffect(() => {
                 setLoading2(true);
                 const apiInFridgeRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${ingredients}/spoon/infridge`);
                 const apiInFridgeRecipeData = await apiInFridgeRecipesRes.json();
-                if (apiInFridgeRecipeData.status == 'failure') {
+                if (apiInFridgeRecipeData.status === 'failure') {
                     setApiMax(true);
                 }
                 else {
@@ -144,6 +144,12 @@ useEffect(() => {
                 sortedJsonInFridgeData = inFridgeRecipeData.sort((a, b) => {
                     if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
                       return -1;
+                    }
+                    else if ((a.ingredientstot-a.ingredientsused) > (b.ingredientstot-b.ingredientsused)){
+                        return 1;
+                    }
+                    else {
+                        return 0;
                     }
                   });
 
@@ -177,7 +183,7 @@ useEffect(() => {
             fetchApiInFridgeRecipes();
             fetchInFridgeRecipes();
         }
-        }, [ingredients]);
+        }, [userId, ingredients]);
 
 
 //---------------------------------------------------------------- 
@@ -190,7 +196,7 @@ useEffect(() => {
                     setLoading3(true);
                     const apiSpoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${spoilIngredients}/spoon/spoilsoon`);
                     const apiSpoilSoonRecipesData = await apiSpoilSoonRecipesRes.json();
-                    if (apiSpoilSoonRecipesData.status == 'failure') {
+                    if (apiSpoilSoonRecipesData.status === 'failure') {
                         setApiMax(true);
                     }
                     else {
@@ -219,6 +225,12 @@ useEffect(() => {
                 sortedJsonSpoilSoonData = spoilSoonRecipesData.sort((a, b) => {
                     if ((a.ingredientstot-a.ingredientsused) < (b.ingredientstot-b.ingredientsused)) {
                       return -1;
+                    }
+                    else if ((a.ingredientstot-a.ingredientsused) > (b.ingredientstot-b.ingredientsused)){
+                        return 1;
+                    }
+                    else {
+                        return 0;
                     }
                   });
 
@@ -253,7 +265,7 @@ useEffect(() => {
                 fetchApiSpoilSoonRecipes();
                 fetchSpoilSoonRecipes();
             }
-            }, [spoilIngredients]);
+            }, [userId, spoilIngredients]);
 
         if (loading0 || loading1 || loading2 || loading3 || loading4 || loading5)
         {

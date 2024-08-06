@@ -183,7 +183,7 @@ const Edit_Item = () => {
 
         return (
 
-            <div className="core">
+            <div className="core-edit-item">
 
                 <div className="edit-image-content">
 
