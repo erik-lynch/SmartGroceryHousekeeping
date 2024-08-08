@@ -137,7 +137,7 @@ const Add_Recipe = () => {
         async function makeRecipe() {
             // Add recipe to recipe table and get recipeId
             try {
-                const recipeRes = await fetch("${API_URL}/api/add-recipe/recipe", {
+                const recipeRes = await fetch(`${API_URL}/api/add-recipe/recipe`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json",},
                     body: JSON.stringify(recipeInfo),
@@ -162,7 +162,7 @@ const Add_Recipe = () => {
                 //get array of stepIds to later link to recipes
                 var tempStepIdArr = [];
                 for (let i=0; i < recipeSteps.length; i++) {
-                    var stepRes = await fetch("${API_URL}/api/add-recipe/step", {
+                    var stepRes = await fetch(`${API_URL}/api/add-recipe/step`, {
                         method: "POST",
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify(recipeSteps[i]),
@@ -196,7 +196,7 @@ const Add_Recipe = () => {
                             stepId: stepIdArr[0][i],
                             recipeId: recipeId
                         };
-                        var recipesstepsRes = await fetch("${API_URL}/api/add-recipe/recipessteps", {
+                        var recipesstepsRes = await fetch(`${API_URL}/api/add-recipe/recipessteps`, {
                             method: "POST",
                             headers: {"Content-Type": "application/json",},
                             body: JSON.stringify(jsonRecipeStepIds),
@@ -231,7 +231,7 @@ const Add_Recipe = () => {
                             quantityUnit: recipeItems[i].quantityUnit
                         };
             
-                        var itemsRecipesRes = await fetch("${API_URL}/api/add-recipe/itemsrecipes", {
+                        var itemsRecipesRes = await fetch(`${API_URL}/api/add-recipe/itemsrecipes`, {
                             method: "POST",
                             headers: {"Content-Type": "application/json",},
                             body: JSON.stringify(jsonItemsRecipesInfo),

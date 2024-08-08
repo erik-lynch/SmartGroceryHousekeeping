@@ -255,7 +255,7 @@ const Add_Item = () => {
     };
 
     try {
-      const response = await fetch("${API_URL}/api/add-item", {
+      const response = await fetch(`${API_URL}/api/add-item`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -279,7 +279,7 @@ const Add_Item = () => {
     const dataToSend = new FormData();
     dataToSend.append('imgfile', image.data);
 
-    const response = await fetch("${API_URL}/detectionObject", {
+    const response = await fetch(`${API_URL}/detectionObject`, {
       method: "POST",
         
       body: dataToSend,
