@@ -993,10 +993,21 @@ color: black;
   width: 100%;
 }
 
+/*
+source-cited: https://stackoverflow.com/questions/26025057/add-custom-text-to-ordered-list-li
+start citation - add-custom-text-to-ordered-list-li
+*/
 .view-section-category-3 ol {
   list-style-type: none;
   counter-reset: stepcounter;
 }
+
+.view-section-category-3 li:before {
+  content: 'Step ' counter(stepcounter) ":";
+  counter-increment: stepcounter;
+  font-weight: bold;
+}
+/* end citation - add-custom-text-to-ordered-list-li*/
 
 .view-section-category-3 ol li {
   margin-bottom: 20px;
@@ -1005,12 +1016,6 @@ color: black;
 
 .view-section-category-3 ol li p {
   margin-left: 20px;
-}
-
-.view-section-category-3 li:before {
-  content: 'Step ' counter(stepcounter) ":";
-  counter-increment: stepcounter;
-  font-weight: bold;
 }
 
 .view-section-content label {
