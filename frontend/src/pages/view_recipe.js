@@ -97,30 +97,46 @@ const View_Recipe = () => {
     else {
 
     return (
-        <div class="core">
-            <h1>
-                {description[0].recipename}
-            </h1>
-            <p>{description[0].recipedescription}</p>
-            <h2>Ingredients:</h2>
-                <ul>
-                    {ingredients.map((ingredientval,key) => {
-                        return (
-                            <li key={key}>{ingredientval.itemname} {ingredientval.quantity} {ingredientval.quantityunit}</li>
-                        );
-                    })}
-                </ul>
-            <h2>Directions:</h2>
+        <div className="view-core">
+            <div className="view-section-content">
+                <div className="view-section">
+                <div className="view-section-category-1">
+                    <h2>
+                        {description[0].recipename}
+                    </h2>
+                    <p>
+                        {description[0].recipedescription}
+                    </p>
+                    </div>
                 
-                <ol>
-                {steps.map((stepval,key) => {
-                    return(
-                        <li key={key}> {stepval.stepdescription}</li>
-                    );
-                })}
-                </ol>
                 <br></br>
+                
+                <div className="view-section-category-2">
+                    <h2>Ingredients:</h2>
+                        <ul>
+                            {ingredients.map((ingredientval,key) => {
+                            return (
+                                <li key={key}>{ingredientval.itemname} {ingredientval.quantity} {ingredientval.quantityunit}</li>
+                            );
+                            })}
+                        </ul>
+                
+                </div>
+                <br></br>
+                
+                <div className="view-section-category-3">
+                    <h2>Directions:</h2>
+                        <ol>
+                            {steps.map((stepval,key) => {
+                            return(
+                                <li key={key}><br></br><br></br><p>{stepval.stepdescription}</p></li>
+                            );
+                            })}
+                        </ol>
+                </div>
+                </div>
                 <button onClick={() => navigate(-1)}> Return to previous page</button>
+            </div>
         </div>
     )
 };
