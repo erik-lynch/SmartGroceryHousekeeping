@@ -181,17 +181,18 @@ table {
 }
 
 th, td {
-  padding: 10px;
+  padding: 15px 10px;
   text-align: left;
 }
 
 th {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 td {
   font-weight: normal;
-  font-size: 12px;
+  font-size: 14px;
+
 }
 
 .header-row {
@@ -201,9 +202,10 @@ td {
 /* Dashboard */
 
 .core-dashboard {
-  padding: 50px 20px;
-  max-width: 2000px;
+  padding: 50px 30px;
+  max-width: 1500px;
   margin: 0 auto;
+  background-color: white;
 }
 
 /* Edit Item Page */
@@ -839,6 +841,7 @@ select[name="spoilage-select"]{
   filter: drop-shadow(10px 10px 0px black);
   border-radius: 8px;
   max-width: 250px;
+
 }
 
 .carousel-container {
@@ -850,26 +853,32 @@ select[name="spoilage-select"]{
   padding: 10px 0px 50px 0px;
 }
 
+.carousel-image {
+  border-radius: 8px 8px 0 0;
+}
+
+
+
 .item-name {
-float: left;
-font-size: medium;
-font-weight: bold;
-display: flex;
-padding: 20px 10px;
+  float: left;
+  font-size: medium;
+  font-weight: bold;
+  display: flex;
+  padding: 20px 10px;
 }
 
 .item-quantity {
-float: left;
-font-size: medium;
-display: flex;
-padding: 20px 10px;
+  float: left;
+  font-size: medium;
+  display: flex;
+  padding: 20px 10px;
 }
 
 .date {
-float: right;
-font-size: medium;
-display: flex;
-padding: 20px 10px;
+  float: right;
+  font-size: medium;
+  display: flex;
+  padding: 20px 10px;
 }
 
 .recipe-title {
@@ -887,11 +896,8 @@ text-decoration: none;
 color: black;
 }
 
-.carousel-image {
-  border-radius: 8px 8px 0px 0px;
-  max-height: 250px;
-  max-width: 250px;
-}
+
+
 
 /* phone, small display specific values */
 

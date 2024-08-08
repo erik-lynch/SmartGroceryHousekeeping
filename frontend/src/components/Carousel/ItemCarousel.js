@@ -56,10 +56,12 @@ class ItemCarousel extends Component {
         
           {this.props.content.map((e) => (
 
+            <div key={e.itemId}>
+
             <Link to={{
               pathname: `/edit_item/${e.userId}/${e.itemId}/${e.usersItemsId}`,
             }}>
-              <div className="CardContent">
+              <div className="card-content">
                       
                 <img 
                   className="carousel-image"
@@ -68,12 +70,15 @@ class ItemCarousel extends Component {
                   alt={e.altText} 
                 />
 
+                <div className="card-text">
                   <div className="item-name">{e.itemName}</div>
                   <div className="item-quantity">{e.itemQuantity} {e.itemUnit}</div>
                   <div className="date">{e.formatspoilagedate}{e.formatdateadded}</div>
+                </div>
 
               </div>
             </Link>
+            </div>
 
           ))}
           

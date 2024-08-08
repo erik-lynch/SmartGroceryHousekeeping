@@ -12,7 +12,6 @@ const Add_Item = () => {
   const [productDetails, setProductDetails] = useState(null);
 
   const [units, setUnits] = useState(null);
-  const [spoilageDate, setSpoilageDate] = useState(null);
 
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
@@ -458,7 +457,7 @@ const Add_Item = () => {
         {image.preview && <img src={image.preview} width='100' height='100'/>}
         
         <form onSubmit={handleVision} encType="multipart/form-data">
-          <label for="imgfile">Upload Image: </label>
+          <label htmlFor="imgfile">Upload Image: </label>
           <input 
             type="file" 
             accept="image/*" 
@@ -467,13 +466,13 @@ const Add_Item = () => {
             onChange={handleVisionChange} 
           />
           
-          <label for="take-photo" class="hide-on-desktop">Take Photo: </label>
+          <label htmlFor="take-photo" className="hide-on-desktop">Take Photo: </label>
           <input 
             accept="image/*" 
             id="take-photo" 
             capture="environment"
             type="file" 
-            class="hide-on-desktop"
+            className="hide-on-desktop"
             onChange={handleVisionChange} 
           />
 
@@ -573,7 +572,7 @@ const Add_Item = () => {
           >
             <option value=""></option>
             {units.map((e) => (
-            <option value={e.unitid}>{e.unitname}</option>
+            <option value={e.unitid} key={e.unitid}>{e.unitname}</option>
           ))}
           </select>
 
@@ -622,7 +621,7 @@ const Add_Item = () => {
         <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
             <option value=""></option>
             {categories.map((e) => (
-            <option value={e.categoryid}>{e.categorysubcategory}</option>
+            <option value={e.categoryid} key={e.categoryid}>{e.categorysubcategory}</option>
           ))}
         </select>
         </div>
@@ -633,7 +632,7 @@ const Add_Item = () => {
         <select name="spoilage-select" onChange={(e) => setSelectProduct(e.target.value)}>
           <option value=""></option>
           {productCategory.map((e) => (
-            <option value={e.productid}>{e.productname}</option>
+            <option value={e.productid} key={e.productid}>{e.productname}</option>
           ))}
         </select>
         </div>}

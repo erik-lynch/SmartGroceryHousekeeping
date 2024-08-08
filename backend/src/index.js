@@ -91,6 +91,7 @@ app.post('/api/add-item/:userId', async (req, res) => {
         'INSERT INTO Items (itemName, itemDescription) VALUES ($1, $2) RETURNING itemId',
         [itemName, itemDescription] 
       );
+
       itemId = insertItemResult.rows[0].itemid;
     }
 
@@ -285,8 +286,11 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
-      AND (usersitems.spoilagedate <= (current_date + 5) AND usersitems.spoiled = False)
-	    ORDER BY formatspoilagedate`);
+      AND usersitems.spoilagedate <= (current_date + 5)
+      AND usersitems.spoiled = False
+      AND usersitems.finished = False
+      AND usersitems.quantityremaining >= 0
+      ORDER BY formatspoilagedate`);
 
     res.json(getUserSpoilingSoon.rows)
     
@@ -319,8 +323,11 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
-	    AND usersitems.dateadded >= (current_date - 5)
-	    ORDER BY usersitems.dateadded;`);
+      AND usersitems.dateadded >= (current_date - 5)
+      AND usersitems.spoiled = False
+      AND usersitems.finished = False
+      AND usersitems.quantityremaining >= 0
+	    ORDER BY usersitems.dateadded DESC;`);
 
     res.json(getUserRecentItems.rows)
     
@@ -350,7 +357,11 @@ app.get('/dashboard/:userId/allitems', async(req, res) => {
       INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
-      WHERE users.userid = ${req.params.userId};`
+      WHERE users.userid = ${req.params.userId}
+      AND usersitems.spoiled = False
+      AND usersitems.finished = False
+      AND usersitems.quantityremaining >= 0
+      ORDER BY items.itemname`
     );
     res.json(getAllUserItems.rows)
     
@@ -798,7 +809,6 @@ app.get('/api/users/:userId/recipes/all', async (req, res) => {
   }
 });
 
-
 // Get all itemsrecipes ids in a list associated with recipeId
 app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
   const recipeId = (req.params.recipeId);
@@ -817,7 +827,6 @@ app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
     res.status(500).json({ message: 'Error getting itemsrecipes id list', error: error.message });
   }
 });
-
 
 // Get all step ids in a list associated with recipeId
 app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
@@ -901,9 +910,9 @@ app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
         I.itemName AS Item,
         TO_CHAR(UI.dateAdded, 'mm/dd/yyyy') AS DateAdded,
         TO_CHAR(UI.spoilageDate,'mm/dd/yyyy') AS SpoilageDate,
-        UI.quantityPurchased || ' ' ||U.UnitName AS LastPurchasedTotal,
-        (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.UnitName AS CurrentQuantityConsumed,
-        UI.quantityRemaining || ' ' ||U.UnitName AS CurrentQuantityRemaining,
+        UI.quantityPurchased || ' ' ||U.unitabbreviation AS LastPurchasedTotal,
+        (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.unitabbreviation AS CurrentQuantityConsumed,
+        UI.quantityRemaining || ' ' ||U.unitabbreviation AS CurrentQuantityRemaining,
         UI.finishedTotal+UI.spoiledTotal AS TimesBought,
           CASE 
             WHEN UI.spoiledTotal >0 

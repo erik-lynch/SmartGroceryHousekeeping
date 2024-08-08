@@ -55,6 +55,7 @@ class RecipeCarousel extends Component {
 
               {this.props.content.map((e) => (
 
+                <div key={e}>
                 <a href={e.link}>
                 <div className="CardContent">
                     
@@ -63,6 +64,8 @@ class RecipeCarousel extends Component {
 
                 </div>
                 </a>
+                </div>
+
 
               ))}
                 

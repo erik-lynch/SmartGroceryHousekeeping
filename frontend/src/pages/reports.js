@@ -62,7 +62,7 @@ const Reports = () => {
 
 
     return (
-        <div class="core">
+        <div className="core">
             <h2>
                 Frequently Spoiled Items
             </h2>
@@ -71,7 +71,8 @@ const Reports = () => {
 
             <div className="table-overflow">
             <table>
-                <tr class="header-row">
+                <thead>
+                <tr className="header-row">
                     <th>Item</th>
                     <th>Last <br></br>Date Added</th>
                     <th>Last <br></br>Spoilage Date</th>
@@ -81,19 +82,21 @@ const Reports = () => {
                     <th>Times <br></br>Purchased</th>
                     <th>Percent <br></br>Purchases <br></br>With Spoilage</th>
                 </tr>
-                <br></br>
+                </thead>
                 {freqSpoiled.map((data,key) => {
                     return (
-                <tr key={key}>
-                    <td>{data.item}</td>
-                    <td>{data.dateadded}</td>
-                    <td>{data.spoilagedate}</td>
-                    <td>{data.lastpurchasedtotal}</td>
-                    <td>{data.currentquantityconsumed}</td>
-                    <td>{data.currentquantityremaining}</td>
-                    <td>{data.timesbought}</td>
-                    <td>{data.spoiledpercent}</td>   
-                </tr>
+                        <tbody key={key}>
+                        <tr>
+                            <td>{data.item}</td>
+                            <td>{data.dateadded}</td>
+                            <td>{data.spoilagedate}</td>
+                            <td>{data.lastpurchasedtotal}</td>
+                            <td>{data.currentquantityconsumed}</td>
+                            <td>{data.currentquantityremaining}</td>
+                            <td>{data.timesbought}</td>
+                            <td>{data.spoiledpercent}</td>   
+                        </tr>
+                        </tbody>
                     )})}
             </table>
             </div>
@@ -110,7 +113,8 @@ const Reports = () => {
 
             <div className="table-overflow">
             <table>
-                <tr class="header-row">
+                <thead>
+                <tr className="header-row">
                     <th>Item</th>
                     <th>Last<br></br> Date Added</th>
                     <th>Last<br></br> Spoilage Date</th>
@@ -121,20 +125,22 @@ const Reports = () => {
                     <th>Times<br></br> Purchased</th>
                     <th>Percent<br></br> Purchases<br></br> Fully Finished</th>
                 </tr>
-                <br></br>
+                </thead>
                 {freqUsed.map((data,key) => {
                     return (
-                <tr key={key}>
-                    <td>{data.item}</td>
-                    <td>{data.dateadded}</td>
-                    <td>{data.spoilagedate}</td>
-                    <td>{data.lastpurchasedtotal}</td>
-                    <td>{data.currentquantityconsumed}</td>
-                    <td>{data.currentquantityremaining}</td>
-                    <td>{data.infridge}</td>
-                    <td>{data.timesbought}</td>
-                    <td>{data.finishedpercent}</td>   
-                </tr>
+                        <tbody key={key}>
+                        <tr>
+                            <td>{data.item}</td>
+                            <td>{data.dateadded}</td>
+                            <td>{data.spoilagedate}</td>
+                            <td>{data.lastpurchasedtotal}</td>
+                            <td>{data.currentquantityconsumed}</td>
+                            <td>{data.currentquantityremaining}</td>
+                            <td>{data.infridge}</td>
+                            <td>{data.timesbought}</td>
+                            <td>{data.finishedpercent}</td>   
+                        </tr>
+                        </tbody>
                     )})}
                 
             </table>

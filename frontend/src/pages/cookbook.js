@@ -173,7 +173,7 @@ const Cookbook = () => {
         else {
 
     return (
-        <div class="core">
+        <div className="core">
             <h2>
                 Cookbook
             </h2>
@@ -182,21 +182,24 @@ const Cookbook = () => {
 
             <div className="table-overflow">
             <table>
-                <tr class="header-row">
+                <thead>
+                <tr className="header-row">
                     <th>Name</th>
                     <th>Description</th>
                     <th></th>
                     <th></th>
                 </tr>
-                <br></br>
+                </thead>
                 {allRecipes.map((recipeData) => {
                     return (
-                <tr key={recipeData.recipeid}>
-                    <td>{recipeData.recipename}</td>
-                    <td>{recipeData.recipedescription}</td>
-                    <td><button onClick={() => handleViewRecipe(recipeData.recipeid)}>View</button></td>
-                    <td><button onClick={() => handleDeleteRecipe(recipeData.recipeid)}>Delete</button></td>
-                </tr>
+                        <tbody key={recipeData.recipeid}>
+                        <tr>
+                            <td>{recipeData.recipename}</td>
+                            <td>{recipeData.recipedescription}</td>
+                            <td><button onClick={() => handleViewRecipe(recipeData.recipeid)}>View</button></td>
+                            <td><button onClick={() => handleDeleteRecipe(recipeData.recipeid)}>Delete</button></td>
+                        </tr>
+                        </tbody>
                     )})}
             </table>
             </div>

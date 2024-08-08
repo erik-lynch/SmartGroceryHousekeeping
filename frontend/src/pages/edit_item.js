@@ -197,7 +197,7 @@ const Edit_Item = () => {
                     <h1>{itemInfo[0].itemname}</h1>
 
                    {itemTags.map((e) => (
-                         <div className="tag">{e.tagname}</div>
+                         <div className="tag" key={e.itemId}>{e.tagname}</div>
                     ))}
 
                     <p className="item-info"><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
@@ -233,10 +233,10 @@ const Edit_Item = () => {
                         {updateButton && <input type="submit" value="Save"></input>}
                         <p>{markedUpdated}</p>
 
-                        {spoilButton && <input type="button" class="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
+                        {spoilButton && <input type="button" className="spoil" value="Mark All Spoiled" onClick={handleSpoil}></input>}
                         <p>{markedSpoiled}</p>
 
-                        {finishButton && <input type="button" class= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
+                        {finishButton && <input type="button" className= "finish" value="Mark All Finished" onClick={handleFinish} ></input>}
                         <p>{markedFinished}</p>
                         
                     </form>

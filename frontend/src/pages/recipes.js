@@ -276,7 +276,7 @@ useEffect(() => {
         else {
             return (
 
-            <div class="core">
+            <div className="core">
 
             <h2>
                 Recipes Suggested From Cookbook With Minimal Ingredients
