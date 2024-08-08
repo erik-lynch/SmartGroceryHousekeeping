@@ -1,5 +1,7 @@
 async function handleDeleteRecipe(recipeId, stepIdArr) {
 
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
     async function deleteInOrder() {
         var allItemsRecipes = await getAllItemsRecipes(recipeId);
         var allSteps = await getAllSteps(recipeId);
@@ -11,7 +13,7 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
     
     async function getAllItemsRecipes(recipeId) {
         try {
-            const itemsRecipesRes = await fetch(`http://localhost:3001/api/delete-recipe/${recipeId}/itemsrecipes`, {
+            const itemsRecipesRes = await fetch(`${API_URL}/api/delete-recipe/${recipeId}/itemsrecipes`, {
                 method: "GET",
                 headers: {"Content-Type": "application/json",}
             });
@@ -29,7 +31,7 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
 
     async function getAllSteps(recipeId) {
         try {
-            const stepsRes = await fetch(`http://localhost:3001/api/delete-recipe/${recipeId}/recipessteps`, {
+            const stepsRes = await fetch(`${API_URL}/api/delete-recipe/${recipeId}/recipessteps`, {
                 method: "GET",
                 headers: {"Content-Type": "application/json",}
             });
@@ -47,7 +49,7 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
 
     async function deleteAllItemsRecipes(allItemsRecipes) {
         try {
-            const deleteIRRes = await fetch(`http://localhost:3001/api/delete-recipe/itemsrecipes`, {
+            const deleteIRRes = await fetch(`${API_URL}/api/delete-recipe/itemsrecipes`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json",},
                 body: JSON.stringify(allItemsRecipes),
@@ -77,7 +79,7 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
             allSteps = {stepidlist: string_val};
           }
         try {
-            const deleteStepsRes = await fetch(`http://localhost:3001/api/delete-recipe/steps`, {
+            const deleteStepsRes = await fetch(`${API_URL}/api/delete-recipe/steps`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json",},
                 body: JSON.stringify(allSteps),
@@ -96,7 +98,7 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
 
     async function deleteRecipe(recipeId, allItemsRecipes, allSteps) {
         try {
-            const deleteRecipeRes = await fetch(`http://localhost:3001/api/delete-recipe/recipe`, {
+            const deleteRecipeRes = await fetch(`${API_URL}/api/delete-recipe/recipe`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json",},
                 body: JSON.stringify({recipeId: recipeId}),

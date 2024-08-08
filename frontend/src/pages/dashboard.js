@@ -6,7 +6,7 @@ import loadingBar from "../components/Loading/loadingbar";
 const Dashboard = () => {
 
     const userId = "1";
-
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     const [recentItems, setRecentItems] = useState(null);
     const [allItems, setAllItems] = useState(null);
     const [spoilItems, setSpoilItems] = useState(null);
@@ -16,7 +16,7 @@ const Dashboard = () => {
         async function fetchAllItems() {
 
             try {
-                const response = await fetch(`http://localhost:3001/dashboard/${userId}/allitems`);
+                const response = await fetch(`${API_URL}/dashboard/${userId}/allitems`);
                 if (!response.ok) {
                     throw new Error(`Response status: ${response.status}`);
                 }
@@ -30,7 +30,7 @@ const Dashboard = () => {
         async function fetchRecentItems() {
 
             try {
-                const response = await fetch(`http://localhost:3001/dashboard/${userId}/recentitems`);
+                const response = await fetch(`${API_URL}/dashboard/${userId}/recentitems`);
                 if (!response.ok) {
                     throw new Error(`Response status: ${response.status}`);
                 }
@@ -44,7 +44,7 @@ const Dashboard = () => {
         async function fetchItemsSpoilingSoon() {
 
             try {
-                const response = await fetch(`http://localhost:3001/dashboard/${userId}/spoilingsoon`);
+                const response = await fetch(`${API_URL}/dashboard/${userId}/spoilingsoon`);
                 if (!response.ok) {
                     throw new Error(`Response status: ${response.status}`);
                 }

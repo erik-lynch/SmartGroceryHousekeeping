@@ -44,7 +44,7 @@ function fill_api_data(jsonData) {
 const Recipes = () => {
 
         let { userId } = useParams();
-
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
         // set use effect state changes- steps,ingredient,description for page data
         const [ingredients, setIngredients] = useState("");
         const [spoilIngredients, setSpoilIngredients] = useState("");
@@ -70,7 +70,7 @@ const Recipes = () => {
         const fetchInFridgeIngredients = async () => {
             try {
                 setLoading0(true);
-                const inFridgeIngredientsRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/infridge`);
+                const inFridgeIngredientsRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/infridge`);
                 const inFridgeIngredientsData = await inFridgeIngredientsRes.json();
                 //console.log(inFridgeIngredientsData)
                 const api_str_ingredients = string_items(inFridgeIngredientsData);
@@ -86,7 +86,7 @@ const Recipes = () => {
         const fetchSpoilSoonIngredients = async () => {
             try {
                 setLoading1(true);
-                const spoilSoonIngredientsRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/spoilsoon`);
+                const spoilSoonIngredientsRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/spoilsoon`);
                 const spoilSoonIngredientsData = await spoilSoonIngredientsRes.json();
                 const api_str_s_ingredients = string_items(spoilSoonIngredientsData);
                 setSpoilIngredients(api_str_s_ingredients);
@@ -113,7 +113,7 @@ useEffect(() => {
         const fetchApiInFridgeRecipes = async () => {
             try {
                 setLoading2(true);
-                const apiInFridgeRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${ingredients}/spoon/infridge`);
+                const apiInFridgeRecipesRes  = await fetch(`${API_URL}/api/ingredients/${ingredients}/spoon/infridge`);
                 const apiInFridgeRecipeData = await apiInFridgeRecipesRes.json();
                 if (apiInFridgeRecipeData.status === 'failure') {
                     setApiMax(true);
@@ -133,7 +133,7 @@ useEffect(() => {
         const fetchInFridgeRecipes = async () => {
             try {
                 setLoading4(true);
-                const inFridgeRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${ingredients}/infridge/recipes`);
+                const inFridgeRecipesRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/${ingredients}/infridge/recipes`);
                 const inFridgeRecipeData = await inFridgeRecipesRes.json();
 
                 //console.log("in fridge pulled:", inFridgeRecipeData);
@@ -159,7 +159,7 @@ useEffect(() => {
                 // get total ingredient list for each recipe and update array
                 for (let i=0; i < sortedJsonInFridgeData.length; i++) {
                     // send recipeId to get list of ingredients
-                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonInFridgeData[i].recipeid}/ingredientlist`);
+                    var currentRecipeRes  = await fetch(`${API_URL}/api/recipe/${sortedJsonInFridgeData[i].recipeid}/ingredientlist`);
                     var currentRecipeData = await currentRecipeRes.json();
                     sortedJsonInFridgeData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
                     sortedJsonInFridgeData[i]['link'] = `/users/${userId}/recipes/${sortedJsonInFridgeData[i].recipeid}/view_recipe`;
@@ -194,7 +194,7 @@ useEffect(() => {
             const fetchApiSpoilSoonRecipes = async () => {
                 try {
                     setLoading3(true);
-                    const apiSpoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/ingredients/${spoilIngredients}/spoon/spoilsoon`);
+                    const apiSpoilSoonRecipesRes  = await fetch(`${API_URL}/api/ingredients/${spoilIngredients}/spoon/spoilsoon`);
                     const apiSpoilSoonRecipesData = await apiSpoilSoonRecipesRes.json();
                     if (apiSpoilSoonRecipesData.status === 'failure') {
                         setApiMax(true);
@@ -214,7 +214,7 @@ useEffect(() => {
             const fetchSpoilSoonRecipes = async () => {
                 try {
                     setLoading5(true);
-                    const spoilSoonRecipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/ingredients/${spoilIngredients}/infridge/recipes`);
+                    const spoilSoonRecipesRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/${spoilIngredients}/infridge/recipes`);
                     const spoilSoonRecipesData = await spoilSoonRecipesRes.json();
                     
                     //console.log("spoil soon e pulled:", spoilSoonRecipesData);
@@ -240,7 +240,7 @@ useEffect(() => {
                 // get total ingredient list for each recipe and update array
                 for (let i=0; i < sortedJsonSpoilSoonData.length; i++) {
                     // send recipeId to get list of ingredients
-                    var currentRecipeRes  = await fetch(`http://localhost:3001/api/recipe/${sortedJsonSpoilSoonData[i].recipeid}/ingredientlist`);
+                    var currentRecipeRes  = await fetch(`${API_URL}/api/recipe/${sortedJsonSpoilSoonData[i].recipeid}/ingredientlist`);
                     var currentRecipeData = await currentRecipeRes.json();
                     sortedJsonSpoilSoonData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
                     sortedJsonSpoilSoonData[i]['link'] = `/users/${userId}/recipes/${sortedJsonSpoilSoonData[i].recipeid}/view_recipe`;

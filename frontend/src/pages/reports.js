@@ -6,7 +6,8 @@ const Reports = () => {
 
         // get userId for URL parameter
         let { userId } = useParams();
-    
+
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
         // set use effect state changes- frequently spoiled, frequently used
         const [freqSpoiled, setFreqSpoiled] = useState([]);
         const [freqUsed, setFreqUsed] = useState([]);
@@ -21,7 +22,7 @@ const Reports = () => {
         const fetchFreqSpoiled = async () => {
             try {
                 setLoading0(true);
-                const freqSpoiledRes  = await fetch(`http://localhost:3001/api/users/${userId}/reports/freqspoiled`);
+                const freqSpoiledRes  = await fetch(`${API_URL}/api/users/${userId}/reports/freqspoiled`);
                 const freqSpoiledData = await freqSpoiledRes.json();
                 console.log(freqSpoiledData)
                 setFreqSpoiled(freqSpoiledData);
@@ -36,7 +37,7 @@ const Reports = () => {
         const fetchFreqUsed = async () => {
             try {
                 setLoading1(true);
-                const freqUsedRes  = await fetch(`http://localhost:3001/api/users/${userId}/reports/freqused`);
+                const freqUsedRes  = await fetch(`${API_URL}/api/users/${userId}/reports/freqused`);
                 const freqUsedData = await freqUsedRes.json();
                 setFreqUsed(freqUsedData);
                 setLoading1(false);
