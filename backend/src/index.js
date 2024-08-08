@@ -35,12 +35,18 @@ pool.connect()
   .catch(err => console.error('Connection error', err.stack));
 
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-})
+  const allowedOrigins = ['http://localhost:3000', 'https://smart-grocery-housekeeping-1ab20f715e60.herokuapp.com'];
+
+app.use(cors({
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
 
 const upload = multer({
   storage: multerStorage,
@@ -1128,6 +1134,14 @@ app.get('/spoilage/product/:productid', async(req, res) => {
 })
 
 //----------------------------------------------------------------------------
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
