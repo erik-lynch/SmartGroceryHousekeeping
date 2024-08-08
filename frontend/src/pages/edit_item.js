@@ -2,7 +2,7 @@ import {React, useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
 
 const Edit_Item = () => {
-    
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     const [itemInfo, setItemInfo] = useState(null);
     const [itemTags, setItemTags] = useState(null);
 
@@ -59,7 +59,7 @@ const Edit_Item = () => {
         };
     
         try {
-          const response = await fetch(`http://localhost:3001/api/edit_item/${routeParams.usersItemsId}`, {
+          const response = await fetch(`${API_URL}/api/edit_item/${routeParams.usersItemsId}`, {
             method: "PUT",
             mode: "cors",
             headers: {
@@ -86,7 +86,7 @@ const Edit_Item = () => {
         e.preventDefault();
     
         try {
-          const response = await fetch(`http://localhost:3001/api/spoil_item/${routeParams.usersItemsId}`, {
+          const response = await fetch(`${API_URL}/api/spoil_item/${routeParams.usersItemsId}`, {
             method: "PUT",
             mode: "cors",
             headers: {
@@ -112,7 +112,7 @@ const Edit_Item = () => {
         e.preventDefault();
     
         try {
-          const response = await fetch(`http://localhost:3001/api/finish_item/${routeParams.usersItemsId}`, {
+          const response = await fetch(`${API_URL}/api/finish_item/${routeParams.usersItemsId}`, {
             method: "PUT",
             mode: "cors",
             headers: {
@@ -139,7 +139,7 @@ const Edit_Item = () => {
     async function fetchItemInfo() {
 
         try {
-            const response = await fetch(`http://localhost:3001/useritem/${routeParams.userId}/${routeParams.itemId}`);
+            const response = await fetch(`${API_URL}/useritem/${routeParams.userId}/${routeParams.itemId}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -154,7 +154,7 @@ const Edit_Item = () => {
     async function fetchTags() {
 
         try {
-            const response = await fetch(`http://localhost:3001/useritem/${routeParams.itemId}`);
+            const response = await fetch(`${API_URL}/useritem/${routeParams.itemId}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }

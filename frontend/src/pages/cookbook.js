@@ -6,7 +6,7 @@ const Cookbook = () => {
 
         let { userId } = useParams();
         const navigate = useNavigate();
-
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
         const [allRecipes, setAllRecipes] = useState([]);
         const [pageError, setPageError] = useState(false);
         const [loading0, setLoading0] = useState(true);
@@ -16,7 +16,7 @@ const Cookbook = () => {
         const fetchAllUserRecipes = async () => {
             try {
                 setLoading0(true);
-                const recipesRes  = await fetch(`http://localhost:3001/api/users/${userId}/recipes/all`);
+                const recipesRes  = await fetch(`${API_URL}/api/users/${userId}/recipes/all`);
                 const recipesData = await recipesRes.json();
                 //console.log(recipesData)
                 setAllRecipes(recipesData);
@@ -48,7 +48,7 @@ const Cookbook = () => {
             
             async function getAllItemsRecipes(recipeId) {
                 try {
-                    const itemsRecipesRes = await fetch(`http://localhost:3001/api/delete-recipe/${recipeId}/itemsrecipes`, {
+                    const itemsRecipesRes = await fetch(`${API_URL}/api/delete-recipe/${recipeId}/itemsrecipes`, {
                         method: "GET",
                         headers: {"Content-Type": "application/json",}
                     });
@@ -68,7 +68,7 @@ const Cookbook = () => {
 
             async function getAllSteps(recipeId) {
                 try {
-                    const stepsRes = await fetch(`http://localhost:3001/api/delete-recipe/${recipeId}/recipessteps`, {
+                    const stepsRes = await fetch(`${API_URL}/api/delete-recipe/${recipeId}/recipessteps`, {
                         method: "GET",
                         headers: {"Content-Type": "application/json",}
                     });
@@ -88,7 +88,7 @@ const Cookbook = () => {
 
             async function deleteAllItemsRecipes(allItemsRecipes) {
                 try {
-                    const deleteIRRes = await fetch(`http://localhost:3001/api/delete-recipe/itemsrecipes`, {
+                    const deleteIRRes = await fetch(`${API_URL}/api/delete-recipe/itemsrecipes`, {
                         method: "DELETE",
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify(allItemsRecipes),
@@ -109,7 +109,7 @@ const Cookbook = () => {
 
             async function deleteAllSteps(allSteps) {
                 try {
-                    const deleteStepsRes = await fetch(`http://localhost:3001/api/delete-recipe/steps`, {
+                    const deleteStepsRes = await fetch(`${API_URL}/api/delete-recipe/steps`, {
                         method: "DELETE",
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify(allSteps),
@@ -130,7 +130,7 @@ const Cookbook = () => {
 
             async function deleteRecipe(recipeId, allItemsRecipes, allSteps) {
                 try {
-                    const deleteRecipeRes = await fetch(`http://localhost:3001/api/delete-recipe/recipe`, {
+                    const deleteRecipeRes = await fetch(`${API_URL}/api/delete-recipe/recipe`, {
                         method: "DELETE",
                         headers: {"Content-Type": "application/json",},
                         body: JSON.stringify({recipeId: recipeId}),

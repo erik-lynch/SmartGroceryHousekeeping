@@ -4,7 +4,7 @@ import * as SDCBarcode from "scandit-web-datacapture-barcode";
 
 
 const Add_Item = () => {
-
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
   const [categories, setCategories] = useState(null);
   const [selectCategory, setSelectCategory] = useState(null);
   const [productCategory, setProductCategory] = useState(null);
@@ -44,7 +44,7 @@ const Add_Item = () => {
     async function fetchUnits() {
 
       try {
-          const response = await fetch(`http://localhost:3001/units`);
+          const response = await fetch(`${API_URL}/units`);
           if (!response.ok) {
               throw new Error(`Response status: ${response.status}`);
           }
@@ -65,7 +65,7 @@ const Add_Item = () => {
     async function fetchCategories() {
 
       try {
-          const response = await fetch(`http://localhost:3001/spoilage/categories`);
+          const response = await fetch(`${API_URL}/spoilage/categories`);
           if (!response.ok) {
               throw new Error(`Response status: ${response.status}`);
           }
@@ -87,7 +87,7 @@ const Add_Item = () => {
       async function fetchItems() {
 
         try {
-            const response = await fetch(`http://localhost:3001/spoilage/${selectCategory}`);
+            const response = await fetch(`${API_URL}/spoilage/${selectCategory}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -109,7 +109,7 @@ const Add_Item = () => {
       async function fetchItemDetails() {
 
         try {
-            const response = await fetch(`http://localhost:3001/spoilage/product/${selectProduct}`);
+            const response = await fetch(`${API_URL}/spoilage/product/${selectProduct}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -225,7 +225,7 @@ const Add_Item = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/add-item/${userId}`, {
+      const response = await fetch(`${API_URL}/api/add-item/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -254,7 +254,7 @@ const Add_Item = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/api/add-item", {
+      const response = await fetch("${API_URL}/api/add-item", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -278,7 +278,7 @@ const Add_Item = () => {
     const dataToSend = new FormData();
     dataToSend.append('imgfile', image.data);
 
-    const response = await fetch("http://localhost:3001/detectionObject", {
+    const response = await fetch("${API_URL}/detectionObject", {
       method: "POST",
         
       body: dataToSend,
