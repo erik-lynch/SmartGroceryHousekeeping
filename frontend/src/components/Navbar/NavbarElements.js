@@ -8,6 +8,15 @@ export const Nav = styled.nav`
     background: #FFE7C3;
     padding: 20px;
     display: grid;
+
+    @media only screen and (max-width: 600px) {
+        overflow: hidden;
+        position: relative;
+        padding: 0;
+        height: fit-content;
+        background: white;
+        margin-bottom: 20px;
+    }
 `;
  
 export const NavLink = styled(Link)`
@@ -22,6 +31,18 @@ export const NavLink = styled(Link)`
     }
     border-radius: 8px;
     margin: 5px;
+
+    @media only screen and (max-width: 600px) {
+        border-radius: 0;
+        margin: 0px;
+        padding: 20px;
+        color: black;
+        &.active {
+            background: black;
+            color: white;
+            font-weight: bold;
+        }
+    }
 `;
  
 export const LoginLogout = styled(Link)`
@@ -35,6 +56,13 @@ export const LoginLogout = styled(Link)`
     cursor: pointer;
     border-radius: 8px;
     margin: 5px;
+    @media only screen and (max-width: 600px) {
+        border-radius: 0;
+        margin: 0px;
+        padding: 20px;
+        background-color: black;
+        color: white;
+    }
 `;
  
 export const NavMenu = styled.div`
@@ -42,6 +70,8 @@ export const NavMenu = styled.div`
     align-items: center;
     @media only screen and (max-width: 600px) {
         display: grid;
+        margin: 0;
+
     }
 
 `;
