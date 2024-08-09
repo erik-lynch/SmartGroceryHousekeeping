@@ -295,7 +295,8 @@ const Add_Recipe = () => {
         else {
     return (
 
-        <div className="core">
+        <div className="additem-core">
+            <div className="section-content">
             <h2>Add a Recipe to the Cookbook</h2>
             <form id="recipeAddForm" onSubmit={handleSubmit}>
                 <h3>Recipe Name:</h3>
@@ -306,7 +307,7 @@ const Add_Recipe = () => {
                         onChange={handleRecipeInfoInputChange}
                         rows="2"
                         cols="55"
-                        className="recipe-text"
+                        
                     ></textarea><br/>
                 <h3>Recipe Description:</h3>
                     <textarea 
@@ -316,15 +317,16 @@ const Add_Recipe = () => {
                         onChange={handleRecipeInfoInputChange}
                         rows="4"
                         cols="55"
-                        className="recipe-text"
+                        
                         ></textarea> <br/>
-                <h3> Ingredients List:</h3>
+                <h2> Ingredients List:</h2>
                     {recipeItems.map((items, i) => {
                         return(
                             <div className="grid-recipe">
+                                
 
                                 <div className = "grid-recipe-item">
-                                    <label htmlFor="itemId">Name: </label><br/>
+                                    <label htmlFor="itemId">Ingredient Name:</label><br/>
                                         <select  className="recipe-select-ingredient" id="itemId" name="itemId" size="2" value={items.itemId} onChange={e => handleRecipeItemsInputChange(i,e)}>
                                             <option value={-1}> Not selected</option>
                                             {allUserIdItems.map((newItems, k) => {
@@ -334,12 +336,13 @@ const Add_Recipe = () => {
                                             })};
                                         </select><br/>
                                 </div>
-                                
+                                <div className="grid-recipe-delete">
+                                    <button className="recipe-delete-item-button" onClick={e => handleDeleteRecipeItem(i,e)}>X</button>
+                                </div>
                                 <div className = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
-                                    <button className="recipe-delete-item-button" onClick={e => handleDeleteRecipeItem(i,e)}>X</button>
                                     <input className="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
-                                <div/>
+                                </div>
 
                                 <div className= "grid-recipe-measurement">
                                     <label htmlFor="quantityUnit">Measurement:</label>
@@ -359,15 +362,15 @@ const Add_Recipe = () => {
                                             <option value="g">Gram/Grams</option>
                                             <option value="kg">Kilogram/Kilograms</option>
                                         </select>
+                                
                                 </div>
-
                             </div>
-                            </div>
+                            
                         )
                     })}
-                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredient</button></div><br/>
+                        <div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredient</button></div>
 
-                        <h3>Directions:</h3>
+                        <h2>Directions:</h2>
                         {recipeSteps.map((steps, i) => {
                             return(
                                 <div>
@@ -378,17 +381,20 @@ const Add_Recipe = () => {
                                         value={steps.stepDescription} 
                                         onChange={e => handleRecipeStepsInputChange(i,e)}
                                         rows="3"
-                                        cols="55"
-                                        className="recipe-text"
-                                    ></textarea> <br/><br/>
+                                        cols="500"
+                                        
+                                    ></textarea>
                                 </div>
                                 
                         )
                     })}
-                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Step</button>
-                    <button className="recipe-delete-step-button" onClick={handleDeleteRecipeStep}>Remove Step</button></div><br/>
+                    <div>
+                        <button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Step</button>
+                        <button className="recipe-delete-step-button" onClick={handleDeleteRecipeStep}>Remove Step</button>
+                    </div>
             </form>
             <div><button className="recipe-submit-button" onClick={handleSubmit}>Submit</button></div>
+        </div>
         </div>
     );
 };
