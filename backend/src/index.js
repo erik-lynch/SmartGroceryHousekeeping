@@ -922,7 +922,9 @@ app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
         UI.finishedTotal+UI.spoiledTotal AS TimesBought,
           CASE 
             WHEN UI.spoiledTotal >0 
-              THEN ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal))*100)||'%'
+              THEN (
+              round((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)),4)
+              *100)||'%'
             WHEN UI.spoiledTotal <=0
               THEN '0%' 
           END AS SpoiledPercent
@@ -931,7 +933,7 @@ app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
         INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
         INNER JOIN Units AS U ON U.unitId=IU.FK_units_unitId
         INNER JOIN Users ON Users.userId = UI.FK_users_userId
-          WHERE ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.15)
+          WHERE ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.30)
           AND purchaseAgain =true
           AND (NOT UI.spoiledTotal = 0)
           AND Users.userId = ${req.params.userid})
@@ -964,7 +966,11 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
         UI.finishedTotal+UI.spoiledTotal AS TimesBought,
 	      CASE
 		      WHEN UI.finishedTotal >0
-			      THEN ((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal))*100)||'%'
+			      THEN (
+		  			round(
+            (UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal))
+            ,4)
+		  			*100)||'%'
 		      WHEN UI.finishedTotal <=0
 	          THEN '0%'
 	        END AS FinishedPercent
@@ -973,7 +979,7 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
         INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
         INNER JOIN Units AS U ON U.unitId=IU.FK_units_unitId
         INNER JOIN Users ON Users.userId = UI.FK_users_userId
-        WHERE ((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.65)
+        WHERE ((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.70)
           AND purchaseAgain =true
           AND (NOT UI.finishedTotal = 0)
           AND Users.userId = ${req.params.userid})
