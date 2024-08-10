@@ -7,11 +7,12 @@ Erik Lynch, Jillian Vondy, Rachel Covington, Kevin Klein
 ## Overview
 Capstone Project - Summer 2024 - Oregon State University
 
-A web application that provides the following:
+### This web application provides the following:
 - **User generated grocery records**
   - Image recognition to automatically identify fruits and vegtables
   - Barcode scanning for packaged items
   - Manual input and verification of information
+  - Food spoilage estimates based on USDA data
 - **A dashboard of all grocery items**
   - Identifies items spoiling soon
   - Identifies items recently purchased
@@ -29,12 +30,11 @@ A web application that provides the following:
   - Recipes with minimal additional ingredients
   - A "cookbook" where users can input their own recipes
 
-## Features
-
 ## Implementation Details
 - [React](https://react.dev/) for UI
 - [react-multi-carousel](https://www.npmjs.com/package/react-multi-carousel) for item and recipe carousels
 - [Google Cloud Vision](https://cloud.google.com/vision?hl=en) for fruit and produce recognition
 - [Spoonacular API](https://spoonacular.com/food-api) for recipe suggestions 
 - [FSIS - FoodKeeper Data](https://catalog.data.gov/dataset/fsis-foodkeeper-data) for spoilage guidelines
-- AWS Postgres Database
+- [AWS PostgreSQL Database](https://aws.amazon.com/rds/postgresql/)
+- [Scandit](https://www.scandit.com/?utm_source=google&utm_medium=cpc&utm_campaign=North-America-24Q3-ams-brand-paid-search-Brand-Terms-Mix&utm_term=scandit&gad_source=1&gclid=CjwKCAjw_Na1BhAlEiwAM-dm7FCNa_kPXgEifCkxgkmOX9rDwRQWqdHHhBQnw_xyxzg5ts_AZsSIaRoCN3UQAvD_BwE) for barcode scanning
