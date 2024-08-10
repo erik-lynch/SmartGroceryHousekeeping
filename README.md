@@ -1,7 +1,16 @@
-#Smart Grocery Housekeeping
+# Smart Grocery Housekeeping
 
-##Overview
+## Contributors
 
-##Features
+Erik Lynch, Jillian Vondy, Rachel Covington, Kevin Klein
 
-##Implementation
+## Overview
+
+## Features
+
+## Implementation
+- React for UI
+- Google Cloud Vision
+- Spoonacular API
+- Department of Agriculture - Foodkeeper data
+- AWS Postgres Database
