@@ -5,8 +5,29 @@
 Erik Lynch, Jillian Vondy, Rachel Covington, Kevin Klein
 
 ## Overview
-Summer 2024 Online Capstone Project at Oregon State University.
+Capstone Project - Summer 2024 - Oregon State University
 
+A web application that provides the following:
+- **User generated grocery records**
+  - Image recognition to automatically identify fruits and vegtables
+  - Barcode scanning for packaged items
+  - Manual input and verification of information
+- **A dashboard of all grocery items**
+  - Identifies items spoiling soon
+  - Identifies items recently purchased
+  - Displays all items
+- **The ability for the user to perform "housekeeping" on the grocery data**
+  - Mark an item as spoiled
+  - Mark an item as finished
+  - Update the quantity of an item remaining
+- **Reports about the grocery item data**
+  - Frequently used items
+  - Frequently unused items
+  - Frequently spoiled items
+- **Recipes based on groceries**
+  - Recipes using items spoiling soon
+  - Recipes with minimal additional ingredients
+  - A "cookbook" where users can input their own recipes
 
 ## Features
 
