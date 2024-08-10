@@ -41,15 +41,15 @@ Capstone Project - Summer 2024 - Oregon State University
 - [AWS PostgreSQL](https://aws.amazon.com/rds/postgresql/) - Database
 
 ## Database - ER Diagram
-![ER Diagram](/ERDiagram.png)
+![ER Diagram](README-images/ERDiagram.png)
 
 ## Example Pages
-<img src="/dashboard.png" width="600">
+<img src="README-images/dashboard.png" width="600">
 The user dashboard page that displays carousels of items recently purchased, spoiling soon, and all items.
 
 &nbsp;
 
-<img src="/edit-item.png" width="600">
+<img src="README-images/edit-item.png" width="600">
 The edit item page that allows users to perform "housekeeping" on grocery items.
 
 &nbsp;
