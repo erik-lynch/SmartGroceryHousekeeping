@@ -922,8 +922,7 @@ app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
         UI.finishedTotal+UI.spoiledTotal AS TimesBought,
           CASE 
             WHEN UI.spoiledTotal >0 
-              THEN (
-              round((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)),4)
+              THEN (round((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)),4)
               *100)||'%'
             WHEN UI.spoiledTotal <=0
               THEN '0%' 
@@ -966,10 +965,7 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
         UI.finishedTotal+UI.spoiledTotal AS TimesBought,
 	      CASE
 		      WHEN UI.finishedTotal >0
-			      THEN (
-		  			round(
-            (UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal))
-            ,4)
+			      THEN (round((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal)),4)
 		  			*100)||'%'
 		      WHEN UI.finishedTotal <=0
 	          THEN '0%'
