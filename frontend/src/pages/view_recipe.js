@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const View_Recipe = () => {
-    
-    // get recipeId for URL parameter
+
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
     let { recipeId } = useParams();
     let { userId } = useParams();
-
     let navigate = useNavigate();
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
     // set use effect state changes- steps,ingredient,description for page data
     const [steps, setSteps] = useState([]);
     const [ingredients, setIngredients] = useState([]);
@@ -81,13 +81,12 @@ const View_Recipe = () => {
         }
     }
 
-    
+
     fetchVerifyRecipeId();
     fetchStepData();
     fetchIngredientData();
     fetchDescriptionData();
     }, [userId, recipeId]);
-    // added recipeId to dependency array to avoid useEffect compile error
 
     if (loading0 || loading1 || loading2 || loading3) {
         return (<p>Loading</p>)

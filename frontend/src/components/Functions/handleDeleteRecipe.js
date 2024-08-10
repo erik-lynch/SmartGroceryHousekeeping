@@ -125,7 +125,6 @@ async function handleDeleteRecipe(recipeId, stepIdArr) {
         }
     }
 
-    //console.log('the recipeId is:', recipeId);
     const deletedAllRecipe = deleteInOrder();
     return(deletedAllRecipe);
 }
