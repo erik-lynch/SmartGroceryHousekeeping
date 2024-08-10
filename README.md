@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# Smart Grocery Housekeeping
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Contributors
 
-## Available Scripts
+Erik Lynch, Jillian Vondy, Rachel Covington, Kevin Klein
 
-In the project directory, you can run:
+## Overview
+Capstone Project - Summer 2024 - Oregon State University
 
-### `npm start`
+### This web application provides the following:
+- **User generated grocery records**
+  - Image recognition to automatically identify fruits and vegtables
+  - Barcode scanning for packaged items
+  - Manual input and verification of information
+  - Food spoilage estimates based on USDA data
+- **A dashboard of all grocery items**
+  - Identifies items spoiling soon
+  - Identifies items recently purchased
+  - Displays all items
+- **The ability for the user to perform "housekeeping" on the grocery data**
+  - Mark an item as spoiled
+  - Mark an item as finished
+  - Update the quantity of an item remaining
+- **Reports about the grocery item data**
+  - Frequently used items
+  - Frequently unused items
+  - Frequently spoiled items
+- **Recipes based on groceries**
+  - Recipes using items spoiling soon
+  - Recipes with minimal additional ingredients
+  - A "cookbook" where users can input their own recipes
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Implementation Details
+- [Figma](https://www.figma.com/proto/EccuouzOB2mMfGrjTj08SP/Smart-Grocery-Housekeeping?node-id=0-1&t=nbDnhliuOygyemjY-1) - initial UI design
+- [React](https://react.dev/) - UI
+- [react-multi-carousel](https://www.npmjs.com/package/react-multi-carousel) - item and recipe carousels
+- [Google Cloud Vision](https://cloud.google.com/vision?hl=en) - fruit and produce recognition
+- [Spoonacular API](https://spoonacular.com/food-api) - recipe suggestions
+- [Scandit](https://www.scandit.com/?utm_source=google&utm_medium=cpc&utm_campaign=North-America-24Q3-ams-brand-paid-search-Brand-Terms-Mix&utm_term=scandit&gad_source=1&gclid=CjwKCAjw_Na1BhAlEiwAM-dm7FCNa_kPXgEifCkxgkmOX9rDwRQWqdHHhBQnw_xyxzg5ts_AZsSIaRoCN3UQAvD_BwE) - barcode scanning
+- [FSIS - FoodKeeper Data](https://catalog.data.gov/dataset/fsis-foodkeeper-data) - spoilage guidelines
+- [AWS PostgreSQL](https://aws.amazon.com/rds/postgresql/) - Database
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Database - ER Diagram
+![ER Diagram](README-images/ERDiagram.png)
 
-### `npm test`
+## Example Pages
+<img src="README-images/dashboard.png" width="600">
+The user dashboard page that displays carousels of items recently purchased, spoiling soon, and all items.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+&nbsp;
 
-### `npm run build`
+<img src="README-images/edit-item.png" width="600">
+The edit item page that allows users to perform "housekeeping" on grocery items.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+&nbsp;
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
