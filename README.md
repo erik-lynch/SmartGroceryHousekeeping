@@ -31,10 +31,14 @@ Capstone Project - Summer 2024 - Oregon State University
   - A "cookbook" where users can input their own recipes
 
 ## Implementation Details
-- [React](https://react.dev/) for UI
-- [react-multi-carousel](https://www.npmjs.com/package/react-multi-carousel) for item and recipe carousels
-- [Google Cloud Vision](https://cloud.google.com/vision?hl=en) for fruit and produce recognition
-- [Spoonacular API](https://spoonacular.com/food-api) for recipe suggestions 
-- [FSIS - FoodKeeper Data](https://catalog.data.gov/dataset/fsis-foodkeeper-data) for spoilage guidelines
-- [AWS PostgreSQL Database](https://aws.amazon.com/rds/postgresql/)
-- [Scandit](https://www.scandit.com/?utm_source=google&utm_medium=cpc&utm_campaign=North-America-24Q3-ams-brand-paid-search-Brand-Terms-Mix&utm_term=scandit&gad_source=1&gclid=CjwKCAjw_Na1BhAlEiwAM-dm7FCNa_kPXgEifCkxgkmOX9rDwRQWqdHHhBQnw_xyxzg5ts_AZsSIaRoCN3UQAvD_BwE) for barcode scanning
+- [Figma](https://www.figma.com/proto/EccuouzOB2mMfGrjTj08SP/Smart-Grocery-Housekeeping?node-id=0-1&t=nbDnhliuOygyemjY-1) - initial UI design
+- [React](https://react.dev/) - UI
+- [react-multi-carousel](https://www.npmjs.com/package/react-multi-carousel) - item and recipe carousels
+- [Google Cloud Vision](https://cloud.google.com/vision?hl=en) - fruit and produce recognition
+- [Spoonacular API](https://spoonacular.com/food-api) - recipe suggestions
+- [Scandit](https://www.scandit.com/?utm_source=google&utm_medium=cpc&utm_campaign=North-America-24Q3-ams-brand-paid-search-Brand-Terms-Mix&utm_term=scandit&gad_source=1&gclid=CjwKCAjw_Na1BhAlEiwAM-dm7FCNa_kPXgEifCkxgkmOX9rDwRQWqdHHhBQnw_xyxzg5ts_AZsSIaRoCN3UQAvD_BwE) - barcode scanning
+- [FSIS - FoodKeeper Data](https://catalog.data.gov/dataset/fsis-foodkeeper-data) - spoilage guidelines
+- [AWS PostgreSQL](https://aws.amazon.com/rds/postgresql/) - Database
+
+## Database - ER Diagram
+![ER Diagram](/ERDiagram.png)
