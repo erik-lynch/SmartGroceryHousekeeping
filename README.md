@@ -42,3 +42,15 @@ Capstone Project - Summer 2024 - Oregon State University
 
 ## Database - ER Diagram
 ![ER Diagram](/ERDiagram.png)
+
+## Example Pages
+<img src="/dashboard.png" width="600">
+The user dashboard page that displays carousels of items recently purchased, spoiling soon, and all items.
+
+&nbsp;
+
+<img src="/edit-item.png" width="600">
+The edit item page that allows users to perform "housekeeping" on grocery items.
+
+&nbsp;
+
