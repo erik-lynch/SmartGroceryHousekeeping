@@ -78,7 +78,7 @@ app.get('/items', async (req, res) => {
 
 // add item to DB
 app.post('/api/add-item/:userId', async (req, res) => {
-  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
+  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate, tags } = req.body; 
 
   try {
     const itemResult = await pool.query(
@@ -87,6 +87,7 @@ app.post('/api/add-item/:userId', async (req, res) => {
     );
 
     let itemId;
+    let tagId;
 
     if (itemResult.rows.length > 0) {
       // Item exists
@@ -101,12 +102,26 @@ app.post('/api/add-item/:userId', async (req, res) => {
       itemId = insertItemResult.rows[0].itemid;
     }
 
+    // associate the user with the item
     const updateUsersItems = await pool.query(
       `INSERT INTO usersitems (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
       VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, '${expirationDate}');`
     )
 
     console.log(updateUsersItems.rows)
+
+    // associate tags with item
+    for (let i = 0; i < tags.length; i++) {
+      tagId = tags[i];
+
+      const updateItemsTags = await pool.query(
+        `INSERT INTO itemstags (fk_items_itemid, fk_tags_tagid)
+        VALUES (${itemId}, ${tagId});`
+      )
+
+      console.log(updateItemsTags.rows)
+
+    }
 
     res.status(200).json({ message: 'Item added successfully' });
   } catch (error) {

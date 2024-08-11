@@ -27,6 +27,7 @@ const Add_Item = () => {
     quantity: 1,
     ripeRating: "",
     expirationDate: "",
+    tags: []
 
   });
   const [image, setImageData] = useState({
@@ -461,6 +462,18 @@ const Add_Item = () => {
 
   };
 
+  const handleCheckbox = (e) => {
+    var tagId = e.target.value
+    if (e.target.checked == true) {
+      formData.tags.push(tagId);
+    } else {
+      formData.tags.pop(tagId);
+    }
+
+    console.log(formData.tags)
+
+  };
+
   if (!categories || !units || !tags) {
 
     return(<h2>Loading...</h2>)
@@ -614,20 +627,17 @@ const Add_Item = () => {
           <div className="all-tags">
           {tags.map((e) => (
             <div className="tag-select">
-            <input type="checkbox" id={e.tagid} name={e.tagname} value={e.tagid} />
-            <label for={e.tagname}> {e.tagname}</label>
+            <input 
+              type="checkbox" 
+              id={e.tagid} 
+              name={e.tagname} 
+              value={e.tagid} 
+              onChange={(e) => handleCheckbox(e)}
+            />
+            <label htmlFor={e.tagname}>{e.tagname}</label>
             </div>
           ))}
           </div>
-
-          <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
-          <input
-            type="text"
-            id="ripeRating"
-            name="ripeRating"
-            value={formData.ripeRating}
-            onChange={handleInputChange}
-          />
 
           <label htmlFor="expirationDate">Item Expiration Date:</label>
           <p>If you are unsure when your item will expire, you can use the "Food Shelf Life Guidelines" below to get an estimate based on USDA food safety data.</p>
