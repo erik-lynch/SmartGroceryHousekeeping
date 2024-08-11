@@ -462,7 +462,7 @@ const Add_Item = () => {
 
   const handleCheckbox = (e) => {
     var tagId = e.target.value
-    if (e.target.checked == true) {
+    if (e.target.checked === true) {
       formData.tags.push(tagId);
     } else {
       formData.tags.pop(tagId);
