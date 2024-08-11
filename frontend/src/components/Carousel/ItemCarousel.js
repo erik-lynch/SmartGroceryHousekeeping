@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
+const handleNoImage = (e) => {
+  e.target.src='/images/no-image.jpg';
+}
 
 const responsive = {
   desktop: {
@@ -67,7 +70,8 @@ class ItemCarousel extends Component {
                   className="carousel-image"
                   src={e.imagePath}
                   style={{ width: "100%"}}
-                  alt={e.altText} 
+                  alt="Image not found"
+                  onError={(e) => handleNoImage(e)}
                 />
 
                 <div className="card-text">

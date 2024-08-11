@@ -32,6 +32,7 @@ const Add_Item = () => {
     preview: '',
     data: ''
   });
+  
   console.log('license key1', process.env.REACT_APP_SCANDIT_LICENSE_KEY);
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/^"|"$/g, '');
   console.log('license key2', licenseKey);
@@ -455,7 +456,7 @@ const Add_Item = () => {
 
     <h2 >Take Photo or Upload</h2>
 
-        {image.preview && <img src={image.preview} width='100' height='100'/>}
+        {image.preview && <img src={image.preview} width='100'/>}
         
         <form onSubmit={handleVision} encType="multipart/form-data">
           <label htmlFor="imgfile">Upload Image: </label>
@@ -620,11 +621,17 @@ const Add_Item = () => {
         <div className="spoilage-section-category-1">
         <h3>Select Category:</h3>
         <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
+      
             <option value=""></option>
             {categories.map((e) => (
+            
             <option value={e.categoryid} key={e.categoryid}>{e.categorysubcategory}</option>
-          ))}
+
+
+            ))}
+
         </select>
+
         </div>
 
         <div className="spoilage-section-category-2">
@@ -639,7 +646,6 @@ const Add_Item = () => {
         </div>}
         </div>
 
-        
         {selectProduct && productDetails && <div className="spoilage-section-product">
         
         {productDetails.map((e) => (

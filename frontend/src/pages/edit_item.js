@@ -134,12 +134,16 @@ const Edit_Item = () => {
         
     };
 
+    const handleNoImage = (e) => {
+      e.target.src='/images/no-image.jpg';
+    }
+
     const routeParams = useParams();
 
     async function fetchItemInfo() {
 
         try {
-            const response = await fetch(`${API_URL}/useritem/${routeParams.userId}/${routeParams.itemId}`);
+            const response = await fetch(`${API_URL}/useritem/iteminfo/${routeParams.userId}/${routeParams.itemId}/${routeParams.usersItemsId}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -154,7 +158,7 @@ const Edit_Item = () => {
     async function fetchTags() {
 
         try {
-            const response = await fetch(`${API_URL}/useritem/${routeParams.itemId}`);
+            const response = await fetch(`${API_URL}/useritem/tags/${routeParams.itemId}`);
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -187,18 +191,22 @@ const Edit_Item = () => {
 
                 <div className="edit-image-content">
 
-                <img className="edit-img"
+                {(itemInfo[0].imagefilepath) && <img className="edit-img"
                     src={itemInfo[0].imagefilepath}
-                    alt=""
-                />
+                    alt="Image not found"
+                    onError={(e) => handleNoImage(e)}
+                />}
 
 
                     <div className="edit-content">
                     <h1>{itemInfo[0].itemname}</h1>
 
+                 
+                  {(itemTags[0].tagname) && <div>
                    {itemTags.map((e) => (
                          <div className="tag" key={e.itemId}>{e.tagname}</div>
                     ))}
+                  </div>}
 
                     <p className="item-info"><b>Quantity:</b> {itemInfo[0].quantityremaining} {itemInfo[0].unitabbreviation}</p>
                     <p><b className="item-info">Expiring:</b> {itemInfo[0].formatspoilagedate}</p>
