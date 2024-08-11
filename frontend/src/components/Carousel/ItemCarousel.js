@@ -68,9 +68,8 @@ class ItemCarousel extends Component {
                       
                 <img 
                   className="carousel-image"
-                  src={e.imagePath}
+                  src={e.imagePath || "/images/no-image.jpg"}
                   style={{ width: "100%"}}
-                  alt="Image not found"
                   onError={(e) => handleNoImage(e)}
                 />
 

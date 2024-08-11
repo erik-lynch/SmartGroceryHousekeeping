@@ -191,11 +191,11 @@ const Edit_Item = () => {
 
                 <div className="edit-image-content">
 
-                {(itemInfo[0].imagefilepath) && <img className="edit-img"
-                    src={itemInfo[0].imagefilepath}
+                <img className="edit-img"
+                    src={itemInfo[0].imagefilepath || "/images/no-image.jpg"}
                     alt="Image not found"
                     onError={(e) => handleNoImage(e)}
-                />}
+                />
 
 
                     <div className="edit-content">
