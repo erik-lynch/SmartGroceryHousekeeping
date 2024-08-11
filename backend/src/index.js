@@ -135,6 +135,25 @@ app.get('/units', async(req, res) => {
   }
 })
 
+// get all tags
+app.get('/tags', async(req, res) => {
+  
+  try{
+    const getUnits = await pool.query(
+      `SELECT
+        tags.tagid,
+        tags.tagname
+      FROM tags
+      ORDER BY tags.tagname;`);
+
+    res.json(getUnits.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
 //----------------------------------------------------------------------------
 //                Edit Item Page requests
 //----------------------------------------------------------------------------

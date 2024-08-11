@@ -12,6 +12,7 @@ const Add_Item = () => {
   const [productDetails, setProductDetails] = useState(null);
 
   const [units, setUnits] = useState(null);
+  const [tags, setTags] = useState(null);
 
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
@@ -33,9 +34,9 @@ const Add_Item = () => {
     data: ''
   });
   
-  console.log('license key1', process.env.REACT_APP_SCANDIT_LICENSE_KEY);
+  // console.log('license key1', process.env.REACT_APP_SCANDIT_LICENSE_KEY);
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/^"|"$/g, '');
-  console.log('license key2', licenseKey);
+  // console.log('license key2', licenseKey);
 
   // temporary for demo
   const userId = 1;
@@ -58,6 +59,27 @@ const Add_Item = () => {
   };
 
   fetchUnits();
+
+  }, [])
+
+  // fetch tags on initial load
+  useEffect(() => {
+
+    async function fetchTags() {
+
+      try {
+          const response = await fetch(`${API_URL}/tags`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setTags(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchTags();
 
   }, [])
 
@@ -439,7 +461,7 @@ const Add_Item = () => {
 
   };
 
-  if (!categories || !units) {
+  if (!categories || !units || !tags) {
 
     return(<h2>Loading...</h2>)
 
@@ -555,7 +577,7 @@ const Add_Item = () => {
             required
           />
 
-          <label htmlFor="itemDescription">Item Description:</label>
+          <label htmlFor="itemDescription">Item Description (optional):</label>
           <input
             type="text"
             id="itemDescription"
@@ -588,6 +610,16 @@ const Add_Item = () => {
             required
           />
 
+          <label htmlFor="tags">Select Item Tags:</label>
+          <div className="all-tags">
+          {tags.map((e) => (
+            <div className="tag-select">
+            <input type="checkbox" id={e.tagid} name={e.tagname} value={e.tagid} />
+            <label for={e.tagname}> {e.tagname}</label>
+            </div>
+          ))}
+          </div>
+
           <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
           <input
             type="text"
@@ -605,6 +637,7 @@ const Add_Item = () => {
             name="expirationDate"
             value={formData.expirationDate}
             onChange={handleInputChange}
+            required
           />
 
           <input type="submit" className="button-submit-button" value="Submit" />

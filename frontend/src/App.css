@@ -552,6 +552,31 @@ input[class="recipe-quantity"] {
   padding: 5px 15px;
 }
 
+.all-tags {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+
+}
+
+.tag-select {
+  display: flex;
+  width: 170px;
+}
+
+.tag-select input[type="checkbox"]{
+  margin: 10px;
+  width: 25px;
+}
+
+.tag-select label {
+  margin: 0;
+  padding: 10px;
+  align-content: center;
+  font-size: medium;
+  font-weight: 500;
+}
+
 .section-content input[type="submit"] {
   cursor: pointer;
   transition: background-color 0.3s ease;
