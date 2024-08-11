@@ -291,46 +291,163 @@ input.edit-button {
   inline-size: 150px;
 }
 
-.grid-recipe {
-  display:grid;
-  grid-template-columns: 200px 240px;
-  padding: 5px;
-  width: 90%;
+  /* based on additem-core to match styling */
+
+.addrecipe-core {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: white;
+  padding: 40px;
 }
 
-.grid-recipe > div {
-  text-align: left;
+ /* all recipe-section-content based on section-content to match styling */
+
+.recipe-section-content {
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 8px;
+  padding: 40px 30px;
+  margin-bottom: 20px;
+  filter: drop-shadow(10px 10px 0px black);
+}
+
+.recipe-section-content form {
   display: flex;
-  flex-wrap: wrap;
-  padding: 20px;
+  width: 100%;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recipe-section-content label {
+  margin: 20px 0 0 0;
+  font-weight: bold;
+}
+
+.recipe-section-content input[type="text"],
+.recipe-section-content select {
+  width: 100%;
+  height: 45px;
+  margin: 10px 10px 10px 0;
+  border-radius: 5px;
+  border: 1px black solid;
+  background-color: white;
+  padding: 5px 15px;
+}
+
+.recipe-section-content button {
+  width: 100%;
+  background-color: #000000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin: 15px 0 30px 0;
+}
+
+.recipe-section-content button[type="submit"] {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 200px;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+  background-color: black;
+  margin: 5px 0 0px 0;
+}
+
+.recipe-section-content button:hover {
+  background-color: grey;
+}
+
+.recipe-section-content h2 {
+  font-size: x-large;
+}
+
+.recipe-section-content h2[name="smaller"] {
+  font-size: large;
+}
+
+.recipe-section-content p {
+  font-size: medium;
+  margin: 0px 0px 15px 0;
+}
+
+.grid-recipe {
+  display:grid;
+  grid-template-columns: 60% 35% 5%;
+  grid-template-rows: 50% 50%;
   width: 100%;
   background-color:#FFE7C3;
+  border-radius:20px;
+  filter: drop-shadow(10px 10px 0px black);
+  border:black 1px solid;
+  text-align: left;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 
 .grid-recipe-item {
   text-align: left;
-  grid-area: 1 / 1 / 1/ 2;
-  border-radius: 20px 0px 0px 20px;
-  border-left: black solid;
-  border-top: black solid;
-  border-bottom: black solid;
+  grid-row: 1 /span 2;
+  grid-column: 1 /span 1;
+  margin: 15px;
 }
 
 .grid-recipe-quantity {
   text-align: left;
   float: left;
-  grid-column: 1 / 2 / 1 / 2;
-  border-radius: 0px 20px 20px 0px;
-  border-right: black solid;
-  border-top: black solid;
-  border-bottom: black solid;
+  grid-row: 1 /span 1;
+  grid-column: 2 /span 1;
+  margin-top: 15px;
+  margin-bottom: 0px;
+  margin-right: 15px;
+  margin-left: 15px;
 }
 
 .grid-recipe-measurement {
   text-align: left;
   float: left;
-  grid-column: 2 / 2 / 2 / 2;
-  border-radius: 0px 20px 20px 0px;
+  grid-row: 2 /span 1;
+  grid-column: 2 /span 1;
+  margin-top: 0px;
+  margin-bottom: 15px;
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+.grid-recipe-delete {
+  grid-row: 1 /span 2;
+  grid-column: 3 /span 1;
+  margin: 1px;
+
+}
+
+.grid-recipe-delete button[class="recipe-delete-item-button"] {
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 10px;
+  width: 30px;
+  padding: 5px;
+  margin-left: auto;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: auto;
+  float: right;
+}
+
+.grid-recipe-delete button[class="recipe-delete-item-button"]:hover {
+  background-color: grey;
 }
 
 textarea {
@@ -400,19 +517,9 @@ input[type="number"] {
   font-size: 16px;
 }
 
-button[class="recipe-submit-button"] {
-  align-self: center;
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px 5px;
-  width: 150px;
-  padding: 10px;
-}
+ /* all recipe-section-content based on section-content to match styling */
 
- button[class="recipe-add-button"] {
+ .recipe-section-content button[class="recipe-add-button"] {
   align-self: center;
   background-color: black;
   color: white;
@@ -424,7 +531,7 @@ button[class="recipe-submit-button"] {
   padding: 5px;
 }
 
-button[class="recipe-delete-step-button"] {
+.recipe-section-content button[class="recipe-delete-step-button"] {
   align-self: center;
   background-color: black;
   color: white;
@@ -437,17 +544,12 @@ button[class="recipe-delete-step-button"] {
   margin-left: 10px
 }
 
-button[class="recipe-delete-item-button"] {
-  margin-right: 0;
-  margin-left: auto; 
-  background-color: black;
-  color: white;
-  font-size: 14px;
-  border: 1px solid black;
-  border-radius: 10px;
-  padding: 2px 2px;
-  width: 30px;
-  padding: 5px;
+.recipe-section-content button[class="recipe-add-button"]:hover {
+  background-color: grey;
+}
+
+.recipe-section-content button[class="recipe-delete-step-button"]:hover {
+  background-color: grey;
 }
 
 select {
@@ -455,34 +557,22 @@ select {
   border-radius: 50px;
   height: 45px;
   width: 150px;
-  border: black solid;
+  border: 1px black solid;
   padding: 5px 15px;
 }
 
-select[class="recipe-select-ingredient"] {
+.grid-recipe-item select[class="recipe-select-ingredient"] {
+  width: 100%;
+  height: 80%;
   margin: 10px;
-  border-radius: 5px;
-  height: 100px;
-  inline-size: 150px;
-  border: black solid;
-  padding: 5px 15px;
-}
-
-select[class="recipe-select-measurement"] {
-  margin: 10px 10px 10px 0;
-  border-radius: 50px;
-  height: 45px;
-  width: 180px;
-  border: black solid;
+  border-radius: 3px;
+  border: 1px black solid;
+  background-color: white;
   padding: 5px 15px;
 }
 
 input[class="recipe-quantity"] {
-  border-radius: 50px;
-  height: 35px;
   text-align: center;
-  border: black solid;
-  width: 150px;
 }
 
 /* Add Item Page */
@@ -857,8 +947,6 @@ select[name="spoilage-select"]{
   border-radius: 8px 8px 0 0;
 }
 
-
-
 .item-name {
   float: left;
   font-size: medium;
@@ -948,4 +1036,93 @@ color: black;
   
   }
 
+/* view_recipe page */
 
+.view-core {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: white;
+  padding: 40px;
+}
+  
+.view-section-content {
+  border: 1px solid black;
+  background-color: #FFE7C3;
+  border-radius: 8px;
+  padding: 40px 30px;
+  margin-bottom: 20px;
+  filter: drop-shadow(10px 10px 0px black);
+}
+
+.view-section-category-1{
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.view-section-category-1 p {
+  margin-left:20px;
+}
+  
+.view-section-category-2 {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.view-section-category-2 ul li {
+  margin-left: 30px;
+  margin-bottom: 5px;
+}
+  
+.view-section-category-3 {
+  width: 100%;
+}
+
+/*
+source-cited: https://stackoverflow.com/questions/26025057/add-custom-text-to-ordered-list-li
+start citation - add-custom-text-to-ordered-list-li
+*/
+.view-section-category-3 ol {
+  list-style-type: none;
+  counter-reset: stepcounter;
+}
+
+.view-section-category-3 li:before {
+  content: 'Step ' counter(stepcounter) ":";
+  counter-increment: stepcounter;
+  font-weight: bold;
+}
+/* end citation - add-custom-text-to-ordered-list-li*/
+
+.view-section-category-3 ol li {
+  margin-bottom: 20px;
+  margin-left: 15px;
+}
+
+.view-section-category-3 ol li p {
+  margin-left: 20px;
+}
+
+.view-section-content label {
+  margin: 20px 0 0 0;
+  font-weight: bold;
+}
+  
+.view-section-content button {
+  background-color: #000000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin: 30px 0 0 0;
+}
+  
+.view-section-content h2 {
+  font-size: x-large;
+}

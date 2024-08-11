@@ -28,14 +28,12 @@ function string_nameClean(obj) {
 function fill_api_data(jsonData) {
     var arrayJsonObjApiData = [];
     for (let i=0; i < jsonData.length; i++) {
-        //console.log(jsonData[i])
         var recipeIngredientStr = string_nameClean(jsonData[i].extendedIngredients);
         var newJsonApiData = {
             link : jsonData[i].spoonacularSourceUrl,
             recipeTitle: jsonData[i].title,
             recipeIngredients: recipeIngredientStr
         }
-        //console.log(newJsonApiData);
         arrayJsonObjApiData.push(newJsonApiData);
     }
     return arrayJsonObjApiData
@@ -72,7 +70,6 @@ const Recipes = () => {
                 setLoading0(true);
                 const inFridgeIngredientsRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/infridge`);
                 const inFridgeIngredientsData = await inFridgeIngredientsRes.json();
-                //console.log(inFridgeIngredientsData)
                 const api_str_ingredients = string_items(inFridgeIngredientsData);
                 setIngredients(api_str_ingredients);
                 setLoading0(false);
@@ -136,8 +133,6 @@ useEffect(() => {
                 const inFridgeRecipesRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/${ingredients}/infridge/recipes`);
                 const inFridgeRecipeData = await inFridgeRecipesRes.json();
 
-                //console.log("in fridge pulled:", inFridgeRecipeData);
-
                 let sortedJsonInFridgeData;
 
                 //couldn't get sql to use temp col value...so this sorts by least ingredients missing (sql secondary-more used ingredient desc , total ingredienst asc)
@@ -152,9 +147,6 @@ useEffect(() => {
                         return 0;
                     }
                   });
-
-                //console.log("SORTED in fridge pulled:", sortedJsonInFridgeData);
-                //console.log(sortedJsonInFridgeData[0].recipeid);
                 
                 // get total ingredient list for each recipe and update array
                 for (let i=0; i < sortedJsonInFridgeData.length; i++) {
@@ -164,10 +156,7 @@ useEffect(() => {
                     sortedJsonInFridgeData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
                     sortedJsonInFridgeData[i]['link'] = `/users/${userId}/recipes/${sortedJsonInFridgeData[i].recipeid}/view_recipe`;
                     sortedJsonInFridgeData[i]['recipeTitle'] = sortedJsonInFridgeData[i].recipename;
-                    //console.log("current recipe list", currentRecipeData[0].ingredientlist)
                 }
-
-                //console.log("finalized",sortedJsonInFridgeData);
 
                 setInFridgeRecipes(sortedJsonInFridgeData);
                 setLoading4(false);
@@ -179,7 +168,6 @@ useEffect(() => {
         }
 
         if (ingredients) { 
-            //console.log("ingredients:", ingredients);
             fetchApiInFridgeRecipes();
             fetchInFridgeRecipes();
         }
@@ -216,8 +204,6 @@ useEffect(() => {
                     setLoading5(true);
                     const spoilSoonRecipesRes  = await fetch(`${API_URL}/api/users/${userId}/ingredients/${spoilIngredients}/infridge/recipes`);
                     const spoilSoonRecipesData = await spoilSoonRecipesRes.json();
-                    
-                    //console.log("spoil soon e pulled:", spoilSoonRecipesData);
 
                     let sortedJsonSpoilSoonData;
 
@@ -233,9 +219,6 @@ useEffect(() => {
                         return 0;
                     }
                   });
-
-                //console.log("SORTED spoil soon pulled:", sortedJsonSpoilSoonData);
-                //console.log(sortedJsonSpoilSoonData[0].recipeid);
                 
                 // get total ingredient list for each recipe and update array
                 for (let i=0; i < sortedJsonSpoilSoonData.length; i++) {
@@ -245,10 +228,7 @@ useEffect(() => {
                     sortedJsonSpoilSoonData[i]['recipeIngredients'] = currentRecipeData[0].ingredientlist;
                     sortedJsonSpoilSoonData[i]['link'] = `/users/${userId}/recipes/${sortedJsonSpoilSoonData[i].recipeid}/view_recipe`;
                     sortedJsonSpoilSoonData[i]['recipeTitle'] = sortedJsonSpoilSoonData[i].recipename;
-                    //console.log("current spoil recipe list", currentRecipeData[0].ingredientlist)
                 }
-
-                //console.log("finalized",sortedJsonSpoilSoonData);
 
                 setFridgeSpoilRecipes(sortedJsonSpoilSoonData);
                     setLoading5(false);
@@ -261,7 +241,6 @@ useEffect(() => {
             }
 
             if (spoilIngredients) {
-                //console.log("spoil ingredients:", spoilIngredients);
                 fetchApiSpoilSoonRecipes();
                 fetchSpoilSoonRecipes();
             }

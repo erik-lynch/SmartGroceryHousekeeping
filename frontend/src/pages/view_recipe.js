@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const View_Recipe = () => {
-    
-    // get recipeId for URL parameter
+
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
     let { recipeId } = useParams();
     let { userId } = useParams();
-
     let navigate = useNavigate();
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
     // set use effect state changes- steps,ingredient,description for page data
     const [steps, setSteps] = useState([]);
     const [ingredients, setIngredients] = useState([]);
@@ -81,13 +81,12 @@ const View_Recipe = () => {
         }
     }
 
-    
+
     fetchVerifyRecipeId();
     fetchStepData();
     fetchIngredientData();
     fetchDescriptionData();
     }, [userId, recipeId]);
-    // added recipeId to dependency array to avoid useEffect compile error
 
     if (loading0 || loading1 || loading2 || loading3) {
         return (<p>Loading</p>)
@@ -97,30 +96,46 @@ const View_Recipe = () => {
     else {
 
     return (
-        <div class="core">
-            <h1>
-                {description[0].recipename}
-            </h1>
-            <p>{description[0].recipedescription}</p>
-            <h2>Ingredients:</h2>
-                <ul>
-                    {ingredients.map((ingredientval,key) => {
-                        return (
-                            <li key={key}>{ingredientval.itemname} {ingredientval.quantity} {ingredientval.quantityunit}</li>
-                        );
-                    })}
-                </ul>
-            <h2>Directions:</h2>
+        <div className="view-core">
+            <div className="view-section-content">
+                <div className="view-section">
+                <div className="view-section-category-1">
+                    <h2>
+                        {description[0].recipename}
+                    </h2>
+                    <p>
+                        {description[0].recipedescription}
+                    </p>
+                    </div>
                 
-                <ol>
-                {steps.map((stepval,key) => {
-                    return(
-                        <li key={key}> {stepval.stepdescription}</li>
-                    );
-                })}
-                </ol>
                 <br></br>
+                
+                <div className="view-section-category-2">
+                    <h2>Ingredients:</h2>
+                        <ul>
+                            {ingredients.map((ingredientval,key) => {
+                            return (
+                                <li key={key}>{ingredientval.itemname} {ingredientval.quantity} {ingredientval.quantityunit}</li>
+                            );
+                            })}
+                        </ul>
+                
+                </div>
+                <br></br>
+                
+                <div className="view-section-category-3">
+                    <h2>Directions:</h2>
+                        <ol>
+                            {steps.map((stepval,key) => {
+                            return(
+                                <li key={key}><br></br><br></br><p>{stepval.stepdescription}</p></li>
+                            );
+                            })}
+                        </ol>
+                </div>
+                </div>
                 <button onClick={() => navigate(-1)}> Return to previous page</button>
+            </div>
         </div>
     )
 };

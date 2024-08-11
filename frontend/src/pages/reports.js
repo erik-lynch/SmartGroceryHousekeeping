@@ -24,7 +24,6 @@ const Reports = () => {
                 setLoading0(true);
                 const freqSpoiledRes  = await fetch(`${API_URL}/api/users/${userId}/reports/freqspoiled`);
                 const freqSpoiledData = await freqSpoiledRes.json();
-                console.log(freqSpoiledData)
                 setFreqSpoiled(freqSpoiledData);
                 setLoading0(false);
             }
@@ -86,7 +85,7 @@ const Reports = () => {
                 </thead>
                 {freqSpoiled.map((data,key) => {
                     return (
-                        <tbody key={key}>
+                        <tbody key={'freqspoil' + key}>
                         <tr>
                             <td>{data.item}</td>
                             <td>{data.dateadded}</td>
@@ -95,7 +94,7 @@ const Reports = () => {
                             <td>{data.currentquantityconsumed}</td>
                             <td>{data.currentquantityremaining}</td>
                             <td>{data.timesbought}</td>
-                            <td>{data.spoiledpercent}</td>   
+                            <td>{data.spoiledpercent.slice(0,5)+data.spoiledpercent.slice(-1)}</td>   
                         </tr>
                         </tbody>
                     )})}
@@ -129,7 +128,7 @@ const Reports = () => {
                 </thead>
                 {freqUsed.map((data,key) => {
                     return (
-                        <tbody key={key}>
+                        <tbody key={'freqused' + key}>
                         <tr>
                             <td>{data.item}</td>
                             <td>{data.dateadded}</td>
@@ -139,7 +138,8 @@ const Reports = () => {
                             <td>{data.currentquantityremaining}</td>
                             <td>{data.infridge}</td>
                             <td>{data.timesbought}</td>
-                            <td>{data.finishedpercent}</td>   
+                            <td>{data.finishedpercent.slice(0,5)+data.finishedpercent.slice(-1)}</td>
+                            
                         </tr>
                         </tbody>
                     )})}

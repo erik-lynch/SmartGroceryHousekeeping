@@ -293,11 +293,13 @@ const Add_Recipe = () => {
     
         if (pageError) {return (<h1>There was an error: {pageError} </h1>)}
         else {
-    return (
 
-        <div className="core">
-            <h2>Add a Recipe to the Cookbook</h2>
-            <form id="recipeAddForm" onSubmit={handleSubmit}>
+        return (
+        <div className="addrecipe-core">
+            <div className="recipe-section-content">
+                <h2>Add a Recipe to the Cookbook</h2>
+                <form id="recipeAddForm" onSubmit={handleSubmit}>
+
                 <h3>Recipe Name:</h3>
                     <textarea 
                         id="recipeName" 
@@ -305,9 +307,8 @@ const Add_Recipe = () => {
                         value={recipeInfo.recipeName} 
                         onChange={handleRecipeInfoInputChange}
                         rows="2"
-                        cols="55"
-                        className="recipe-text"
-                    ></textarea><br/>
+                    ></textarea>
+
                 <h3>Recipe Description:</h3>
                     <textarea 
                         id="recipeDescription" 
@@ -315,35 +316,69 @@ const Add_Recipe = () => {
                         value={recipeInfo.recipeDescription} 
                         onChange={handleRecipeInfoInputChange}
                         rows="4"
-                        cols="55"
-                        className="recipe-text"
-                        ></textarea> <br/>
-                <h3> Ingredients List:</h3>
+                        ></textarea>
+
+                <h2 name="smaller"> Ingredients List:</h2>
+                    <div>
+                        <p>
+                            Ingredients are only from items that have been in fridge at some point in time.
+                            Please add item to inventory if recipe requires item.
+                            Quantity may be a numerical answer or description
+                            (examples: "2 1/2", "bulbs", "pieces", "sticks")
+                        </p>
+                    </div>
                     {recipeItems.map((items, i) => {
                         return(
                             <div className="grid-recipe">
 
                                 <div className = "grid-recipe-item">
-                                    <label htmlFor="itemId">Name: </label><br/>
-                                        <select  className="recipe-select-ingredient" id="itemId" name="itemId" size="2" value={items.itemId} onChange={e => handleRecipeItemsInputChange(i,e)}>
-                                            <option value={-1}> Not selected</option>
-                                            {allUserIdItems.map((newItems, k) => {
-                                                return (
-                                                    <option key={k} value={newItems.itemid}>{newItems.itemname}</option>
-                                                )
-                                            })};
-                                        </select><br/>
+                                    <label htmlFor="itemId">Ingredient Name:</label>
+                                    <select  
+                                        className="recipe-select-ingredient"
+                                        id="itemId" name="itemId"
+                                        size="2"
+                                        value={items.itemId} 
+                                        onChange={e => handleRecipeItemsInputChange(i,e)}
+                                    >
+                                        <option value={-1}> Not selected</option>
+                                        {allUserIdItems.map((newItems, k) => {
+                                            return (
+                                                <option 
+                                                    key={k}
+                                                    value={newItems.itemid}
+                                                >{newItems.itemname}</option>
+                                            )
+                                        })};
+                                    </select>
                                 </div>
-                                
+
+                                <div className="grid-recipe-delete">
+                                    <button 
+                                        className="recipe-delete-item-button" 
+                                        onClick={e => handleDeleteRecipeItem(i,e)}
+                                    >X</button>
+                                </div>
+
                                 <div className = "grid-recipe-quantity">
                                     <label htmlFor="quantity">Quantity: </label>
-                                    <button className="recipe-delete-item-button" onClick={e => handleDeleteRecipeItem(i,e)}>X</button>
-                                    <input className="recipe-quantity" type="text" id="quantity" name="quantity" value={items.quantity} onChange={e => handleRecipeItemsInputChange(i,e)}/><br/>
-                                <div/>
+                                    <input 
+                                        className="recipe-quantity"
+                                        type="text"
+                                        id="quantity"
+                                        name="quantity"
+                                        value={items.quantity}
+                                        onChange={e => handleRecipeItemsInputChange(i,e)}/>
+                                </div>
 
                                 <div className= "grid-recipe-measurement">
                                     <label htmlFor="quantityUnit">Measurement:</label>
-                                        <select id="quantityUnit" name="quantityUnit"   className="recipe-select-measurement" value={items.quantityUnit} onChange={e => handleRecipeItemsInputChange(i,e)}>
+                                        <select 
+                                            id="quantityUnit"
+                                            name="quantityUnit"
+                                            className="recipe-select-measurement"
+                                            value={items.quantityUnit}
+                                            onChange={e => handleRecipeItemsInputChange(i,e)}
+                                        >
                                             <option value="">No Unit</option>
                                             <option value="tsp">Teaspoon/Teaspoons</option>
                                             <option value="tbsp">Tablespoon/Tablespoons</option>
@@ -362,36 +397,52 @@ const Add_Recipe = () => {
                                 </div>
 
                             </div>
-                            </div>
                         )
                     })}
-                        <br/><div><button className="recipe-add-button" onClick={handleNewRecipeItem} >Add Ingredient</button></div><br/>
+                        <div>
+                            <button 
+                                className="recipe-add-button" 
+                                onClick={handleNewRecipeItem}
+                            >Add Ingredient</button>
+                        </div>
 
-                        <h3>Directions:</h3>
+                        <h2 name="smaller">Directions:</h2>
                         {recipeSteps.map((steps, i) => {
                             return(
                                 <div>
-                                    <label htmlFor="stepDescription">Step {steps.stepNumber} :</label><br/><br/>
+                                    <label htmlFor="stepDescription">Step {steps.stepNumber} :</label>
+                                    <br/><br/>
                                     <textarea
                                         id="stepDescription" 
                                         name="stepDescription"
                                         value={steps.stepDescription} 
                                         onChange={e => handleRecipeStepsInputChange(i,e)}
                                         rows="3"
-                                        cols="55"
-                                        className="recipe-text"
-                                    ></textarea> <br/><br/>
-                                </div>
-                                
-                        )
-                    })}
-                    <div><button className="recipe-add-button" onClick={handleNewRecipeStep}>Add Step</button>
-                    <button className="recipe-delete-step-button" onClick={handleDeleteRecipeStep}>Remove Step</button></div><br/>
-            </form>
-            <div><button className="recipe-submit-button" onClick={handleSubmit}>Submit</button></div>
+                                        cols="500"
+                                    ></textarea>
+                                </div>     
+                            )
+                        })}
+                    <div>
+                        <button 
+                            className="recipe-add-button"
+                            onClick={handleNewRecipeStep}
+                        >Add Step</button>
+                        <button
+                            className="recipe-delete-step-button"
+                            onClick={handleDeleteRecipeStep}
+                        >Remove Step</button>
+                    </div>
+
+                    <button 
+                        type="submit"
+                        onClick={handleSubmit}
+                    >Submit</button>
+                </form>
+            </div>
         </div>
     );
-};
+    };
 }
 
 export default Add_Recipe;
