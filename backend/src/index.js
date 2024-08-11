@@ -19,6 +19,8 @@ const { Pool } = require('pg');
 const app = express();
 const https = require('https');
 const path = require('path');
+const { generateToken, verifyToken, hashPassword, comparePassword, authMiddleware } = require('./auth');
+
 
 
 const pool = new Pool({
@@ -72,13 +74,56 @@ app.get('/items', async (req, res) => {
   }
 });
 
+app.post('/api/register', async (req, res) => {
+  const { firstname, lastname, email, password } = req.body;
+  try {
+    console.log('Received registration request for email:', email);
+
+    const hashedPassword = await hashPassword(password);
+    console.log('Password hashed successfully');
+    
+    const result = await pool.query(
+      'INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4) RETURNING userid, firstname, lastname, email',
+      [firstname, lastname, email, hashedPassword]
+    );
+    console.log('User inserted into database');
+    const user = result.rows[0];
+    const token = generateToken(user);
+    console.log('Token generated successfully');
+    res.json({ user, token });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Error registering user', details: error.message });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const isValid = await comparePassword(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = generateToken(user);
+    res.json({ user: { userid: user.userid, firstname: user.firstname, lastname: user.lastname, email: user.email }, token });
+  } catch (error) {
+    res.status(500).json({ error: 'Error logging in' });
+  }
+});
+
 //----------------------------------------------------------------------------
 //                Add Item Page requests
 //----------------------------------------------------------------------------
 
 // add item to DB
-app.post('/api/add-item/:userId', async (req, res) => {
+app.post('/api/add-item', authMiddleware, async (req, res) => {
   const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
+  const userId = req.user.id; // Get the user ID from the authenticated token
 
   try {
     const itemResult = await pool.query(
@@ -103,10 +148,9 @@ app.post('/api/add-item/:userId', async (req, res) => {
 
     const updateUsersItems = await pool.query(
       `INSERT INTO usersitems (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
-      VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, '${expirationDate}');`
-    )
-
-    console.log(updateUsersItems.rows)
+      VALUES ($1, $2, $3, $3, CURRENT_DATE, $4)`,
+      [itemId, userId, quantity, expirationDate]
+    );
 
     res.status(200).json({ message: 'Item added successfully' });
   } catch (error) {
@@ -135,12 +179,87 @@ app.get('/units', async(req, res) => {
   }
 })
 
+app.post('/api/check-and-add-item', authMiddleware, async (req, res) => {
+  const { itemName, itemDescription } = req.body;
+  const userId = req.user.id;
+
+  try {
+    // Check if the item exists
+    const itemResult = await pool.query(
+      'SELECT itemId FROM Items WHERE itemName = $1',
+      [itemName]
+    );
+
+    if (itemResult.rows.length > 0) {
+      // Item exists
+      res.json({ exists: true, itemId: itemResult.rows[0].itemid });
+    } else {
+      // Item doesn't exist, so add it
+      const insertItemResult = await pool.query(
+        'INSERT INTO Items (itemName, itemDescription) VALUES ($1, $2) RETURNING itemId',
+        [itemName, itemDescription]
+      );
+      res.json({ exists: false, itemId: insertItemResult.rows[0].itemid });
+    }
+  } catch (error) {
+    console.error('Error checking/adding item:', error);
+    res.status(500).json({ message: 'Error checking/adding item', error: error.message });
+  }
+});
+
+app.post('/api/add-to-my-items', authMiddleware, async (req, res) => {
+  const { itemId, quantity, expirationDate } = req.body;
+  const userId = req.user.id;
+
+  try {
+    // First, check if the user already has this item
+    const existingItemResult = await pool.query(
+      `SELECT usersitemsid, quantityremaining 
+       FROM usersitems 
+       WHERE fk_users_userid = $1 AND fk_items_itemid = $2`,
+      [userId, itemId]
+    );
+
+    if (existingItemResult.rows.length > 0) {
+      // Item exists, update the quantity
+      const existingItem = existingItemResult.rows[0];
+      const newQuantity = existingItem.quantityremaining + parseInt(quantity);
+      
+      const updateResult = await pool.query(
+        `UPDATE usersitems 
+         SET quantityremaining = $1, quantitypurchased = quantitypurchased + $2, 
+             spoilagedate = COALESCE($3, spoilagedate)
+         WHERE usersitemsid = $4 
+         RETURNING *`,
+        [newQuantity, quantity, expirationDate, existingItem.usersitemsid]
+      );
+
+      res.json({ message: 'Item quantity updated in your inventory', item: updateResult.rows[0] });
+    } else {
+      // Item doesn't exist for this user, add new entry
+      const insertResult = await pool.query(
+        `INSERT INTO usersitems 
+         (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
+         VALUES ($1, $2, $3, $3, CURRENT_DATE, $4)
+         RETURNING *`,
+        [itemId, userId, quantity, expirationDate]
+      );
+
+      res.json({ message: 'Item added to your inventory successfully', item: insertResult.rows[0] });
+    }
+  } catch (error) {
+    console.error('Error adding item to user items:', error);
+    res.status(500).json({ message: 'Error adding item to user items', error: error.message });
+  }
+});
+
 //----------------------------------------------------------------------------
 //                Edit Item Page requests
 //----------------------------------------------------------------------------
 
 // get item info to display
-app.get('/useritem/:userId/:itemId', async (req, res) => {
+app.get('/useritem/:itemId', authMiddleware, async (req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
 
   try{
     const getItemDetails = await pool.query(
@@ -160,50 +279,56 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
         usersitems.finishedtotal,
         usersitems.spoiledtotal,
         images.imagefilepath,
-		    units.unitabbreviation
+        units.unitabbreviation
       FROM usersitems
       INNER JOIN users ON usersitems.fk_users_userid = users.userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
       LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
       LEFT JOIN images ON images.imageid = itemsimages.fk_images_imageid
-	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
+      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      WHERE users.userid = $1 AND items.itemid = $2`,
+      [userId, req.params.itemId]
+    );
 
     res.json(getItemDetails.rows);
     
   } catch (err){
-      console.error(err);
-      res.status(500).send('Server error')
+    console.error(err);
+    res.status(500).send('Server error')
   }
 
 });
 
 // get item tags to display
-app.get('/useritem/:itemId', async (req, res) => {
+app.get('/useritem/:itemId/tags', authMiddleware, async (req, res) => {
+  const userId = req.user.id;
 
   try {
     const getItemTags = await pool.query(
       `SELECT
-	      tags.tagname
+        tags.tagname
       FROM tags
-      FULL OUTER JOIN itemstags ON tags.tagid = itemstags.fk_tags_tagid
-      FULL OUTER JOIN items ON itemstags.fk_items_itemid = items.itemid
-      WHERE items.itemid = ${req.params.itemId}
-      ORDER BY tags.tagname`);
+      INNER JOIN itemstags ON tags.tagid = itemstags.fk_tags_tagid
+      INNER JOIN items ON itemstags.fk_items_itemid = items.itemid
+      INNER JOIN usersitems ON items.itemid = usersitems.fk_items_itemid
+      WHERE items.itemid = $1 AND usersitems.fk_users_userid = $2
+      ORDER BY tags.tagname`,
+      [req.params.itemId, userId]
+    );
 
     res.json(getItemTags.rows);
-    
-  } catch (err){
-      console.error(err);
-      res.status(500).send('Server error')
-  }
 
+  } catch (err){
+    console.error(err)
+    res.status(500).json({ message: 'Server error', error: err.message })
+  }
 });
 
 // update item quantity 
-app.put('/api/edit_item/:usersItemsId', async (req, res) => {
+app.put('/api/edit_item/:usersItemsId', authMiddleware, async (req, res) => {
   const { newlySpoiled, newlyFinished, newlyAdded } = req.body;
+  const userId = req.user.id; // Ge======t the user ID from the authenticated token
   
   try {
     const markUpdated = await pool.query(
@@ -213,19 +338,26 @@ app.put('/api/edit_item/:usersItemsId', async (req, res) => {
         finishedtotal = finishedtotal + $2,
         quantitypurchased = quantitypurchased + $3,
         quantityremaining = quantityremaining + $3 - $2 - $1
-      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`, [newlySpoiled, newlyFinished, newlyAdded]);
+      WHERE usersitems.usersitemsid = $4 AND fk_users_userid = $5
+      RETURNING *`, 
+      [newlySpoiled, newlyFinished, newlyAdded, req.params.usersItemsId, userId]
+    );
     
-    res.json(markUpdated.rows);
-    
-  } catch (err){
-      console.error(err);
-      res.status(500).send('Server error')
-  }
+    if (markUpdated.rows.length === 0) {
+      return res.status(404).json({ message: 'Item not found or you do not have permission to edit this item' });
+    }
 
+    res.json(markUpdated.rows[0]);
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
 });
 
 // update item quantity - spoil all in stock
-app.put('/api/spoil_item/:usersItemsId', async (req, res) => {
+app.put('/api/spoil_item/:usersItemsId', authMiddleware, async (req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
   
   try {
     const markSpoiled = await pool.query(
@@ -233,19 +365,26 @@ app.put('/api/spoil_item/:usersItemsId', async (req, res) => {
       SET spoiled = true,
         spoiledtotal = spoiledtotal + quantityremaining,
         quantityremaining = 0
-      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
+      WHERE usersitems.usersitemsid = $1 AND fk_users_userid = $2
+      RETURNING *`,
+      [req.params.usersItemsId, userId]
+    );
     
-    res.json(markSpoiled.rows);
-    
-  } catch (err){
-      console.error(err);
-      res.status(500).send('Server error')
-  }
+    if (markSpoiled.rows.length === 0) {
+      return res.status(404).json({ message: 'Item not found or you do not have permission to edit this item' });
+    }
 
+    res.json(markSpoiled.rows[0]);
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
 });
 
 // update item quantity - finish all in stock
-app.put('/api/finish_item/:usersItemsId', async (req, res) => {
+app.put('/api/finish_item/:usersItemsId', authMiddleware, async (req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
 
   try {
     const markFinished = await pool.query(
@@ -253,15 +392,21 @@ app.put('/api/finish_item/:usersItemsId', async (req, res) => {
       SET finished = true, 
         finishedtotal = finishedtotal + quantityremaining,
         quantityremaining = 0
-      WHERE usersitems.usersitemsid = ${req.params.usersItemsId}`);
+      WHERE usersitems.usersitemsid = $1 AND fk_users_userid = $2
+      RETURNING *`,
+      [req.params.usersItemsId, userId]
+    );
 
-    res.json(markFinished.rows);
+    if (markFinished.rows.length === 0) {
+      return res.status(404).json({ message: 'Item not found or you do not have permission to edit this item' });
+    }
+
+    res.json(markFinished.rows[0]);
     
-  } catch (err){
-      console.error(err);
-      res.status(500).send('Server error')
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
-
 });
 
 //----------------------------------------------------------------------------
@@ -269,7 +414,8 @@ app.put('/api/finish_item/:usersItemsId', async (req, res) => {
 //----------------------------------------------------------------------------
 
 // get items spoiling soon
-app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
+app.get('/dashboard/spoilingsoon', authMiddleware, async(req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
   
   try{
     const getUserSpoilingSoon = await pool.query(
@@ -291,23 +437,26 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
       INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId}
+      WHERE users.userid = $1
       AND usersitems.spoilagedate <= (current_date + 5)
       AND usersitems.spoiled = False
       AND usersitems.finished = False
       AND usersitems.quantityremaining >= 0
-      ORDER BY formatspoilagedate`);
+      ORDER BY formatspoilagedate`,
+      [userId]
+    );
 
-    res.json(getUserSpoilingSoon.rows)
-    
-  }catch (err){
+    res.json(getUserSpoilingSoon.rows);
+
+  } catch (err){
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 })
 
 // get items recently purchased
-app.get('/dashboard/:userId/recentitems', async(req, res) => {
+app.get('/dashboard/recentitems', authMiddleware, async(req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
   
   try{
     const getUserRecentItems = await pool.query(
@@ -328,146 +477,162 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
       INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
       INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId}
+      WHERE users.userid = $1
       AND usersitems.dateadded >= (current_date - 5)
       AND usersitems.spoiled = False
       AND usersitems.finished = False
       AND usersitems.quantityremaining >= 0
-	    ORDER BY usersitems.dateadded DESC;`);
+      ORDER BY usersitems.dateadded DESC`,
+      [userId]
+    );
 
-    res.json(getUserRecentItems.rows)
-    
-  }catch (err){
+    res.json(getUserRecentItems.rows);
+  } catch (err){
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message })
   }
 })
 
 // get all items
-app.get('/dashboard/:userId/allitems', async(req, res) => {
+app.get('/dashboard/allitems', authMiddleware, async(req, res) => {
+  const userId = req.user.id; // Get the user ID from the authenticated token
   
   try{
     const getAllUserItems = await pool.query(
       `SELECT 
-        users.userid as "userId",
-        items.itemid as "itemId",
-        items.itemname as "itemName", 
-        usersitems.usersitemsid as "usersItemsId",
-        usersitems.quantityremaining as "itemQuantity", 
-        images.imagefilepath as "imagePath", 
-        units.unitabbreviation as "itemUnit" 
-      FROM users
-      INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
-      INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
-      WHERE users.userid = ${req.params.userId}
-      AND usersitems.spoiled = False
-      AND usersitems.finished = False
-      AND usersitems.quantityremaining >= 0
-      ORDER BY items.itemname`
+    users.userid as "userId",
+    items.itemid as "itemId",
+    items.itemname as "itemName", 
+    usersitems.usersitemsid as "usersItemsId",
+    usersitems.quantityremaining as "itemQuantity", 
+    images.imagefilepath as "imagePath", 
+    units.unitabbreviation as "itemUnit" 
+    FROM users
+    INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
+    INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
+    INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
+    INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
+    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
+    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
+    WHERE users.userid = $1
+    AND usersitems.spoiled = False
+    AND usersitems.finished = False
+    AND usersitems.quantityremaining >= 0
+    ORDER BY items.itemname`,
+      [userId]
     );
-    res.json(getAllUserItems.rows)
-    
-  }catch (err){
-    console.error(err);
-    res.status(500).send('Server error');
-  }
+    res.json(getAllUserItems.rows);
 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message })
+  }
 })
 
 //----------------------------------------------------------------------------
 //                View Recipe Page requests
 //----------------------------------------------------------------------------
 
-//Get recipe name and description From recipeid and userId
-app.get('/api/users/:userId/recipes/:recipeId/namedescription', async(req,res) => {
+//Get recipe name and description From recipeid
+app.get('/api/recipes/:recipeId/namedescription', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getRecipeInfoData = await pool.query(
       `SELECT
         recipeName,
         recipeDescription
       FROM recipes AS R
-	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
-	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
-	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-	    WHERE recipeId = ${req.params.recipeId}	
-	      AND U.userId = ${req.params.userId}`
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+      INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE recipeId = $1	
+        AND U.userId = $2`,
+      [req.params.recipeId, userId]
     );
-    res.json(getRecipeInfoData.rows);
+    if (getRecipeInfoData.rows.length === 0) {
+      return res.status(404).json({ message: 'Recipe not found or you do not have access to this recipe' });
+    }
+    res.json(getRecipeInfoData.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message })
   }
 });
 
 //Get recipe ingredients from recipeid
-app.get('/api/users/:userId/recipes/:recipeId/ingredients', async(req,res) => {
+app.get('/api/recipes/:recipeId/ingredients', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getRecipeIngredientData = await pool.query(
-      `SELECT  distinct
+      `SELECT DISTINCT
         I.itemName, 
         IR.quantity,
         IR.quantityunit
       FROM Items AS I
       INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
       INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
-	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-      WHERE R.recipeId = ${req.params.recipeId}`
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE R.recipeId = $1 AND U.userId = $2`,
+      [req.params.recipeId, userId]
     );
     res.json(getRecipeIngredientData.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
 //verify recipeid exists
-app.get('/api/users/:userId/recipes/:recipeId/verify', async(req,res) => {
+app.get('/api/recipes/:recipeId/verify', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getRecipeVerify = await pool.query(
     `SELECT 
       recipeId 
     FROM recipes AS R
-	  INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
-	  INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
-	  INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	  INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-	  WHERE recipeid = ${req.params.recipeId}
-      AND U.userid=${req.params.userId}`
+    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+    WHERE recipeid = $1 AND U.userid = $2`,
+    [req.params.recipeId, userId]
     );
-    if (getRecipeVerify.rows.length === 0 ) {
-      res.status(404).send("404 recipeId doesn't exist");
+    if (getRecipeVerify.rows.length === 0) {
+      res.status(404).json({ message: "Recipe doesn't exist or you don't have access to it" });
+    } else {
+      res.status(200).json({ message: "Recipe exists" });
     }
-    else {res.status(200).send("recipe exists")}
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
 //get recipe steps from recipeid
-app.get('/api/recipes/:recipeId/steps', async(req,res) => {
+app.get('/api/recipes/:recipeId/steps', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getRecipeStepData = await pool.query(
-
     `SELECT
-	    S.StepNumber,
-	    S.stepDescription
+      S.StepNumber,
+      S.stepDescription
     FROM Recipes AS R
     INNER JOIN RecipesSteps AS RS ON RS.FK_recipes_recipeId = R.recipeId
     INNER JOIN Steps AS S ON RS.FK_steps_stepId = S.stepId
-    WHERE R.recipeId = ${req.params.recipeId}
-    ORDER BY S.stepNumber ASC`
+    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+    WHERE R.recipeId = $1 AND U.userId = $2
+    ORDER BY S.stepNumber ASC`,
+    [req.params.recipeId, userId]
     );
     res.json(getRecipeStepData.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
@@ -476,22 +641,23 @@ app.get('/api/recipes/:recipeId/steps', async(req,res) => {
 //----------------------------------------------------------------------------
 
 //Get all ingredients spoiling in the next 5 days
-app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
+app.get('/api/ingredients/spoilsoon', authMiddleware, async(req, res) => {
   try{
     const getSpoilSoonIngredientsData = await pool.query(
       `SELECT DISTINCT
-	      I.itemName,
+        I.itemName,
         UI.spoilageDate
       FROM Items AS I
       INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
       INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
       INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
       INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
-      WHERE U.userId = ${req.params.userid}
+      WHERE U.userId = $1
         AND UI.spoilageDate <= (SELECT CURRENT_DATE+5)
         AND UI.finished = false
-      ORDER BY UI.spoilageDate`
-  );
+      ORDER BY UI.spoilageDate`,
+      [req.user.id] // Use the user ID from the authenticated token
+    );
     res.json(getSpoilSoonIngredientsData.rows);
   } catch (err) {
     console.error(err);
@@ -500,21 +666,22 @@ app.get('/api/users/:userid/ingredients/spoilsoon', async(req,res) => {
 });
 
 //Get all ingredients in fridge
-app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
+app.get('/api/ingredients/infridge', authMiddleware, async(req, res) => {
   try{
     const getInFridgeIngredientsData = await pool.query(
       `SELECT DISTINCT
-	      I.itemName,
+        I.itemName,
         UI.spoilageDate
       FROM Items AS I
       INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
       INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
       INNER JOIN ItemsUnits AS IU ON I.itemId = IU.FK_items_itemId
       INNER JOIN Units ON IU.FK_units_unitId = Units.unitId
-      WHERE U.userId = ${req.params.userid}
+      WHERE U.userId = $1
         AND UI.finished = false
-      ORDER BY UI.spoilageDate`
-  );
+      ORDER BY UI.spoilageDate`,
+      [req.user.id] // Use the user ID from the authenticated token
+    );
     res.json(getInFridgeIngredientsData.rows);
   } catch (err) {
     console.error(err);
@@ -523,25 +690,26 @@ app.get('/api/users/:userid/ingredients/infridge', async(req,res) => {
 });
 
 //Get all recipes that use these ingredients that are in fride
-app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(req,res) => {
+app.get('/api/ingredients/:ingredients/infridge/recipes', authMiddleware, async(req, res) => {
   try{
     const getRecipeInFridgeIngredientsData = await pool.query(
       `SELECT distinct
-		    R.recipeId,
+        R.recipeId,
         R.recipeName,
-		    count(*) over(partition by r.recipeId) AS ingredientsUsed,
-		      (SELECT COUNT(itemsrecipesId)
-		      FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
+        count(*) over(partition by r.recipeId) AS ingredientsUsed,
+          (SELECT COUNT(itemsrecipesId)
+          FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
         FROM Recipes AS R
-	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
-	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
-	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-	    WHERE I.itemName IN (${req.params.ingredients})
-        AND U.userId = ${req.params.userid}
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+      INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE I.itemName IN (${req.params.ingredients})
+        AND U.userId = $1
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
-      limit 16`
-  );
+      limit 16`,
+      [req.user.id] // Use the user ID from the authenticated token
+    );
     res.json(getRecipeInFridgeIngredientsData.rows);
   } catch (err) {
     console.error(err);
@@ -550,26 +718,27 @@ app.get('/api/users/:userid/ingredients/:ingredients/infridge/recipes', async(re
 });
 
 //Get all recipes that use these ingredients that spoil soon
-app.get('/api/users/:userid/ingredients/:ingredients/spoilsoon/recipes', async(req,res) => {
+app.get('/api/ingredients/:ingredients/spoilsoon/recipes', authMiddleware, async(req, res) => {
   try{
     const getRecipeSpoilSoonIngredientsData = await pool.query(
       `SELECT distinct
-		    R.recipeId,
+        R.recipeId,
         R.recipeName,
-		    count(*) over(partition by r.recipeId) AS ingredientsUsed,
-		      (SELECT COUNT(itemsrecipesId)
-		      FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
+        count(*) over(partition by r.recipeId) AS ingredientsUsed,
+          (SELECT COUNT(itemsrecipesId)
+          FROM ItemsRecipes where FK_recipes_recipeId = R.recipeId ) AS ingredientsTot
         FROM Recipes AS R
-	    INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
-	    INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
-	    INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
-	    INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-	    WHERE I.itemName IN (${req.params.ingredients})
-        AND U.userId = ${req.params.userid}
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_recipes_recipeId = R.recipeId
+      INNER JOIN Items AS I ON IR.FK_items_itemId = I.itemId
+      INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
+      INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
+      WHERE I.itemName IN (${req.params.ingredients})
+        AND U.userId = $1
       ORDER BY ingredientsUsed DESC, ingredientsTot ASC
-      limit 16`
-  );
-    res.json(getRecipeSpoilSoonIngredientsDataa.rows);
+      limit 16`,
+      [req.user.id] // Use the user ID from the authenticated token
+    );
+    res.json(getRecipeSpoilSoonIngredientsData.rows); // Fixed typo here
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -603,16 +772,17 @@ app.get('/api/ingredients/:ingredients/spoon/spoilsoon', async(req,res) => {
   }
     });
 
-app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
+app.get('/api/recipe/:recipeid/ingredientlist', authMiddleware, async(req, res) => {
   try{
     const Data = await pool.query(
-      `select 
-	    STRING_AGG(itemname, ', ') AS ingredientList
+      `SELECT 
+        STRING_AGG(itemname, ', ') AS ingredientList
       FROM items AS I
-	    INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
-	    INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
-      where r.recipeId = ${req.params.recipeid}`
-  );
+      INNER JOIN ItemsRecipes AS IR ON IR.FK_items_itemId = I.itemId
+      INNER JOIN Recipes AS R ON IR.FK_recipes_recipeId = R.recipeId
+      WHERE r.recipeId = $1`,
+      [req.params.recipeid]
+    );
     res.json(Data.rows);
   } catch (err) {
     console.error(err);
@@ -625,163 +795,140 @@ app.get('/api/recipe/:recipeid/ingredientlist', async(req,res) => {
 //----------------------------------------------------------------------------
 
 // Get all items for selection on ingredient list
-app.get('/api/users/:userid/items', async(req,res) => {
+app.get('/api/items', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getAllUserItems = await pool.query(
-      `SELECT distinct
-	      I.itemid,
-	      I.itemName
+      `SELECT DISTINCT
+        I.itemid,
+        I.itemName
       FROM Items AS I
       INNER JOIN UsersItems AS UI ON UI.FK_items_itemId = I.itemId
       INNER JOIN Users AS U ON U.userId = UI.FK_users_userId
-      WHERE U.userid = ${req.params.userid}
-      ORDER by itemName`
-  );
+      WHERE U.userid = $1
+      ORDER BY itemName`,
+      [userId]
+    );
     res.json(getAllUserItems.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
 // make recipe
-app.post('/api/add-recipe/recipe', async (req, res) => {
-  const recipeName = (req.body.recipeName);
-  const recipeDescription = (req.body.recipeDescription);
+app.post('/api/add-recipe/recipe', authMiddleware, async (req, res) => {
+  const { recipeName, recipeDescription } = req.body;
 
-  if (recipeName == null || recipeName == "")  {
-    res.status(400).json({ 
+  if (!recipeName) {
+    return res.status(400).json({ 
       message: 'No recipe name was given. Please give the recipe a name.',
       error: 'bad recipeName'
     });
   }
-  else if (recipeDescription == null || recipeDescription == "") {
-    res.status(400).json({ 
+  if (!recipeDescription) {
+    return res.status(400).json({ 
       message: 'No recipe description was given. Please fill in a description.',
       error: 'bad recipeDescription'
     });
   }
-  else {
-    try {
-        // check to see if recipe name is used
-        const checkName = await pool.query(`SELECT recipeName from recipes where recipeName = '${recipeName}'`)
-        if (checkName.rows.length > 0) {res.status(400).json({
-          message: 'Recipe with that name already exist. Please choose a different name.',
-          error: 'RecipeName already used'
-        })}
-        else {
-        // Insert new recipe name and description
-        const insertRecipeRes = await pool.query(
-          `INSERT INTO Recipes (recipeName, recipeDescription)
-          VALUES ('${recipeName}', '${recipeDescription}')
-          RETURNING recipeId`
-        );
-        //return recipe id
-        res.status(200).json(insertRecipeRes.rows);
-      }}
-    catch (error) {
-      console.error('Error adding recipe:', error); 
-      res.status(500).json({ message: 'Error adding recipe', error: error.message });
+
+  try {
+    // check to see if recipe name is used
+    const checkName = await pool.query('SELECT recipeName FROM recipes WHERE recipeName = $1', [recipeName]);
+    if (checkName.rows.length > 0) {
+      return res.status(400).json({
+        message: 'Recipe with that name already exists. Please choose a different name.',
+        error: 'RecipeName already used'
+      });
     }
+    
+    // Insert new recipe name and description
+    const insertRecipeRes = await pool.query(
+      'INSERT INTO Recipes (recipeName, recipeDescription) VALUES ($1, $2) RETURNING recipeId',
+      [recipeName, recipeDescription]
+    );
+    res.status(200).json(insertRecipeRes.rows[0]);
+  } catch (error) {
+    console.error('Error adding recipe:', error); 
+    res.status(500).json({ message: 'Error adding recipe', error: error.message });
   }
 });
 
-app.post('/api/add-recipe/step', async (req, res) => {
-  const stepNumber = (req.body.stepNumber);
-  const stepDescription = (req.body.stepDescription);
+app.post('/api/add-recipe/step', authMiddleware, async (req, res) => {
+  const { stepNumber, stepDescription } = req.body;
 
-  if (stepNumber == null || stepNumber <=0) {
-    res.status(400).json({ 
+  if (!stepNumber || stepNumber <= 0) {
+    return res.status(400).json({ 
      message: 'Error adding step number.',
      error: 'bad stepNumber'
     });
   }
-  else if (stepDescription == null || stepDescription == "") {
-    res.status(400).json({
+  if (!stepDescription) {
+    return res.status(400).json({
       message: `No step description was given for step ${stepNumber}. Please fill in a description.`,
       error: 'bad stepDescription'
     });
   }
-  else {
-    try {
-        // Insert new recipe name and description
-        const insertStepRes = await pool.query(
-          `INSERT INTO Steps (stepNumber, stepDescription)
-          VALUES (${stepNumber}, '${stepDescription}')
-          RETURNING stepId`
-        );
-        //return step id
-        res.status(200).json(insertStepRes.rows);
-      }
-    catch (error) {
-      console.error('Error adding step:', error); 
-      res.status(500).json({ message: 'Error adding step', error: error.message });
-    }
-  }
-});
-
-app.post('/api/add-recipe/recipessteps', async (req, res) => {
-  const recipeId = (req.body.recipeId);
-  const stepId = (req.body.stepId);
 
   try {
-    // Insert new recipessteps
-    const insertRecipesStepRes = await pool.query(
-      `INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_steps_stepid)
-      VALUES (${recipeId}, ${stepId})`
+    const insertStepRes = await pool.query(
+      'INSERT INTO Steps (stepNumber, stepDescription) VALUES ($1, $2) RETURNING stepId',
+      [stepNumber, stepDescription]
     );
-    //return step id
-    res.status(200).json(
-      {message: `Linked stepId: ${stepId} and recipeId: ${recipeId} succesfully`}
-    );
+    res.status(200).json([{ stepid: insertStepRes.rows[0].stepid }]);
+  } catch (error) {
+    console.error('Error adding step:', error); 
+    res.status(500).json({ message: 'Error adding step', error: error.message });
   }
-catch (error) {
-  console.error('Error adding recipestep:', error); 
-  res.status(500).json({ message: 'Error adding recipestep', error: error.message });
-}
 });
 
-app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
-  const recipeId = (req.body.recipeId);
-  const itemId = (req.body.itemId);
-  const quantity = (req.body.quantity);
-  const quantityUnit = (req.body.quantityUnit);
+app.post('/api/add-recipe/recipessteps', authMiddleware, async (req, res) => {
+  const { recipeId, stepId } = req.body;
 
-  if (recipeId == null || recipeId <=0 ) {
-    res.status(400).json({ 
+  try {
+    const insertRecipesStepRes = await pool.query(
+      'INSERT INTO RecipesSteps (fk_recipes_recipeid, fk_steps_stepid) VALUES ($1, $2)',
+      [recipeId, stepId]
+    );
+    res.status(200).json({ message: `Linked stepId: ${stepId} and recipeId: ${recipeId} successfully` });
+  } catch (error) {
+    console.error('Error adding recipestep:', error); 
+    res.status(500).json({ message: 'Error adding recipestep', error: error.message });
+  }
+});
+
+app.post('/api/add-recipe/itemsrecipes', authMiddleware, async (req, res) => {
+  const { recipeId, itemId, quantity, quantityUnit } = req.body;
+
+  if (!recipeId || recipeId <= 0) {
+    return res.status(400).json({ 
       message: 'Error with recipeId',
       error: 'bad recipeId'
     });
   }
-  else if (itemId == null || itemId <=0 ) {
-    res.status(400).json({ 
+  if (!itemId || itemId <= 0) {
+    return res.status(400).json({ 
       message: 'No Ingredient was selected. Please select an ingredient or delete unused item.',
       error: 'bad itemId'
     });
   }
-  else if (quantity == null || quantity == "") {
-    res.status(400).json({
-      message: `No quantity was given for an item. Please fill in quantity or delete unused item.`,
+  if (!quantity) {
+    return res.status(400).json({
+      message: 'No quantity was given for an item. Please fill in quantity or delete unused item.',
       error: 'bad quantity'
     });
   }
 
-  else {
-    try {
-      // Insert new itemsrecipes
-      const insertItemsRecipesRes = await pool.query(
-        `INSERT INTO ItemsRecipes (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit)
-        VALUES (${recipeId}, ${itemId}, '${quantity}', '${quantityUnit}')`
-      );
-      // state linked item and recipe succesfully
-      res.status(200).json(
-        {message: `Linked itemId: ${itemId} and recipeId: ${recipeId} succesfully`}
-      );
-    }
-  catch (error) {
-    console.error('Error adding step:', error); 
+  try {
+    const insertItemsRecipesRes = await pool.query(
+      'INSERT INTO ItemsRecipes (fk_recipes_recipeid, fk_items_itemid, quantity, quantityUnit) VALUES ($1, $2, $3, $4)',
+      [recipeId, itemId, quantity, quantityUnit]
+    );
+    res.status(200).json({ message: `Linked itemId: ${itemId} and recipeId: ${recipeId} successfully` });
+  } catch (error) {
+    console.error('Error adding itemsrecipes:', error); 
     res.status(500).json({ message: 'Error adding itemsrecipes', error: error.message });
-  }
   }
 });
 
@@ -789,44 +936,41 @@ app.post('/api/add-recipe/itemsrecipes', async (req, res) => {
 //                Cookbook Page
 //----------------------------------------------------------------------------
 
-app.get('/api/users/:userId/recipes/all', async (req, res) => {
-  const userId = (req.params.userId);
-  
-  // Get all recipes a particular user has in their cookbook
+app.get('/api/recipes/all', authMiddleware, async (req, res) => {
   try {
-    getAllUserRecipesRes = await pool.query(
-      `SELECT DISTINCT
-	      recipeId,
-        recipeName,
-        recipeDescription
-      FROM recipes AS R
-      INNER JOIN itemsrecipes AS IR ON IR.fk_recipes_recipeid = R.recipeid
-      INNER JOIN items AS I ON IR.fk_items_itemid = I.itemid
-      INNER JOIN usersitems AS UI ON UI.fk_items_itemid = I.itemid
-      INNER JOIN users AS U ON UI.fk_users_userid = U.userid
-      WHERE U.userid = ${userId}
-      order by recipename`
+    const getAllRecipesRes = await pool.query(
+      `SELECT
+        recipeid,
+        recipename,
+        recipedescription
+      FROM recipes
+      ORDER BY recipename`
     );
-    res.status(200).json(getAllUserRecipesRes.rows);
+    res.status(200).json(getAllRecipesRes.rows);
   }
   catch (error) {
-    console.error('Error getting user recipes:', error); 
-    res.status(500).json({error: error.message});
+    console.error('Error getting recipes:', error); 
+    res.status(500).json({message: 'Error getting recipes', error: error.message});
   }
 });
-
 // Get all itemsrecipes ids in a list associated with recipeId
-app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
-  const recipeId = (req.params.recipeId);
+app.get('/api/delete-recipe/:recipeId/itemsrecipes', authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  const { recipeId } = req.params;
 
   try {
     const getItemsRecipesIdListRes = await pool.query(
       `SELECT
-	      STRING_AGG(CHR(39) || CAST(itemsrecipesid AS VARCHAR) || CHR(39), ', ') AS itemsrecipesidlist
-	    FROM itemsrecipes
-	    WHERE fk_recipes_recipeid = ${recipeId}`
+        STRING_AGG(CAST(IR.itemsrecipesid AS VARCHAR), ', ') AS itemsrecipesidlist
+      FROM itemsrecipes IR
+      INNER JOIN recipes R ON R.recipeId = IR.fk_recipes_recipeid
+      WHERE R.recipeId = $1 AND R.userId = $2`,
+      [recipeId, userId]
     );
-    res.status(200).json(getItemsRecipesIdListRes.rows);
+    if (getItemsRecipesIdListRes.rows.length === 0) {
+      return res.status(404).json({ message: 'Recipe not found or you do not have permission to access this recipe' });
+    }
+    res.status(200).json(getItemsRecipesIdListRes.rows[0]);
   }
   catch (error) {
     console.error('Error getting itemsrecipes id list:', error); 
@@ -835,17 +979,23 @@ app.get('/api/delete-recipe/:recipeId/itemsrecipes', async (req, res) => {
 });
 
 // Get all step ids in a list associated with recipeId
-app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
-  const recipeId = (req.params.recipeId);
+app.get('/api/delete-recipe/:recipeId/recipessteps', authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  const { recipeId } = req.params;
 
   try {
     const getStepsIdListRes = await pool.query(
       `SELECT
-	      STRING_AGG(CHR(39) || CAST(fk_steps_stepid AS VARCHAR) || CHR(39), ', ') AS stepidlist
-	    FROM recipessteps
-	    WHERE fk_recipes_recipeid = ${recipeId}`
+        STRING_AGG(CAST(RS.fk_steps_stepid AS VARCHAR), ', ') AS stepidlist
+      FROM recipessteps RS
+      INNER JOIN recipes R ON R.recipeId = RS.fk_recipes_recipeid
+      WHERE R.recipeId = $1 AND R.userId = $2`,
+      [recipeId, userId]
     );
-    res.status(200).json(getStepsIdListRes.rows);
+    if (getStepsIdListRes.rows.length === 0) {
+      return res.status(404).json({ message: 'Recipe not found or you do not have permission to access this recipe' });
+    }
+    res.status(200).json(getStepsIdListRes.rows[0]);
   }
   catch (error) {
     console.error('Error getting steps id list:', error); 
@@ -853,54 +1003,40 @@ app.get('/api/delete-recipe/:recipeId/recipessteps', async (req, res) => {
   }
 });
 
-// delete items recipe relationship from id (cant just delete recipe)
-app.delete('/api/delete-recipe/itemsrecipes', async (req, res) => {
-  const itemsRecipesIdList = (req.body.itemsrecipesidlist);
+app.delete('/api/recipes/:recipeId', authMiddleware, async (req, res) => {
+  const { recipeId } = req.params;
 
   try {
-    const deleteItemsRecipesRes = await pool.query(
-      `DELETE FROM itemsrecipes
-       WHERE itemsrecipesid IN (${itemsRecipesIdList})`
-    );
-    res.status(200).json(deleteItemsRecipesRes);
-  }
-  catch (error) {
-    console.error('Error deleting itemsrecipes:', error);
-    res.status(500).json({ message: 'Error deleting itemsrecipes', error: error.message });
-  }
-});
+      // Start a transaction
+      await pool.query('BEGIN');
 
-// delete all steps from id, will delete the recipestep relationship too
-app.delete('/api/delete-recipe/steps', async (req, res) => {
-  const stepsIdList = (req.body.stepidlist);
+      // Delete associated itemsrecipes
+      await pool.query('DELETE FROM itemsrecipes WHERE fk_recipes_recipeid = $1', [recipeId]);
 
-  try {
-    const deleteStepsRes = await pool.query(
-      `DELETE FROM steps
-       WHERE stepid IN (${stepsIdList})`
-    );
-    res.status(200).json(deleteStepsRes);
-  }
-  catch (error) {
-    console.error('Error deleting steps:', error);
-    res.status(500).json({ message: 'Error deleting steps', error: error.message });
-  }
-});
+      // Delete associated steps
+      await pool.query(
+          'DELETE FROM steps WHERE stepid IN (SELECT fk_steps_stepid FROM recipessteps WHERE fk_recipes_recipeid = $1)',
+          [recipeId]
+      );
 
-// delete recipe from recipeId
-app.delete('/api/delete-recipe/recipe', async (req, res) => {
-  const recipeId = (req.body.recipeId);
+      // Delete the recipe
+      const deleteRecipeRes = await pool.query(
+          'DELETE FROM recipes WHERE recipeId = $1 RETURNING recipeId',
+          [recipeId]
+      );
 
-  try {
-    const deleteRecipeRes = await pool.query(
-      `DELETE FROM recipes
-       WHERE recipeId = ${recipeId}`
-    );
-    res.status(200).json(deleteRecipeRes );
-  }
-  catch (error) {
-    console.error('Error deleting recipe:', error);
-    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
+      // Commit the transaction
+      await pool.query('COMMIT');
+
+      if (deleteRecipeRes.rows.length === 0) {
+          return res.status(404).json({ message: 'Recipe not found' });
+      }
+
+      res.status(200).json({ message: 'Recipe and associated data deleted successfully', deletedRecipe: deleteRecipeRes.rows[0] });
+  } catch (error) {
+      await pool.query('ROLLBACK');
+      console.error('Error deleting recipe:', error);
+      res.status(500).json({ message: 'Error deleting recipe', error: error.message });
   }
 });
 
@@ -909,80 +1045,77 @@ app.delete('/api/delete-recipe/recipe', async (req, res) => {
 //----------------------------------------------------------------------------
 
 //Get all freq spoiled items
-app.get('/api/users/:userid/reports/freqspoiled', async(req,res) => {
+app.get('/api/reports/freqspoiled', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getFreqSpoiled = await pool.query(
       `SELECT 
         I.itemName AS Item,
         TO_CHAR(UI.dateAdded, 'mm/dd/yyyy') AS DateAdded,
         TO_CHAR(UI.spoilageDate,'mm/dd/yyyy') AS SpoilageDate,
-        UI.quantityPurchased || ' ' ||U.unitabbreviation AS LastPurchasedTotal,
-        (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.unitabbreviation AS CurrentQuantityConsumed,
-        UI.quantityRemaining || ' ' ||U.unitabbreviation AS CurrentQuantityRemaining,
-        UI.finishedTotal+UI.spoiledTotal AS TimesBought,
-          CASE 
-            WHEN UI.spoiledTotal >0 
-              THEN ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal))*100)||'%'
-            WHEN UI.spoiledTotal <=0
-              THEN '0%' 
-          END AS SpoiledPercent
-        FROM UsersItems AS UI
-        INNER JOIN Items AS I ON UI.FK_items_itemId = I.itemId
-        INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
-        INNER JOIN Units AS U ON U.unitId=IU.FK_units_unitId
-        INNER JOIN Users ON Users.userId = UI.FK_users_userId
-          WHERE ((UI.spoiledTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.15)
-          AND purchaseAgain =true
-          AND (NOT UI.spoiledTotal = 0)
-          AND Users.userId = ${req.params.userid})
-        ORDER BY I.itemName;`
-  );
+        UI.quantityPurchased || ' ' || U.unitabbreviation AS LastPurchasedTotal,
+        (UI.quantityPurchased - UI.quantityRemaining) || ' ' || U.unitabbreviation AS CurrentQuantityConsumed,
+        UI.quantityRemaining || ' ' || U.unitabbreviation AS CurrentQuantityRemaining,
+        UI.finishedTotal + UI.spoiledTotal AS TimesBought,
+        CASE 
+          WHEN UI.spoiledTotal > 0 
+            THEN CAST(CAST((UI.spoiledTotal::float / (UI.finishedTotal + UI.spoiledTotal)) * 100 AS DECIMAL(5,2)) AS TEXT) || '%'
+          ELSE '0%' 
+        END AS SpoiledPercent
+      FROM UsersItems AS UI
+      INNER JOIN Items AS I ON UI.FK_items_itemId = I.itemId
+      INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
+      INNER JOIN Units AS U ON U.unitId = IU.FK_units_unitId
+      WHERE UI.FK_users_userId = $1
+        AND (UI.spoiledTotal::float / NULLIF(UI.finishedTotal + UI.spoiledTotal, 0)) >= 0.15
+        AND UI.purchaseAgain = true
+        AND UI.spoiledTotal > 0
+      ORDER BY I.itemName`,
+      [userId]
+    );
     res.json(getFreqSpoiled.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
-//Get all freq used items
-app.get('/api/users/:userid/reports/freqused', async(req,res) => {
+app.get('/api/reports/freqused', authMiddleware, async(req,res) => {
+  const userId = req.user.id;
   try{
     const getFreqUsed = await pool.query(
       `SELECT 
         I.itemName AS Item,
         TO_CHAR(UI.dateAdded, 'mm/dd/yyyy') AS DateAdded,
         TO_CHAR(UI.spoilageDate,'mm/dd/yyyy') AS SpoilageDate,
-        UI.quantityPurchased || ' ' ||U.UnitName AS LastPurchasedTotal,
-        (UI.quantityPurchased - UI.quantityRemaining) || ' ' ||U.UnitName AS CurrentQuantityConsumed,
-        UI.quantityRemaining || ' ' ||U.UnitName AS CurrentQuantityRemaining,
+        UI.quantityPurchased || ' ' || U.UnitName AS LastPurchasedTotal,
+        (UI.quantityPurchased - UI.quantityRemaining) || ' ' || U.UnitName AS CurrentQuantityConsumed,
+        UI.quantityRemaining || ' ' || U.UnitName AS CurrentQuantityRemaining,
         CASE 
-          WHEN UI.finished = true
-            THEN 'YES'
-          WHEN  UI.finished = false 
-            THEN 'NO' 
+          WHEN UI.finished = true THEN 'YES'
+          ELSE 'NO' 
         END AS InFridge,
-        UI.finishedTotal+UI.spoiledTotal AS TimesBought,
-	      CASE
-		      WHEN UI.finishedTotal >0
-			      THEN ((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal))*100)||'%'
-		      WHEN UI.finishedTotal <=0
-	          THEN '0%'
-	        END AS FinishedPercent
-        FROM UsersItems AS UI
-        INNER JOIN Items AS I ON UI.FK_items_itemId = I.itemId
-        INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
-        INNER JOIN Units AS U ON U.unitId=IU.FK_units_unitId
-        INNER JOIN Users ON Users.userId = UI.FK_users_userId
-        WHERE ((UI.finishedTotal/(UI.finishedTotal+UI.spoiledTotal)) >= (0.65)
-          AND purchaseAgain =true
-          AND (NOT UI.finishedTotal = 0)
-          AND Users.userId = ${req.params.userid})
-        ORDER BY I.itemName`
-  );
+        UI.finishedTotal + UI.spoiledTotal AS TimesBought,
+        CASE
+          WHEN UI.finishedTotal > 0
+            THEN CAST(CAST((UI.finishedTotal::float / NULLIF(UI.finishedTotal + UI.spoiledTotal, 0)) * 100 AS DECIMAL(5,2)) AS TEXT) || '%'
+          ELSE '0%'
+        END AS FinishedPercent
+      FROM UsersItems AS UI
+      INNER JOIN Items AS I ON UI.FK_items_itemId = I.itemId
+      INNER JOIN ItemsUnits AS IU ON IU.FK_items_itemId = I.itemId
+      INNER JOIN Units AS U ON U.unitId = IU.FK_units_unitId
+      WHERE UI.FK_users_userId = $1
+        AND (UI.finishedTotal::float / NULLIF(UI.finishedTotal + UI.spoiledTotal, 0)) >= 0.65
+        AND UI.purchaseAgain = true
+        AND UI.finishedTotal > 0
+      ORDER BY I.itemName`,
+      [userId]
+    );
     res.json(getFreqUsed.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 

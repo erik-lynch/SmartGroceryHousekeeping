@@ -1,10 +1,11 @@
 import {React, useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
+import { axiosInstance } from "../services/auth";
 
 const Edit_Item = () => {
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     const [itemInfo, setItemInfo] = useState(null);
     const [itemTags, setItemTags] = useState(null);
+    const { itemId, usersItemsId } = useParams();
 
     const [markedSpoiled, setSpoiled] = useState("");
     const [markedFinished, setFinished] = useState("");
@@ -53,118 +54,57 @@ const Edit_Item = () => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const dataToSend = {
-          ...formData,
-        };
-    
-        try {
-          const response = await fetch(`${API_URL}/api/edit_item/${routeParams.usersItemsId}`, {
-            method: "PUT",
-            mode: "cors",
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(dataToSend),
-          });
-    
-          if (response.ok) {
-            console.log("Item edited successfully");
-            handleUpdate();
-          } else {
-            const errorText = await response.text();
-            console.error("Failed to edit item:", errorText);
-          }
-        } catch (error) {
+      e.preventDefault();
+      try {
+          const response = await axiosInstance.put(`/api/edit_item/${routeParams.usersItemsId}`, formData);
+          console.log("Item edited successfully");
+          handleUpdate();
+      } catch (error) {
           console.error("Error submitting form:", error);
-        }
-        
-    };
+      }
+  };
 
     const handleSpoil = async (e) => {
-        e.preventDefault();
-    
-        try {
-          const response = await fetch(`${API_URL}/api/spoil_item/${routeParams.usersItemsId}`, {
-            method: "PUT",
-            mode: "cors",
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-          });
-    
-          if (response.ok) {
-            console.log("Item spoiled successfully");
-            handleSpoiled();
-          } else {
-            const errorText = await response.text();
-            console.error("Failed to spoil item:", errorText);
-          }
-        } catch (error) {
-          console.error("Error submitting form:", error);
-        }
-        
-    };
+      e.preventDefault();
+      try {
+          const response = await axiosInstance.put(`/api/spoil_item/${routeParams.usersItemsId}`);
+          console.log("Item spoiled successfully");
+          handleSpoiled();
+      } catch (error) {
+          console.error("Error spoiling item:", error);
+      }
+  };
 
-    const handleFinish = async (e) => {
-        e.preventDefault();
-    
-        try {
-          const response = await fetch(`${API_URL}/api/finish_item/${routeParams.usersItemsId}`, {
-            method: "PUT",
-            mode: "cors",
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-          });
-    
-          if (response.ok) {
-            console.log("Item marked as finished successfully");
-            handleFinished();
-          } else {
-            const errorText = await response.text();
-            console.error("Failed to finish item:", errorText);
-          }
-        } catch (error) {
-          console.error("Error submitting form:", error);
-        }
-        
-    };
+  const handleFinish = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await axiosInstance.put(`/api/finish_item/${routeParams.usersItemsId}`);
+        console.log("Item marked as finished successfully");
+        handleFinished();
+    } catch (error) {
+        console.error("Error finishing item:", error);
+    }
+};
 
     const routeParams = useParams();
 
     async function fetchItemInfo() {
-
-        try {
-            const response = await fetch(`${API_URL}/useritem/${routeParams.userId}/${routeParams.itemId}`);
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            setItemInfo(await response.json());
-
-        } catch (error) {
-            console.error(error.message);
-        }
-
-    };
+      try {
+          const response = await axiosInstance.get(`/useritem/${routeParams.itemId}`);
+          setItemInfo(response.data);
+      } catch (error) {
+          console.error("Error fetching item info:", error);
+      }
+  }
 
     async function fetchTags() {
-
-        try {
-            const response = await fetch(`${API_URL}/useritem/${routeParams.itemId}`);
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            setItemTags(await response.json());
-
-        } catch (error) {
-            console.error(error.message);
-        }
-
-    };
+      try {
+          const response = await axiosInstance.get(`/useritem/${routeParams.itemId}/tags`);
+          setItemTags(response.data);
+      } catch (error) {
+          console.error("Error fetching tags:", error);
+      }
+  }
 
     useEffect(() => {
 
@@ -245,7 +185,7 @@ const Edit_Item = () => {
                     
 
                     <br/><br/>
-                    <a className="return-dashboard" href="/">Return to Dashboard</a>
+                    <a className="return-dashboard" href={`/dashboard`}>Return to Dashboard</a>
                     </div>
 
                 

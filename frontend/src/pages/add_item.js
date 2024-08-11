@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as SDCCore from "scandit-web-datacapture-core";
 import * as SDCBarcode from "scandit-web-datacapture-barcode";
+import { axiosInstance } from '../services/auth';
 
 
 const Add_Item = () => {
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  const [isLoading, setIsLoading] = useState(false);
+  const [itemExists, setItemExists] = useState(false);
+  const [itemId, setItemId] = useState(null);
   const [categories, setCategories] = useState(null);
   const [selectCategory, setSelectCategory] = useState(null);
   const [productCategory, setProductCategory] = useState(null);
@@ -34,25 +37,17 @@ const Add_Item = () => {
   });
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/['"]/g, '');
 
-  // temporary for demo
-  const userId = 1;
-
   // fetch units on initial load
   useEffect(() => {
 
     async function fetchUnits() {
-
       try {
-          const response = await fetch(`${API_URL}/units`);
-          if (!response.ok) {
-              throw new Error(`Response status: ${response.status}`);
-          }
-          setUnits(await response.json());
-
+        const response = await axiosInstance.get('/units');
+        setUnits(response.data);
       } catch (error) {
-          console.error(error.message);
-          }
-  };
+        console.error('Error fetching units:', error);
+      }
+    }
 
   fetchUnits();
 
@@ -62,18 +57,13 @@ const Add_Item = () => {
   useEffect(() => {
 
     async function fetchCategories() {
-
       try {
-          const response = await fetch(`${API_URL}/spoilage/categories`);
-          if (!response.ok) {
-              throw new Error(`Response status: ${response.status}`);
-          }
-          setCategories(await response.json());
-
+        const response = await axiosInstance.get('/spoilage/categories');
+        setCategories(response.data);
       } catch (error) {
-          console.error(error.message);
-          }
-  };
+        console.error('Error fetching categories:', error);
+      }
+    }
 
   fetchCategories();
 
@@ -84,18 +74,13 @@ const Add_Item = () => {
     if (selectCategory) {
 
       async function fetchItems() {
-
         try {
-            const response = await fetch(`${API_URL}/spoilage/${selectCategory}`);
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            setProductCategory(await response.json());
-  
+          const response = await axiosInstance.get(`/spoilage/${selectCategory}`);
+          setProductCategory(response.data);
         } catch (error) {
-            console.error(error.message);
-            }
-    }; 
+          console.error('Error fetching items:', error);
+        }
+      }
 
     fetchItems();
 
@@ -106,18 +91,13 @@ const Add_Item = () => {
     if (selectProduct) {
 
       async function fetchItemDetails() {
-
         try {
-            const response = await fetch(`${API_URL}/spoilage/product/${selectProduct}`);
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            setProductDetails(await response.json());
-  
+          const response = await axiosInstance.get(`/spoilage/product/${selectProduct}`);
+          setProductDetails(response.data);
         } catch (error) {
-            console.error(error.message);
-            }
-    }; 
+          console.error('Error fetching item details:', error);
+        }
+      }
 
     fetchItemDetails();
 
@@ -219,56 +199,101 @@ const Add_Item = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const dataToSend = {
-      ...formData,
-      barcode: barcodeData,
+      itemName: formData.itemName,
+      itemDescription: formData.itemDescription,
     };
-
+  
     try {
-      const response = await fetch(`${API_URL}/api/add-item/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (response.ok) {
-        console.log("Item added successfully");
+      setIsLoading(true);
+      const response = await axiosInstance.post('/api/check-and-add-item', dataToSend);
+      setItemExists(response.data.exists);
+      setItemId(response.data.itemId);
+  
+      if (response.data.exists) {
+        alert('This item already exists in the database. Click "Add to My Items" to add it to your inventory.');
       } else {
-        const errorText = await response.text();
-        console.error("Failed to add item:", errorText);
+        alert('New item added to the database. Click "Add to My Items" to add it to your inventory.');
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      alert('Error adding item to database.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAddItem = async (product) => {
     const dataToSend = {
       itemName: product.name,
-      itemDescription: product.itemDescription,
-      unit: product.unit,
-      quantity: product.quantity,
-      barcode: product.barcode,
+      itemDescription: `${product.brand} - ${product.categories} - ${product.description}`,
     };
-
+  
     try {
-      const response = await fetch(`${API_URL}/api/add-item`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
+      const response = await axiosInstance.post('/api/check-and-add-item', dataToSend);
+      setItemExists(response.data.exists);
+      setItemId(response.data.itemId);
+  
+      setFormData({
+        ...formData,
+        itemName: product.name,
+        itemDescription: dataToSend.itemDescription,
+        quantity: 1,
+        unit: "count",
+        barcode: product.barcode,
       });
-
-      if (response.ok) {
-        console.log("Item added successfully");
+  
+      if (response.data.exists) {
+        alert('This item already exists in the database. Click "Add to My Items" to add it to your inventory.');
       } else {
-        const errorText = await response.text();
-        console.error("Failed to add item:", errorText);
+        alert('New item added to the database. Click "Add to My Items" to add it to your inventory.');
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      alert('Error adding item to database.');
+    }
+  };
+
+  const handleAddToMyItems = async () => {
+    if (!itemId) {
+      alert('Please add the item to the database first.');
+      return;
+    }
+  
+    // Calculate default expiration date (6 months from today)
+    const defaultExpirationDate = new Date();
+    defaultExpirationDate.setMonth(defaultExpirationDate.getMonth() + 6);
+    const formattedDefaultDate = defaultExpirationDate.toISOString().split('T')[0];
+  
+    const dataToSend = {
+      itemId: itemId,
+      quantity: formData.quantity,
+      expirationDate: formData.expirationDate || formattedDefaultDate,
+    };
+  
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post('/api/add-to-my-items', dataToSend);
+      alert('Item added to your inventory successfully');
+      // Reset form or redirect user as needed
+      setFormData({
+        itemName: "",
+        itemDescription: "",
+        unit: "",
+        quantity: 1,
+        ripeRating: "",
+        expirationDate: "",
+      });
+      setItemId(null);
+      setItemExists(false);
+    } catch (error) {
+      console.error("Error adding item to inventory:", error);
+      if (error.response && error.response.status === 409) {
+        alert('This item is already in your inventory. Please update the quantity instead.');
+      } else {
+        alert('Error adding item to your inventory.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -276,29 +301,21 @@ const Add_Item = () => {
     e.preventDefault();
     const dataToSend = new FormData();
     dataToSend.append('imgfile', image.data);
-
-    const response = await fetch(`${API_URL}/detectionObject`, {
-      method: "POST",
-        
-      body: dataToSend,
-    })
-      .then((res) => {
-        if(!res.ok) {
-          console.log("Failure:" + res.statusText);
-          throw new Error('HTTP ' + res.status);
-      } else {
-          console.log("Success :" + res.statusText);
-          return res.text();
-      }
-      }).then(function(data) {
-        console.log(data);
-        var img_str = String(data);
-          setFormData({
-            ...formData,
-            itemName: img_str
-          });
-      })
-
+  
+    try {
+      const response = await axiosInstance.post('/detectionObject', dataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("Success:", response.data);
+      setFormData({
+        ...formData,
+        itemName: response.data,
+      });
+    } catch (error) {
+      console.error("Error analyzing image:", error);
+    }
   };
 
   const fetchItemDetails = async (barcode) => {
@@ -539,7 +556,8 @@ const Add_Item = () => {
     )}
 
         <h2>Manual Input</h2>
-        <form id="manual-input-form" onSubmit={handleSubmit}>
+          {isLoading && <p>Loading...</p>}
+          <form id="manual-input-form" onSubmit={handleSubmit}>
 
         <label htmlFor="itemName">Item name:</label>
 
@@ -604,8 +622,13 @@ const Add_Item = () => {
             onChange={handleInputChange}
           />
 
-          <input type="submit" className="button-submit-button" value="Submit" />
+          <input type="submit" className="button-submit-button" value="Add to Database" />
         </form>
+        {itemId && (
+          <button onClick={handleAddToMyItems} className="button-add-to-my-items" disabled={isLoading}>
+            Add to My Items
+          </button>
+)}
 
       </div>
 

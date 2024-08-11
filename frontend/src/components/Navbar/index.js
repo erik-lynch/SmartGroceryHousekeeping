@@ -1,41 +1,48 @@
-// Adapted from https://www.geeksforgeeks.org/how-to-create-a-multi-page-website-using-react-js/
-// Retrieved July 10, 2024
+import React, { useContext } from "react";
+import { LoginLogout, Nav, NavLink, NavMenu, UserInfo, RightSection } from "./NavbarElements";
+import { logout } from "../../services/auth";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 
-import React from "react";
-import { LoginLogout, Nav, NavLink, NavMenu } from "./NavbarElements";
- 
 const Navbar = () => {
-    return (
-        <>
-            <Nav>
-                <NavMenu>
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
-                    <NavLink to="/">
-                        Dashboard
-                    </NavLink>
-                    <NavLink to="/add_item">
-                        Add Item
-                    </NavLink>
-                    <NavLink to="/users/1/reports">
-                        Reports
-                    </NavLink>
-                    <NavLink to="/users/1/recipes">
-                        Recipes
-                    </NavLink>
-                    <NavLink to="/users/1/add_recipe">
-                        Add Recipe
-                    </NavLink>
-                    <NavLink to="/users/1/cookbook">
-                        Cookbook
-                    </NavLink>
-                    <LoginLogout>
-                        Login
-                    </LoginLogout>
-                    
-                </NavMenu>
-            </Nav>
-        </>
-    );
-};
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+    navigate("/");
+  };
  
+  return (
+    <Nav>
+      <NavMenu>
+        <NavLink to="/">Dashboard</NavLink>
+        <NavLink to="/add_item">Add Item</NavLink>
+        {user && (
+          <>
+            <NavLink to="/reports">Reports</NavLink>
+            <NavLink to="/recipes">Recipes</NavLink>
+            <NavLink to="/add_recipe">Add Recipe</NavLink>
+            <NavLink to="/cookbook">Cookbook</NavLink>
+          </>
+        )}
+      </NavMenu>
+      <RightSection>
+        {user ? (
+          <>
+            <UserInfo>{`${user.user.firstname} ${user.user.lastname} (${user.user.email})`}</UserInfo>
+            <LoginLogout onClick={handleLogout}>Logout</LoginLogout>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/register">Register</NavLink>
+          </>
+        )}
+      </RightSection>
+    </Nav>
+  );
+};
+
 export default Navbar;

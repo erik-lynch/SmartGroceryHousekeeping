@@ -12,24 +12,31 @@ import Reports from "./pages/reports";
 import ViewRecipe from "./pages/view_recipe";
 import AddRecipe from "./pages/add_recipe";
 import Cookbook from "./pages/cookbook";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import { UserProvider } from './UserContext';
 
 function App() {
-
+    
     return (
-        <Router>
-            <Navbar />
-            <Routes>
-                <Route exact path="/" element={<Dashboard />} />
-                <Route path="/add_item" element={<AddItem />} />
-                <Route path="/users/:userId/reports" element={<Reports />} />
-                <Route path="/users/:userId/recipes" element={<Recipes />} />
-                <Route path="/edit_item/:userId/:itemId/:usersItemsId" element={<EditItem />} />
-                <Route path="/users/:userId/recipes/:recipeId/view_recipe" element={<ViewRecipe />} />
-                <Route path="/users/:userId/add_recipe" element={<AddRecipe />} />
-                <Route path="/users/:userId/cookbook" element={<Cookbook />} />
-            </Routes>
-            <Footer />
-        </Router>
+        <UserProvider>
+            <Router>
+                <Navbar />
+                <Routes>
+                    <Route exact path="/" element={<Dashboard />} />
+                    <Route path="/add_item" element={<AddItem />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/recipes" element={<Recipes />} />
+                    <Route path="/edit_item/:itemId/:usersItemsId" element={<EditItem />} />
+                    <Route path="/recipes/:recipeId/view" element={<ViewRecipe />} />
+                    <Route path="/add_recipe" element={<AddRecipe />} />
+                    <Route path="/cookbook" element={<Cookbook />} /> {/* Updated this line */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Routes>
+                <Footer />
+            </Router>
+        </UserProvider>
     );
 }
 

@@ -59,7 +59,7 @@ class ItemCarousel extends Component {
             <div key={e.itemId}>
 
             <Link to={{
-              pathname: `/edit_item/${e.userId}/${e.itemId}/${e.usersItemsId}`,
+              pathname: `/edit_item/${e.itemId}/${e.usersItemsId}`,
             }}>
               <div className="card-content">
                       

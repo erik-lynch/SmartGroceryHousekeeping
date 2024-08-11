@@ -384,6 +384,25 @@ input[type="submit"] {
   margin: 10px 10px 10px 0;
 }
 
+.section-content input[type="email"],
+.section-content input[type="password"] {
+  width: 100%;
+  height: 45px;
+  margin: 10px 10px 10px 0;
+  border-radius: 5px;
+  border: 1px black solid;
+  background-color: white;
+  padding: 5px 15px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.section-content input[type="email"]:focus,
+.section-content input[type="password"]:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
 input[type="number"] {
   margin: 10px 0px;
   margin-right: 100%;
@@ -946,6 +965,6 @@ color: black;
   }
   
   
-  }
+}
 
 
