@@ -12,6 +12,7 @@ const Add_Item = () => {
   const [productDetails, setProductDetails] = useState(null);
 
   const [units, setUnits] = useState(null);
+  const [tags, setTags] = useState(null);
 
   const [isScanning, setIsScanning] = useState(false);
   const [barcodeData, setBarcodeData] = useState("");
@@ -26,12 +27,14 @@ const Add_Item = () => {
     quantity: 1,
     ripeRating: "",
     expirationDate: "",
+    tags: []
 
   });
   const [image, setImageData] = useState({
     preview: '',
     data: ''
   });
+
   const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/['"]/g, '');
 
   // temporary for demo
@@ -55,6 +58,27 @@ const Add_Item = () => {
   };
 
   fetchUnits();
+
+  }, [])
+
+  // fetch tags on initial load
+  useEffect(() => {
+
+    async function fetchTags() {
+
+      try {
+          const response = await fetch(`${API_URL}/tags`);
+          if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+          }
+          setTags(await response.json());
+
+      } catch (error) {
+          console.error(error.message);
+          }
+  };
+
+  fetchTags();
 
   }, [])
 
@@ -436,7 +460,19 @@ const Add_Item = () => {
 
   };
 
-  if (!categories || !units) {
+  const handleCheckbox = (e) => {
+    var tagId = e.target.value
+    if (e.target.checked === true) {
+      formData.tags.push(tagId);
+    } else {
+      formData.tags.pop(tagId);
+    }
+
+    console.log(formData.tags)
+
+  };
+
+  if (!categories || !units || !tags) {
 
     return(<h2>Loading...</h2>)
 
@@ -453,7 +489,7 @@ const Add_Item = () => {
 
     <h2 >Take Photo or Upload</h2>
 
-        {image.preview && <img src={image.preview} width='100' height='100'/>}
+        {image.preview && <img src={image.preview} width='100'/>}
         
         <form onSubmit={handleVision} encType="multipart/form-data">
           <label htmlFor="imgfile">Upload Image: </label>
@@ -552,7 +588,7 @@ const Add_Item = () => {
             required
           />
 
-          <label htmlFor="itemDescription">Item Description:</label>
+          <label htmlFor="itemDescription">Item Description (optional):</label>
           <input
             type="text"
             id="itemDescription"
@@ -585,14 +621,21 @@ const Add_Item = () => {
             required
           />
 
-          <label htmlFor="ripeRating">Item Ripeness Rating (optional):</label>
-          <input
-            type="text"
-            id="ripeRating"
-            name="ripeRating"
-            value={formData.ripeRating}
-            onChange={handleInputChange}
-          />
+          <label htmlFor="tags">Select Item Tags:</label>
+          <div className="all-tags">
+          {tags.map((e) => (
+            <div className="tag-select">
+            <input 
+              type="checkbox" 
+              id={e.tagid} 
+              name={e.tagname} 
+              value={e.tagid} 
+              onChange={(e) => handleCheckbox(e)}
+            />
+            <label htmlFor={e.tagname}>{e.tagname}</label>
+            </div>
+          ))}
+          </div>
 
           <label htmlFor="expirationDate">Item Expiration Date:</label>
           <p>If you are unsure when your item will expire, you can use the "Food Shelf Life Guidelines" below to get an estimate based on USDA food safety data.</p>
@@ -602,6 +645,7 @@ const Add_Item = () => {
             name="expirationDate"
             value={formData.expirationDate}
             onChange={handleInputChange}
+            required
           />
 
           <input type="submit" className="button-submit-button" value="Submit" />
@@ -618,11 +662,17 @@ const Add_Item = () => {
         <div className="spoilage-section-category-1">
         <h3>Select Category:</h3>
         <select name="spoilage-select" onChange={(e) => setSelectCategory(e.target.value)}>
+      
             <option value=""></option>
             {categories.map((e) => (
+            
             <option value={e.categoryid} key={e.categoryid}>{e.categorysubcategory}</option>
-          ))}
+
+
+            ))}
+
         </select>
+
         </div>
 
         <div className="spoilage-section-category-2">
@@ -637,7 +687,6 @@ const Add_Item = () => {
         </div>}
         </div>
 
-        
         {selectProduct && productDetails && <div className="spoilage-section-product">
         
         {productDetails.map((e) => (

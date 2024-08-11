@@ -145,6 +145,12 @@ body {
   }
 }
 
+/* Nav Bar */
+
+.icon-mobile {
+  display: none;
+}
+
 /* h1, h2, h3 */
 
 h1 {
@@ -202,7 +208,7 @@ td {
 /* Dashboard */
 
 .core-dashboard {
-  padding: 50px 30px;
+  padding: 50px 10px;
   max-width: 1500px;
   margin: 0 auto;
   background-color: white;
@@ -636,6 +642,32 @@ input[class="recipe-quantity"] {
   padding: 5px 15px;
 }
 
+.all-tags {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+
+}
+
+.tag-select {
+  display: flex;
+  width: 150px;
+}
+
+.tag-select input[type="checkbox"]{
+  margin: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+.tag-select label {
+  margin: 0;
+  padding: 10px;
+  align-content: center;
+  font-size: small;
+  font-weight: 400;
+}
+
 .section-content input[type="submit"] {
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -995,6 +1027,7 @@ color: black;
     min-height: 150vh;
   }
 
+  /* Carousel */
   .carousel-item {
     min-width: none;
   }
@@ -1013,7 +1046,14 @@ color: black;
     float: none;
     padding: 5px 12px 15px 12px; 
   }
+
+  /* Add Item Page */
+
+  .additem-core{
+    padding: 30px 20px;
+  }
   
+  /* Edit Page */
   .edit-image-content {
     display: grid;
     grid-template-rows: .25fr 1fr;
@@ -1032,8 +1072,30 @@ color: black;
     align-content: center;
     max-width: 100%;
   }
-  
-  
+
+  /* Mobile Nav Bar */
+
+  .nav-links-mobile {
+    display: none;
+  }
+
+  .icon-container {
+    display: block;
+    background-color: #FFE7C3;
+    height: 60px;
+  }
+
+  .icon-mobile {
+    display: block;
+    float: right;
+    padding: 15px;
+    background-color: #FFE7C3;
+    color: black;
+    height: 60px;
+    
+  }
+
+
   }
 
 /* view_recipe page */

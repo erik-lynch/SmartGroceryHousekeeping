@@ -78,7 +78,7 @@ app.get('/items', async (req, res) => {
 
 // add item to DB
 app.post('/api/add-item/:userId', async (req, res) => {
-  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate } = req.body; 
+  const { itemName, unit, quantity, ripeRating, barcode, itemDescription, recipeId, expirationDate, tags } = req.body; 
 
   try {
     const itemResult = await pool.query(
@@ -87,6 +87,7 @@ app.post('/api/add-item/:userId', async (req, res) => {
     );
 
     let itemId;
+    let tagId;
 
     if (itemResult.rows.length > 0) {
       // Item exists
@@ -101,12 +102,26 @@ app.post('/api/add-item/:userId', async (req, res) => {
       itemId = insertItemResult.rows[0].itemid;
     }
 
+    // associate the user with the item
     const updateUsersItems = await pool.query(
       `INSERT INTO usersitems (fk_items_itemid, fk_users_userid, quantitypurchased, quantityremaining, dateadded, spoilagedate)
       VALUES (${itemId}, ${req.params.userId}, ${quantity}, ${quantity}, CURRENT_DATE, '${expirationDate}');`
     )
 
     console.log(updateUsersItems.rows)
+
+    // associate tags with item
+    for (let i = 0; i < tags.length; i++) {
+      tagId = tags[i];
+
+      const updateItemsTags = await pool.query(
+        `INSERT INTO itemstags (fk_items_itemid, fk_tags_tagid)
+        VALUES (${itemId}, ${tagId});`
+      )
+
+      console.log(updateItemsTags.rows)
+
+    }
 
     res.status(200).json({ message: 'Item added successfully' });
   } catch (error) {
@@ -135,12 +150,31 @@ app.get('/units', async(req, res) => {
   }
 })
 
+// get all tags
+app.get('/tags', async(req, res) => {
+  
+  try{
+    const getUnits = await pool.query(
+      `SELECT
+        tags.tagid,
+        tags.tagname
+      FROM tags
+      ORDER BY tags.tagname;`);
+
+    res.json(getUnits.rows)
+    
+  }catch (err){
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
+
 //----------------------------------------------------------------------------
 //                Edit Item Page requests
 //----------------------------------------------------------------------------
 
 // get item info to display
-app.get('/useritem/:userId/:itemId', async (req, res) => {
+app.get('/useritem/iteminfo/:userId/:itemId/:usersItemsId', async (req, res) => {
 
   try{
     const getItemDetails = await pool.query(
@@ -160,15 +194,19 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
         usersitems.finishedtotal,
         usersitems.spoiledtotal,
         images.imagefilepath,
-		    units.unitabbreviation
+        units.unitabbreviation
+          
       FROM usersitems
       INNER JOIN users ON usersitems.fk_users_userid = users.userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
+
       LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
       LEFT JOIN images ON images.imageid = itemsimages.fk_images_imageid
-	    INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-	    INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
-      WHERE users.userid = ${req.params.userId} AND items.itemid = ${req.params.itemId}`);
+
+      LEFT JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      LEFT JOIN units ON itemsunits.fk_units_unitid = units.unitid
+
+      WHERE usersitems.usersitemsid =${req.params.usersItemsId}`);
 
     res.json(getItemDetails.rows);
     
@@ -180,7 +218,7 @@ app.get('/useritem/:userId/:itemId', async (req, res) => {
 });
 
 // get item tags to display
-app.get('/useritem/:itemId', async (req, res) => {
+app.get('/useritem/tags/:itemId', async (req, res) => {
 
   try {
     const getItemTags = await pool.query(
@@ -287,15 +325,15 @@ app.get('/dashboard/:userId/spoilingsoon', async(req, res) => {
       FROM users
       INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      LEFT JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      LEFT JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      LEFT JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
       AND usersitems.spoilagedate <= (current_date + 5)
       AND usersitems.spoiled = False
       AND usersitems.finished = False
-      AND usersitems.quantityremaining >= 0
+      AND usersitems.quantityremaining > 0
       ORDER BY formatspoilagedate`);
 
     res.json(getUserSpoilingSoon.rows)
@@ -324,15 +362,15 @@ app.get('/dashboard/:userId/recentitems', async(req, res) => {
       FROM users
       INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid
+      LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid
+      LEFT JOIN images ON itemsimages.fk_images_imageid = images.imageid
+      LEFT JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid
+      LEFT JOIN units ON itemsunits.fk_units_unitid = units.unitid
       WHERE users.userid = ${req.params.userId}
       AND usersitems.dateadded >= (current_date - 5)
       AND usersitems.spoiled = False
       AND usersitems.finished = False
-      AND usersitems.quantityremaining >= 0
+      AND usersitems.quantityremaining > 0
 	    ORDER BY usersitems.dateadded DESC;`);
 
     res.json(getUserRecentItems.rows)
@@ -359,14 +397,14 @@ app.get('/dashboard/:userId/allitems', async(req, res) => {
       FROM users
       INNER JOIN usersitems ON users.userid = usersitems.fk_users_userid 
       INNER JOIN items ON usersitems.fk_items_itemid = items.itemid 
-      INNER JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
-      INNER JOIN images ON itemsimages.fk_images_imageid = images.imageid 
-      INNER JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
-      INNER JOIN units ON itemsunits.fk_units_unitid = units.unitid 
+      LEFT JOIN itemsimages ON items.itemid = itemsimages.fk_items_itemid 
+      LEFT JOIN images ON itemsimages.fk_images_imageid = images.imageid 
+      LEFT JOIN itemsunits ON items.itemid = itemsunits.fk_items_itemid 
+      LEFT JOIN units ON itemsunits.fk_units_unitid = units.unitid 
       WHERE users.userid = ${req.params.userId}
       AND usersitems.spoiled = False
       AND usersitems.finished = False
-      AND usersitems.quantityremaining >= 0
+      AND usersitems.quantityremaining > 0
       ORDER BY items.itemname`
     );
     res.json(getAllUserItems.rows)
@@ -1044,8 +1082,10 @@ app.get('/spoilage/categories', async(req, res) => {
   try{
     const getCategoriesSubcategories = await pool.query(
       `SELECT 
-	      CONCAT_WS(' - ', categories.categoryname, categories.subcategoryname) as categorySubcategory,
-        categories.categoryid
+        categories.categoryname as groupname,
+        categories.subcategoryname as optionname,
+        CONCAT_WS(' - ', categories.categoryname, categories.subcategoryname) as categorySubcategory,
+          categories.categoryid
       FROM categories
       ORDER BY categories.categoryname, categories.subcategoryname;`);
 
