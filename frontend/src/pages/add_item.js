@@ -446,16 +446,13 @@ const Add_Item = () => {
         break;
     }
 
-    console.log(productDetails);
 
     days = Math.floor((min + max) / 2);
     updateDate.setDate(updateDate.getDate() + days);
     updateDate = updateDate.toISOString().split('T')[0];
-    console.log(updateDate);
 
     document.getElementById("expirationDate").value = updateDate;
     setFormData({ ...formData, ['expirationDate']: updateDate });
-    console.log(formData);
 
 
   };
@@ -467,8 +464,6 @@ const Add_Item = () => {
     } else {
       formData.tags.pop(tagId);
     }
-
-    console.log(formData.tags)
 
   };
 
