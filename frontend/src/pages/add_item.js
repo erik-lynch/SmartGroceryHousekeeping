@@ -34,10 +34,8 @@ const Add_Item = () => {
     preview: '',
     data: ''
   });
-  
-  // console.log('license key1', process.env.REACT_APP_SCANDIT_LICENSE_KEY);
-  const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/^"|"$/g, '');
-  // console.log('license key2', licenseKey);
+
+  const licenseKey = process.env.REACT_APP_SCANDIT_LICENSE_KEY.replace(/['"]/g, '');
 
   // temporary for demo
   const userId = 1;
