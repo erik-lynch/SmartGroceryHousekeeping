@@ -1030,27 +1030,22 @@ app.get('/api/users/:userid/reports/freqused', async(req,res) => {
 //                Google Cloud Vision API
 //----------------------------------------------------------------------------
 
-const CREDENTIALS = JSON.parse(JSON.stringify(
-  {
-    "type": "service_account",
-    "project_id": "clever-guard-429915-v9",
-    "private_key_id": process.env.VISION_API_KEY_ID,
-    "private_key": process.env.VISION_API_KEY,
-    "client_email": "imagerecognition@clever-guard-429915-v9.iam.gserviceaccount.com",
-    "client_id": "102964667298987474008",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/imagerecognition%40clever-guard-429915-v9.iam.gserviceaccount.com",
-    "universe_domain": "googleapis.com"
-  }
-));
+let CREDENTIALS;
+
+if (process.env.NODE_ENV === 'production') {
+  // In production (Heroku), use the environment variable
+  CREDENTIALS = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+} else {
+  // In development, use the JSON file
+  const fs = require('fs');
+  const path = require('path');
+  const keyFilePath = path.join(__dirname, '../../service-account-key.json');
+  const keyFileContent = fs.readFileSync(keyFilePath, 'utf8');
+  CREDENTIALS = JSON.parse(keyFileContent);
+}
 
 const CONFIG = {
-  credentials: {
-      private_key: CREDENTIALS.private_key,
-      client_email: CREDENTIALS.client_email
-  }
+  credentials: CREDENTIALS
 };
 
 const client = new vision.ImageAnnotatorClient(CONFIG);

@@ -35,6 +35,7 @@
 /backend/.env.development.local
 /backend/.env.test.local
 /backend/.env.production.local
+service-account-key.json
 
 npm-debug.log*
 yarn-debug.log*
